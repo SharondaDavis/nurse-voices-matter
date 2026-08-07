@@ -698,6 +698,8 @@ const settings = [
   {id:'ltc',      label:'Long-term care / SNF',   phrase:'working in long-term care and skilled nursing',     sig:'Long-term care / skilled nursing'},
   {id:'homehealth',label:'Home health',           phrase:'working in home health',                            sig:'Home health nursing'},
   {id:'school',   label:'School / Public health', phrase:'working in school and public health nursing',       sig:'School / public health nursing'},
+  {id:'retired',  label:'Retired',                phrase:'as a retired nurse',                                sig:'Retired nursing'},
+  {id:'academia', label:'Nursing education / Academia', phrase:'working in nursing education and academia',  sig:'Nursing education'},
   {id:'other',    label:'Other',                  phrase:'working in direct patient care',                    sig:'Direct patient care'}
 ];
 
@@ -756,6 +758,7 @@ const IMPACTS = {
   homesafe: {label:"Made the home safe enough to stay in", tag:"Nursing assessment", program:"Hospital-Acquired Condition Reduction Program", hint:"throw rugs, lighting, grab bars, the fall waiting to happen", deed:"kept safely at home instead of falling and being admitted", eg:"I have prevented more falls with a home safety walk than any protocol"},
   inclass: {label:"Kept kids in class", tag:"Nursing judgment", program:"ambulatory quality measures", hint:"asthma, diabetes, seizures, allergies — managed so no one misses school", deed:"kept in school and out of the ER through school nursing care", eg:"I manage 40 care plans so those kids stay in class"},
   kidmental: {label:"Caught a kid in crisis", tag:"Nursing intuition", program:"nurse-sensitive failure-to-rescue measures", hint:"the one who came to your office for a stomachache and needed something else", deed:"whose mental health crisis was identified by a school nurse first", eg:"the frequent-flyer stomachache who was actually being hurt at home"},
+  other: {label:"Other nursing work not listed here", tag:"Custom", program:"nursing practice", hint:"describe your own work if it's not captured above", deed:"", eg:"describe what your nursing care meant for your patients"},
 };
 
 const SPEC_IMPACTS = {
@@ -769,7 +772,8 @@ const SPEC_IMPACTS = {
     "family",
     "medrec",
     "equity",
-    "qi"
+    "qi",
+    "other"
   ],
   "pcu": [
     "intuition",
@@ -780,7 +784,8 @@ const SPEC_IMPACTS = {
     "clabsi",
     "hcahps",
     "equity",
-    "qi"
+    "qi",
+    "other"
   ],
   "medsurg": [
     "intuition",
@@ -792,7 +797,8 @@ const SPEC_IMPACTS = {
     "cauti",
     "hcahps",
     "equity",
-    "qi"
+    "qi",
+    "other"
   ],
   "er": [
     "triage",
@@ -802,7 +808,8 @@ const SPEC_IMPACTS = {
     "intuition",
     "equity",
     "medrec",
-    "qi"
+    "qi",
+    "other"
   ],
   "ld": [
     "pph",
@@ -812,7 +819,8 @@ const SPEC_IMPACTS = {
     "newborn",
     "intuition",
     "equity",
-    "qi"
+    "qi",
+    "other"
   ],
   "nicupeds": [
     "intuition",
@@ -821,7 +829,8 @@ const SPEC_IMPACTS = {
     "parents",
     "clabsi",
     "equity",
-    "qi"
+    "qi",
+    "other"
   ],
   "orpacu": [
     "timeout",
@@ -830,7 +839,8 @@ const SPEC_IMPACTS = {
     "ssi",
     "intuition",
     "medrec",
-    "qi"
+    "qi",
+    "other"
   ],
   "onc": [
     "chemo",
@@ -841,7 +851,8 @@ const SPEC_IMPACTS = {
     "transitional",
     "hcahps",
     "equity",
-    "qi"
+    "qi",
+    "other"
   ],
   "psych": [
     "deescalate",
@@ -849,7 +860,8 @@ const SPEC_IMPACTS = {
     "psychmeds",
     "equity",
     "falls",
-    "qi"
+    "qi",
+    "other"
   ],
   "clinic": [
     "phonecall",
@@ -858,7 +870,8 @@ const SPEC_IMPACTS = {
     "chronic",
     "medrec",
     "equity",
-    "qi"
+    "qi",
+    "other"
   ],
   "ltc": [
     "dignity",
@@ -867,7 +880,8 @@ const SPEC_IMPACTS = {
     "hapi",
     "polypharm",
     "equity",
-    "qi"
+    "qi",
+    "other"
   ],
   "homehealth": [
     "thehome",
@@ -875,7 +889,8 @@ const SPEC_IMPACTS = {
     "transitional",
     "medrec",
     "coordination",
-    "equity"
+    "equity",
+    "other"
   ],
   "school": [
     "inclass",
@@ -883,7 +898,28 @@ const SPEC_IMPACTS = {
     "gaps",
     "coordination",
     "equity",
-    "qi"
+    "qi",
+    "other"
+  ],
+  "retired": [
+    "intuition",
+    "hcahps",
+    "equity",
+    "qi",
+    "medrec",
+    "falls",
+    "transitional",
+    "family",
+    "other"
+  ],
+  "academia": [
+    "intuition",
+    "equity",
+    "qi",
+    "medrec",
+    "transitional",
+    "hcahps",
+    "other"
   ],
   "other": [
     "intuition",
@@ -900,7 +936,8 @@ const SPEC_IMPACTS = {
     "qi",
     "medrec",
     "falls",
-    "transitional"
+    "transitional",
+    "other"
   ]
 };
 
@@ -1231,6 +1268,31 @@ function impactCard(id){
   const st  = state.impacts[id] || { count: "", note: "" };
   const card = el("div", "card" + (on ? " on" : ""));
   card.id = "impact-" + id;
+
+  /* Special rendering for "other" — just a checkbox and text input */
+  if(id === "other"){
+    card.innerHTML =
+      '<label class="card-head" for="ichk-' + id + '">' +
+        '<input type="checkbox" id="ichk-' + id + '" data-impact="' + id + '"' + (on ? " checked" : "") + '>' +
+        '<span class="card-txt">' +
+          '<span class="card-title"></span><span class="card-sub"></span>' +
+        '</span>' +
+      '</label>' +
+      '<div class="card-body">' +
+        '<label for="inote-' + id + '">Describe your nursing work:</label>' +
+        '<textarea id="inote-' + id + '" data-inote="' + id + '" rows="3"></textarea>' +
+        '<p class="phi"><span class="ic" aria-hidden="true">&#9888;</span>' +
+        '<span>Nothing that could identify a patient, please.</span></p>' +
+      '</div>';
+    card.querySelector(".card-title").textContent = i.label;
+    card.querySelector(".card-sub").textContent   = i.hint;
+    const ta = card.querySelector("#inote-" + id);
+    ta.value = st.note || "";
+    ta.placeholder = i.eg;
+    return card;
+  }
+
+  /* Standard rendering for all other impacts */
   card.innerHTML =
     '<label class="card-head" for="ichk-' + id + '">' +
       '<input type="checkbox" id="ichk-' + id + '" data-impact="' + id + '"' + (on ? " checked" : "") + '>' +
@@ -1597,9 +1659,18 @@ function buildLetter(){
   if(impIds.length){
     const byProgram = {};
     const order = [];
+    let customOther = "";
     impIds.forEach(function(id){
       const i  = IMPACTS[id];
       const st = state.impacts[id] || {};
+
+      /* Handle "other" custom interventions separately */
+      if(id === "other"){
+        const note = (st.note || "").trim();
+        if(note) customOther = note;
+        return;
+      }
+
       const c  = counts.filter(function(c){ return c.id === st.count; })[0];
       let phrase = c ? c.phrase + " " + i.deed : "patients " + i.deed;
       const note = (st.note || "").trim();
@@ -1612,6 +1683,7 @@ function buildLetter(){
     order.forEach(function(prog){
       para += " Under " + programPhrase(prog) + ": " + byProgram[prog].join("; ") + ".";
     });
+    if(customOther) para += " " + sentence(customOther);
     para += " This is harm prevented before it happened: nursing assessment, judgment and intuition " +
             "applied reliably, to every patient. Medicare measures and pays for these outcomes, yet the " +
             "nursing work behind them is bundled into room-and-board or other clinicians' billing — " +
