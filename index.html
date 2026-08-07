@@ -450,6 +450,11 @@
       </div>
 
       <div class="field">
+        <label for="fyears">Years of nursing experience <span class="opt">&mdash; optional</span></label>
+        <input type="text" id="fyears" inputmode="numeric" placeholder="23">
+      </div>
+
+      <div class="field">
         <label for="fname">Your name <span class="opt">&mdash; optional</span></label>
         <input type="text" id="fname" autocomplete="name" placeholder="Jordan Ellis">
       </div>
@@ -1066,7 +1071,7 @@ const state = {
   impacts:   {},     /* id -> { count: "", note: "" }  (presence = selected)     */
   topics:    {},     /* id -> { note: "" }             (presence = selected)     */
   own:       "",
-  name: "", cred: "", org: "", orgCount: "",
+  name: "", cred: "", years: "", org: "", orgCount: "",
   letterEdited: null,   /* string once the visitor edits the letter, else null   */
   checklist: { phi: false, read: false },
   copied: false
@@ -1491,6 +1496,8 @@ document.addEventListener("input", function(e){
   if(t.id === "freeText"){ state.own = t.value; save(); refreshLetter(); return; }
   if(t.id === "fname")   { state.name = t.value; save(); refreshLetter(); return; }
   if(t.id === "fcred")   { state.cred = t.value; syncCredChips(); save(); refreshLetter(); return; }
+  if(t.id === "fyears")  { state.years = t.value.replace(/[^0-9]/g, ""); t.value = state.years;
+                           save(); refreshLetter(); return; }
   if(t.id === "forg")    { state.org = t.value; save(); refreshLetter(); return; }
   if(t.id === "fcount")  { state.orgCount = t.value.replace(/[^0-9]/g, ""); t.value = state.orgCount;
                            save(); refreshLetter(); return; }
@@ -1630,6 +1637,7 @@ function buildLetter(){
   const set   = state.setting ? settingById(state.setting) : null;
   const cred  = state.cred.trim();
   const org   = state.org.trim();
+  const years = state.years.trim();
   const impIds = selectedImpactIds();
   const tps    = selectedTopicIds();
   const own    = state.own.trim();
@@ -1647,7 +1655,8 @@ function buildLetter(){
     if(set) who += " " + set.phrase;   /* reads correctly for 1 nurse or 400 */
     out.push(who + ". We are submitting this comment on the proposed rule above.");
   } else {
-    const who = cred ? article(cred) + " " + cred : "a nurse";
+    let who = cred ? article(cred) + " " + cred : "a nurse";
+    if(years) who += " with " + years + (years === "1" ? " year" : " years") + " of experience";
     out.push("I am " + who + (set ? " " + set.phrase : "") +
              ". I am submitting this comment on the proposed rule above.");
   }
@@ -2084,6 +2093,7 @@ function loadSaved(){
     own:      typeof s.own === "string" ? s.own : "",
     name:     typeof s.name === "string" ? s.name : "",
     cred:     typeof s.cred === "string" ? s.cred : "",
+    years:    typeof s.years === "string" ? s.years.replace(/[^0-9]/g, "") : "",
     org:      typeof s.org === "string" ? s.org : "",
     orgCount: typeof s.orgCount === "string" ? s.orgCount.replace(/[^0-9]/g, "") : "",
     letterEdited: typeof s.letterEdited === "string" ? s.letterEdited : null,
@@ -2119,6 +2129,7 @@ function applyState(s){
   $("freeText").value = state.own;
   $("fname").value    = state.name;
   $("fcred").value    = state.cred;
+  $("fyears").value   = state.years;
   $("forg").value     = state.org;
   $("fcount").value   = state.orgCount;
   syncRadioGroup($("modeChips"), state.mode);
