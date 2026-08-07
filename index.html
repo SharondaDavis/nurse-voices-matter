@@ -578,6 +578,28 @@
         </ol>
         <p class="fine" id="fallbackNote"></p>
       </div>
+
+      <div class="howto">
+        <h3>Help us measure reach (optional)</h3>
+        <p class="fine" style="margin-top:0">After you submit, would you share your story? It helps us understand
+          what's working and how many nurses are joining this movement.</p>
+        <div class="field">
+          <label for="fbSpecialty">Your specialty or setting <span class="opt">&mdash; optional</span></label>
+          <input type="text" id="fbSpecialty" placeholder="ICU, ER, clinic, home health, etc.">
+        </div>
+        <div class="field">
+          <label for="fbCount">How many comments did you submit? <span class="opt">&mdash; optional</span></label>
+          <input type="text" id="fbCount" inputmode="numeric" placeholder="1, 5, 10...">
+        </div>
+        <div class="field">
+          <label for="fbFeedback">Any feedback or tips? <span class="opt">&mdash; optional</span></label>
+          <textarea id="fbFeedback" rows="2" placeholder="What helped? What would you change? Any tips for other nurses?"></textarea>
+        </div>
+        <p class="fine">We'll send this to sharonda@nursebloc.io. Your email will open so you can review before sending.</p>
+        <div class="lbtns">
+          <button type="button" class="btn ghost" id="sendFeedbackBtn">Share my story</button>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -1966,6 +1988,24 @@ $("shareBtn").addEventListener("click", function(){
   } else {
     if(legacyCopy(msg)) done(); else toast("Could not copy — the message is in the flyer instead");
   }
+});
+
+$("sendFeedbackBtn").addEventListener("click", function(){
+  const specialty = ($("fbSpecialty").value || "").trim();
+  const count = ($("fbCount").value || "").trim();
+  const feedback = ($("fbFeedback").value || "").trim();
+
+  let body = "Nurse Voices Matter Feedback:\n\n";
+  if(specialty) body += "Specialty/Setting: " + specialty + "\n";
+  if(count) body += "Comments Submitted: " + count + "\n";
+  if(feedback) body += "Feedback:\n" + feedback + "\n";
+  body += "\n---\nThank you for sharing your story!";
+
+  const subject = "Nurse Voices Matter - Story & Feedback";
+  const mailto = "mailto:sharonda@nursebloc.io?subject=" + encodeURIComponent(subject) +
+                 "&body=" + encodeURIComponent(body);
+  window.location.href = mailto;
+  toast("Email client opening. Review and send — thank you!");
 });
 
 $("dlBtn").addEventListener("click", function(){

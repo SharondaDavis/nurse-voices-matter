@@ -76,9 +76,23 @@ Identical letters get bundled as one comment. Yours counts because it's yours â€
 
 MIT License â€” you can use this, modify it, run it, or share it. Just keep the original attribution. See LICENSE file for details.
 
+## Share Your Impact
+
+**Submitted your comment?** Help us measure reach by emailing **sharonda@nursebloc.io** with:
+- Your specialty (ICU, ER, clinic, etc.)
+- How many comments you submitted
+- Any tips that helped you or other nurses
+- Anything you'd like to see changed
+
+We read every message. Your story helps us understand what's working.
+
 ## Questions?
 
-This tool was built to meet nurses where they are: busy, practical, focused on the bedside, and expert in what they see. If something doesn't work or could work better, let us know.
+This tool was built to meet nurses where they are: busy, practical, focused on the bedside, and expert in what they see. 
+
+**Found a bug?** Report it to sharonda@nursebloc.io  
+**Have a feature idea?** Send it to sharonda@nursebloc.io  
+**Want to contribute?** See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ---
 
