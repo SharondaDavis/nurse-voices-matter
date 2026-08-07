@@ -326,6 +326,12 @@
     <div class="toprow">
       <h1 class="brand"><span id="ruleLabel">&nbsp;</span>Medicare Comment Builder for Nurses</h1>
       <span class="clock" id="clock">&nbsp;</span>
+      <a href="mailto:feedback@nursevoicesmatter.com?subject=Feedback on Nurse Voices Matter Tool"
+         style="font-size:13px;font-weight:700;color:var(--accent-ink);text-decoration:none;padding:8px 12px;border-radius:6px;background:var(--void);border:1px solid var(--line);cursor:pointer;white-space:nowrap;transition:all .2s;"
+         onmouseover="this.style.background='var(--panel)'"
+         onmouseout="this.style.background='var(--void)'">
+        Feedback
+      </a>
     </div>
     <nav aria-label="Progress">
       <ol class="bars" id="bars"></ol>
@@ -364,6 +370,20 @@
       <fieldset>
         <legend id="lgSet">Question 2 &mdash; where do you nurse? <span class="req">(required)</span></legend>
         <div class="chips" role="radiogroup" aria-labelledby="lgSet" id="settingChips"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Not a nurse? <span class="opt">&mdash; optional</span></legend>
+        <label style="display:flex;align-items:center;gap:10px;margin-bottom:12px;cursor:pointer;font-size:16px;font-weight:600;">
+          <input type="checkbox" id="notNurseCheck" style="width:20px;height:20px;cursor:pointer;">
+          I am not a nurse, but want to comment on this issue
+        </label>
+        <div id="roleField" hidden>
+          <label for="fRole" style="display:block;font-size:13.5px;font-weight:800;color:var(--text-2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.02em;">
+            Your role or perspective <span class="opt">&mdash; optional</span>
+          </label>
+          <input type="text" id="fRole" placeholder="e.g., patient advocate, healthcare worker, family member">
+        </div>
       </fieldset>
     </section>
 
@@ -1072,6 +1092,8 @@ const state = {
   topics:    {},     /* id -> { note: "" }             (presence = selected)     */
   own:       "",
   name: "", cred: "", years: "", org: "", orgCount: "",
+  isNurse:   true,   /* false if non-nurse commenting */
+  role:      "",     /* non-nurse's role or perspective */
   letterEdited: null,   /* string once the visitor edits the letter, else null   */
   checklist: { phi: false, read: false },
   copied: false
@@ -1479,6 +1501,13 @@ document.addEventListener("change", function(e){
   }
   if(t.id === "ck-phi")  { state.checklist.phi  = t.checked; save(); paintChecklist(); }
   if(t.id === "ck-read") { state.checklist.read = t.checked; save(); paintChecklist(); }
+  if(t.id === "notNurseCheck"){
+    state.isNurse = !t.checked;
+    $("roleField").hidden = !t.checked;
+    $("settingChips").parentNode.hidden = t.checked;  /* hide "where do you nurse" for non-nurses */
+    if(t.checked) state.setting = null;  /* clear setting if switching to non-nurse */
+    save(); refreshLetter();
+  }
 });
 
 document.addEventListener("input", function(e){
@@ -1498,6 +1527,7 @@ document.addEventListener("input", function(e){
   if(t.id === "fcred")   { state.cred = t.value; syncCredChips(); save(); refreshLetter(); return; }
   if(t.id === "fyears")  { state.years = t.value.replace(/[^0-9]/g, ""); t.value = state.years;
                            save(); refreshLetter(); return; }
+  if(t.id === "fRole")   { state.role = t.value; save(); refreshLetter(); return; }
   if(t.id === "forg")    { state.org = t.value; save(); refreshLetter(); return; }
   if(t.id === "fcount")  { state.orgCount = t.value.replace(/[^0-9]/g, ""); t.value = state.orgCount;
                            save(); refreshLetter(); return; }
@@ -1536,7 +1566,8 @@ function validateStep(n){
               $("modeChips").querySelector('[tabindex="0"]'));
     return false;
   }
-  if(!state.setting){
+  /* Non-nurses skip the setting question; nurses must answer it */
+  if(state.isNurse && !state.setting){
     showAlert("Please answer question 2: where do you nurse?",
               $("settingChips").querySelector('[tabindex="0"]'));
     return false;
@@ -1550,6 +1581,9 @@ function goTo(n, focusHeading){
   /* Moving forward past an incomplete step 1 is blocked; moving back is not. */
   if(n > step && !validateStep(step)) return;
   if(n > 0 && !validateStep(0)){ n = 0; }
+
+  /* Non-nurses skip Step 2 (contributions); redirect Step 2 to Step 3 (own words) */
+  if(!state.isNurse && n === 1) n = 2;
 
   const back = n < step;
   for(let i = 0; i < STEPS; i++){
@@ -1648,7 +1682,12 @@ function buildLetter(){
   out.push("Re: " + CONFIG.ruleId + " — " + CONFIG.ruleTitle);
 
   /* --- who is writing (grammatical in all four cases) --- */
-  if(isOrg){
+  if(!state.isNurse){
+    /* Non-nurse commenter */
+    const role = state.role.trim();
+    let who = role ? "a " + role : "someone who cares about healthcare policy";
+    out.push("I am " + who + ". I am submitting this comment on the proposed rule above.");
+  } else if(isOrg){
     const n = state.orgCount ? parseInt(state.orgCount, 10) : 0;
     let who = "I am writing on behalf of " + (org || "a group of nurses");
     if(n > 0) who += ", speaking for " + n + (n === 1 ? " nurse" : " nurses");
@@ -1665,7 +1704,8 @@ function buildLetter(){
   if(own) out.push(own.replace(/\n{3,}/g, "\n\n"));
 
   /* --- contributions: one sentence per program, so nothing is ambiguous --- */
-  if(impIds.length){
+  /* Non-nurses skip the contributions section entirely */
+  if(impIds.length && state.isNurse){
     const byProgram = {};
     const order = [];
     let customOther = "";
@@ -2096,6 +2136,8 @@ function loadSaved(){
     years:    typeof s.years === "string" ? s.years.replace(/[^0-9]/g, "") : "",
     org:      typeof s.org === "string" ? s.org : "",
     orgCount: typeof s.orgCount === "string" ? s.orgCount.replace(/[^0-9]/g, "") : "",
+    isNurse:  typeof s.isNurse === "boolean" ? s.isNurse : true,
+    role:     typeof s.role === "string" ? s.role : "",
     letterEdited: typeof s.letterEdited === "string" ? s.letterEdited : null,
     checklist: { phi: !!(s.checklist && s.checklist.phi), read: !!(s.checklist && s.checklist.read) },
     copied: false   /* never restore "copied" — it must be true for this session */
@@ -2132,6 +2174,10 @@ function applyState(s){
   $("fyears").value   = state.years;
   $("forg").value     = state.org;
   $("fcount").value   = state.orgCount;
+  $("notNurseCheck").checked = !state.isNurse;
+  $("fRole").value    = state.role;
+  $("roleField").hidden = state.isNurse;
+  $("settingChips").parentNode.hidden = !state.isNurse;
   syncRadioGroup($("modeChips"), state.mode);
   syncRadioGroup($("settingChips"), state.setting);
   syncCredChips();
