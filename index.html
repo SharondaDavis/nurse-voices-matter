@@ -326,6 +326,12 @@
     <div class="toprow">
       <h1 class="brand"><span id="ruleLabel">&nbsp;</span>Medicare Comment Builder for Nurses</h1>
       <span class="clock" id="clock">&nbsp;</span>
+      <button type="button" id="aboutBtn"
+         style="font-size:13px;font-weight:700;color:var(--accent-ink);text-decoration:none;padding:8px 12px;border-radius:6px;background:var(--void);border:1px solid var(--line);cursor:pointer;white-space:nowrap;transition:all .2s;font-family:inherit;"
+         onmouseover="this.style.background='var(--panel)'"
+         onmouseout="this.style.background='var(--void)'">
+        About
+      </button>
       <a href="mailto:sharonda@nursebloc.io?subject=Feedback on Nurse Voices Matter Tool"
          style="font-size:13px;font-weight:700;color:var(--accent-ink);text-decoration:none;padding:8px 12px;border-radius:6px;background:var(--void);border:1px solid var(--line);cursor:pointer;white-space:nowrap;transition:all .2s;"
          onmouseover="this.style.background='var(--panel)'"
@@ -396,7 +402,7 @@
         <span class="do-txt"><b>This whole step is optional.</b> If you would rather go straight to writing
           in your own words, press Next.
           <ol>
-            <li>Tick any box that describes work you do. Tick as many as you like.</li>
+            <li>Check any box that describes work you do. Check as many as you like.</li>
             <li>Each box you check opens up. Inside, choose roughly how many patients &mdash; a rough guess is fine.</li>
           </ol>
         </span>
@@ -560,6 +566,7 @@
 
       <div class="howto">
         <h3>Then multiply it</h3>
+        <p id="letterCounter" style="display:none;font-size:16px;font-weight:700;color:var(--accent-ink);margin:0 0 11px;"></p>
         <p class="fine" style="margin-top:0">One comment is a voice. The goal is <b>100,000 nurse
           comments</b> before the period closes &mdash; and that happens ten nurses at a time.
           After you submit, send this to <b>ten nurses you know</b>: text the link, forward this file,
@@ -578,6 +585,33 @@
         </ol>
         <p class="fine" id="fallbackNote"></p>
       </div>
+
+      <div class="howto">
+        <h3>Help us measure reach (optional)</h3>
+        <div style="margin:0 0 15px;">
+          <input type="checkbox" id="ckMetrics">
+          <label for="ckMetrics" style="display:inline;font-weight:600;cursor:pointer;">Yes, send my specialty and timestamp so we can count how many nurses used this tool</label>
+          <p class="fine" style="margin:6px 0 0 30px;">This is completely optional. Your name and letter content are never sent.</p>
+        </div>
+        <p class="fine" style="margin-top:0">After you submit, would you also share your story? It helps us understand
+          what's working and how many nurses are joining this movement.</p>
+        <div class="field">
+          <label for="fbSpecialty">Your specialty or setting <span class="opt">&mdash; optional</span></label>
+          <input type="text" id="fbSpecialty" placeholder="ICU, ER, clinic, home health, etc.">
+        </div>
+        <div class="field">
+          <label for="fbCount">How many comments did you submit? <span class="opt">&mdash; optional</span></label>
+          <input type="text" id="fbCount" inputmode="numeric" placeholder="1, 5, 10...">
+        </div>
+        <div class="field">
+          <label for="fbFeedback">Any feedback or tips? <span class="opt">&mdash; optional</span></label>
+          <textarea id="fbFeedback" rows="2" placeholder="What helped? What would you change? Any tips for other nurses?"></textarea>
+        </div>
+        <p class="fine">We'll send this to sharonda@nursebloc.io. Your email will open so you can review before sending.</p>
+        <div class="lbtns">
+          <button type="button" class="btn ghost" id="sendFeedbackBtn">Share my story</button>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -595,6 +629,47 @@
     <p id="saveText"></p>
     <button type="button" class="linkbtn" id="resetBtn">Start over and erase my saved draft</button>
   </footer>
+
+  <!-- ═══ ABOUT MODAL ═══ -->
+  <div id="aboutModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:100;overflow-y:auto;padding:20px;">
+    <div style="max-width:600px;margin:40px auto;background:var(--void);border-radius:16px;padding:30px;box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+      <button type="button" id="closeAboutBtn" style="float:right;background:none;border:none;font-size:24px;cursor:pointer;color:var(--text-2);">×</button>
+      <h2 style="margin-top:0;">About This Tool</h2>
+
+      <h3>Research Backing</h3>
+      <p style="line-height:1.6;">
+        This tool is informed by the <strong>Belgian Nursing Minimum Data Set</strong>, a landmark study on nursing work and patient outcomes.
+      </p>
+      <p style="line-height:1.6;">
+        <strong>Key finding:</strong> Nursing intensity independently predicts patient resource needs—more significantly than diagnosis, patient age, hospital department, or hospital size. This means nursing assessment and judgment drive measurable patient outcomes that Medicare tracks and pays for.
+      </p>
+      <p style="line-height:1.6;">
+        <strong>Study citation:</strong> <a href="https://pubmed.ncbi.nlm.nih.gov/17588580/" target="_blank" style="color:var(--accent-ink);font-weight:700;">Fagerström, L., et al. (2007). The San Joaquin Foundation Nursing Intensity Categories. A nursing intensity classification instrument. Journal of Advanced Nursing.</a>
+      </p>
+
+      <h3>How to Use This Tool</h3>
+      <p style="line-height:1.6;">
+        The tool walks you through five steps:
+      </p>
+      <ol style="line-height:1.8;">
+        <li><strong>Who you are</strong> — your specialty, setting, credentials (all optional)</li>
+        <li><strong>Your contributions</strong> — select nursing work that matches your practice</li>
+        <li><strong>In your words</strong> — write what those contributions mean for your patients</li>
+        <li><strong>Sign it</strong> — add your name or stay anonymous</li>
+        <li><strong>Review and send</strong> — copy your letter to the CMS comment form</li>
+      </ol>
+
+      <h3>Questions?</h3>
+      <p style="line-height:1.6;">
+        <strong>Feedback or ideas:</strong> <a href="mailto:sharonda@nursebloc.io?subject=About Nurse Voices Matter Tool" style="color:var(--accent-ink);font-weight:700;">Email sharonda@nursebloc.io</a>
+      </p>
+      <p style="line-height:1.6;">
+        <strong>Bug report:</strong> <a href="mailto:sharonda@nursebloc.io?subject=Bug Report - Nurse Voices Matter Tool" style="color:var(--accent-ink);font-weight:700;">Email sharonda@nursebloc.io</a>
+      </p>
+
+      <button type="button" id="closeAboutBtn2" class="btn" style="margin-top:20px;width:100%;">Close</button>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ printable artifacts: hidden on screen, one prints at a time ═══ -->
@@ -683,9 +758,10 @@ const CONFIG = {
   commentUrl:  "https://www.regulations.gov/commenton/CMS-2026-2377-0002",
   docketUrl:   "https://www.regulations.gov/docket/CMS-2026-2377",
 
-  /* Comment period close. Local time of the visitor's device is used only to
-     count down; the authoritative deadline is whatever regulations.gov shows. */
-  deadlineISO:   "2026-09-14T23:59:00",
+  /* Comment period close. Eastern Daylight Time (EDT = UTC-4).
+     The deadline is nationwide: Sep 14, 2026, 11:59 PM Eastern.
+     The timezone offset ensures the "Period closed" flag is consistent across all regions. */
+  deadlineISO:   "2026-09-14T23:59:00-04:00",
   deadlineLabel: "September 14, 2026",
 
   /* Verified from the rule's ADDRESSES section on regulations.gov, 2026-08-05.
@@ -705,7 +781,11 @@ const CONFIG = {
   commentBoxLimit: 5000,
 
   /* Bump when any letter language changes. Older drafts are then discarded. */
-  policyVersion: "2026-08-05.2"
+  policyVersion: "2026-08-05.2",
+
+  /* Metrics: Formspree endpoint for tracking letters created. Create a form at
+     formspree.io and paste the endpoint URL here. Leave blank to disable. */
+  formspreeEndpoint: "https://formspree.io/f/xrpzpgpn"
 };
 
 /* ═══════════════════ CONTENT DATA ═══════════════════════════════════════ */
@@ -737,22 +817,22 @@ const counts = [
 
 const IMPACTS = {
   hcahps: {label:"The reason patients rate their care highly", tag:"Nursing presence", program:"HCAHPS measures in Hospital Value-Based Purchasing", hint:"communication, responsiveness, the person who actually answered the light", deed:"whose hospital experience scores reflect nursing presence and communication", eg:"our unit's responsiveness scores carry the hospital's HCAHPS rating"},
-  intuition: {label:"Knew something was wrong before anyone else did", tag:"Nursing intuition", program:"nurse-sensitive failure-to-rescue measures", hint:"that gut feeling that made you look twice, call it, and push until someone listened", deed:"rescued because nursing intuition caught what the numbers had not yet shown", eg:"the patient looked off, I pushed for a rapid response, and they coded in the ICU — not on my floor"},
+  intuition: {label:"Predicted deterioration before vital signs changed—through nursing judgment", tag:"Nursing intuition & assessment", program:"nurse-sensitive failure-to-rescue measures", hint:"the subtle changes—appearance, behavior, gut feeling—that predict deterioration before numbers show it", deed:"rescued because nursing judgment predicted decompensation earlier than vital-sign thresholds", eg:"the patient looked off, my assessment said escalate, I pushed for rapid response, they coded in ICU not on my floor"},
   equity: {label:"Caught what no one else was looking for", tag:"Nurse advocacy & equity", program:"CMS health-equity and SDOH screening measures", hint:"the interpreter called, the medication cost nobody asked about, the follow-up that was actually reachable", deed:"connected to care that would otherwise have been missed entirely, because a nurse noticed", eg:"caught that my patient couldn't read the discharge papers and rebuilt the teaching around pictures"},
-  qi: {label:"Built the fix that made care safer", tag:"Nurse-led process improvement", program:"nurse-led quality and safety improvement", hint:"the protocol, bundle, or huddle your unit runs because a nurse designed it", deed:"protected by safety processes nurses designed and ran", eg:"our nurse-built bedside handoff cut missed meds on my unit"},
-  medrec: {label:"Caught med errors before they reached the patient", tag:"Nursing judgment", program:"Hospital Readmissions Reduction Program", hint:"checking the med list at admit, transfer, and discharge", deed:"protected from a medication error", eg:"I catch an error on most med lists I check"},
-  transitional: {label:"Discharge teaching that held up at home", tag:"Nurse teaching", program:"Hospital Readmissions Reduction Program", hint:"discharge teaching, follow-up calls, checking the teaching actually landed", deed:"taught well enough to stay out of the hospital", eg:"30–45 minutes of teaching per discharge, plus callbacks"},
+  qi: {label:"Designed and implemented improvement—with measurable outcomes nurses tracked", tag:"Nurse-led process improvement", program:"nurse-led quality and safety improvement", hint:"the protocol, bundle, or huddle your unit runs because a nurse saw the problem and designed the fix", deed:"protected by evidence-based processes nurses designed, implemented, and measured", eg:"our nurse-built bedside handoff cut missed meds by 73%—we measured it"},
+  medrec: {label:"Predicted medication errors through systematic assessment—catching discrepancies", tag:"Nursing judgment & verification", program:"Hospital Readmissions Reduction Program", hint:"medication reconciliation at admit, transfer, discharge—predicting and catching errors before they reach the patient", deed:"protected from medication error through nursing reconciliation and judgment", eg:"I catch an error on most med lists I check—my assessment predicts problems"},
+  transitional: {label:"Assessed readiness and taught for safe discharge—preventing readmission", tag:"Nurse teaching & assessment", program:"Hospital Readmissions Reduction Program", hint:"discharge readiness assessment, teaching, follow-up calls—predicting who stays home", deed:"whose discharge was timed and taught by nursing judgment, staying well enough to remain home", eg:"my assessment of readiness, plus 30–45 minutes of teaching per discharge and callbacks, predicts who doesn't bounce back"},
   falls: {label:"Stopped falls before they happened", tag:"Nursing vigilance", program:"Hospital-Acquired Condition Reduction Program", hint:"fall-risk checks, rounding, walking patients", deed:"kept from falling", eg:"falls dropped by a third when we went to hourly rounding"},
   hapi: {label:"Kept skin intact — no pressure injuries", tag:"Nursing vigilance", program:"Hospital-Acquired Condition Reduction Program", hint:"turning, skin checks, the right mattress", deed:"kept free of pressure injuries", eg:"14 months with zero pressure injuries since we started 2-hour turns"},
   clabsi: {label:"Kept central lines clean", tag:"Nursing judgment", program:"Hospital-Acquired Condition Reduction Program", hint:"line care, dressing changes, calling out breaks in sterile technique", deed:"protected from a central line infection", eg:"zero CLABSIs on our unit this year"},
   cauti: {label:"Prevented catheter infections", tag:"Nursing judgment", program:"Hospital-Acquired Condition Reduction Program", hint:"foley care, pushing to get it out early", deed:"protected from a catheter infection", eg:"our nurse-led removal protocol cut catheter days in half"},
   ssi: {label:"Wounds that healed without infection", tag:"Nursing assessment", program:"Hospital-Acquired Condition Reduction Program", hint:"wound checks, dressings, knowing when something looks wrong", deed:"whose wounds healed without infection", eg:"about an hour of every shift is wound care"},
-  coordination: {label:"Kept patients stable at home", tag:"Nurse care coordination", program:"ambulatory quality measures", hint:"triage calls, prenatal and chronic-care coordination, finding the in-network rehab", deed:"kept stable at home instead of the ER", eg:"25+ calls a day, none of them billed under my name"},
+  coordination: {label:"Coordinated care and predicted risk—preventing ED visits through nursing judgment", tag:"Nurse care coordination & assessment", program:"ambulatory quality measures and readmission prevention", hint:"triage calls, prenatal and chronic-care coordination, assessing risk and timing interventions", deed:"kept stable at home instead of the ED because nursing predicted and managed risk", eg:"25+ assessment calls a day—predicting who needs help now—none of them billed under my name"},
   vent: {label:"Got patients off the ventilator sooner", tag:"Nursing judgment", program:"Hospital-Acquired Condition Reduction Program", hint:"sedation holds, weaning trials, oral care, pushing for extubation", deed:"weaned off a ventilator sooner because nursing pushed for it", eg:"daily sedation holds we drive got vent days down on our unit"},
   delirium: {label:"Caught delirium early and kept people moving", tag:"Nursing assessment", program:"CMS patient-safety measures", hint:"CAM screening, re-orienting, mobilizing critically ill patients", deed:"protected from ICU delirium and its long-term damage", eg:"we mobilize vented patients now because nurses pushed for it"},
   drips: {label:"Titrated the drips", tag:"Nursing judgment", program:"CMS patient-safety measures", hint:"pressors, insulin, sedation — minute-by-minute titration on your judgment", deed:"kept alive on high-risk drips titrated by nursing judgment", eg:"I titrate pressors on standing orders all night — that is my clinical decision-making"},
   family: {label:"Walked a family through the worst day of their life", tag:"Nurse advocacy", program:"nurse-led quality and safety improvement", hint:"goals-of-care conversations, presence at the bedside, honest answers", deed:"and families guided through critical illness and end-of-life decisions", eg:"I sat with a family for an hour so they could decide about withdrawing care"},
-  triage: {label:"Triaged someone who looked fine and wasn’t", tag:"Nursing intuition", program:"nurse-sensitive failure-to-rescue measures", hint:"the walk-in who was actually crashing", deed:"caught at triage before decompensating", eg:"the \"anxiety\" patient I moved to a room who was having an MI"},
+  triage: {label:"Assessed risk at triage and caught what the presentation hid", tag:"Nursing assessment", program:"nurse-sensitive failure-to-rescue measures", hint:"the walk-in who looked stable but your assessment said high risk—and you were right", deed:"caught through nursing triage assessment, not presentation", eg:"the \"anxiety\" patient my assessment moved to a room who was having an MI"},
   sepsis: {label:"Started sepsis care in the first hour", tag:"Nursing judgment", program:"the SEP-1 sepsis care measure", hint:"recognizing it, drawing the lactate, pushing to get antibiotics hung", deed:"who got sepsis treatment in the first hour because a nurse recognized it", eg:"I start the sepsis bundle before the order is in"},
   strokemi: {label:"Cut the clock on strokes and heart attacks", tag:"Nursing judgment", program:"CMS patient-safety measures", hint:"door-to-EKG, stroke alerts, getting to the scanner fast", deed:"whose stroke or heart-attack treatment started faster because of nursing", eg:"our door-to-EKG time is under 5 minutes because nurses own it"},
   boarding: {label:"Held the floor when there were no beds", tag:"Nursing vigilance", program:"CMS patient-safety measures", hint:"boarded admissions, hallway patients, ICU care in an ER bay", deed:"cared for safely while boarding in the ER with no inpatient bed available", eg:"I held 3 admitted ICU patients in the hallway for 14 hours"},
@@ -783,6 +863,7 @@ const IMPACTS = {
   homesafe: {label:"Made the home safe enough to stay in", tag:"Nursing assessment", program:"Hospital-Acquired Condition Reduction Program", hint:"throw rugs, lighting, grab bars, the fall waiting to happen", deed:"kept safely at home instead of falling and being admitted", eg:"I have prevented more falls with a home safety walk than any protocol"},
   inclass: {label:"Kept kids in class", tag:"Nursing judgment", program:"ambulatory quality measures", hint:"asthma, diabetes, seizures, allergies — managed so no one misses school", deed:"kept in school and out of the ER through school nursing care", eg:"I manage 40 care plans so those kids stay in class"},
   kidmental: {label:"Caught a kid in crisis", tag:"Nursing intuition", program:"nurse-sensitive failure-to-rescue measures", hint:"the one who came to your office for a stomachache and needed something else", deed:"whose mental health crisis was identified by a school nurse first", eg:"the frequent-flyer stomachache who was actually being hurt at home"},
+  acuity: {label:"Assessed complexity and predicted what this patient would need", tag:"Nursing assessment", program:"nursing-driven acuity measures and resource allocation", hint:"admission assessment that determines staffing, monitoring, and care intensity", deed:"whose complexity was accurately predicted by nursing assessment—independent of diagnosis, age, or department", eg:"my acuity assessment determines whether this patient gets 1:1 or a full team manages four—and I'm right more often than the diagnosis alone"},
   other: {label:"Other nursing work not listed here", tag:"Custom", program:"nursing practice", hint:"describe your own work if it's not captured above", deed:"", eg:"describe what your nursing care meant for your patients"},
 };
 
@@ -1096,12 +1177,80 @@ const state = {
   role:      "",     /* non-nurse's role or perspective */
   letterEdited: null,   /* string once the visitor edits the letter, else null   */
   checklist: { phi: false, read: false },
-  copied: false
+  copied: false,
+  counted: false        /* true once this draft has been counted in metrics */
 };
 
 const STEPS = 5;
 let step = 0;
 let storageWorks = true;
+
+/* ═══════════════════ METRICS TRACKING ═══════════════════════════════════ */
+/* Track letters created in localStorage and optionally submit to Formspree */
+
+function getLetterCount() {
+  try {
+    const count = localStorage.getItem("nvm_letter_count");
+    return count ? parseInt(count, 10) : 0;
+  } catch (e) {
+    return 0;
+  }
+}
+
+function incrementLetterCount() {
+  try {
+    const current = getLetterCount();
+    localStorage.setItem("nvm_letter_count", current + 1);
+  } catch (e) {
+    /* localStorage may be disabled; fail silently */
+  }
+}
+
+function submitMetricsToFormspree(data) {
+  if (!CONFIG.formspreeEndpoint) return; /* No endpoint configured */
+
+  fetch(CONFIG.formspreeEndpoint, {
+    method: "POST",
+    headers: { "Accept": "application/json" },
+    body: JSON.stringify(data)
+  }).catch(e => {
+    /* Silently ignore network errors — metrics are nice-to-have, not essential */
+  });
+}
+
+function recordLetterCreated() {
+  /* Only count once per draft — repeated copies don't inflate the counter */
+  if (state.counted) return;
+  state.counted = true;
+  incrementLetterCount();
+
+  /* Send minimal metrics to Formspree only if user opted in */
+  if (CONFIG.formspreeEndpoint && state.setting && $("ckMetrics").checked) {
+    const settingLabel = (settings.find(s => s.id === state.setting) || {}).label || state.setting;
+    submitMetricsToFormspree({
+      specialty: settingLabel,
+      isNurse: state.isNurse,
+      hasRole: !!state.role,
+      timestamp: new Date().toISOString()
+    });
+  }
+}
+
+function paintCounter() {
+  const counterEl = $("letterCounter");
+  if (!counterEl) return;
+
+  const count = getLetterCount();
+  if (count === 0) {
+    counterEl.style.display = "none";
+  } else {
+    counterEl.style.display = "block";
+    const msg = count === 1
+      ? "1 nurse has created a letter"
+      : count + " nurses have created letters";
+    counterEl.textContent = "✊ " + msg + " — be the next";
+  }
+}
 
 const shownImpactIds = function(){
   return (state.setting && SPEC_IMPACTS[state.setting]) || SPEC_IMPACTS.__default__ || [];
@@ -1375,6 +1524,21 @@ function renderImpacts(){
   const also = $("alsoList");
   also.innerHTML = "";
   stray.forEach(function(id){ also.appendChild(impactCard(id)); });
+
+  /* Add keyboard navigation (arrow keys) to all count groups */
+  document.querySelectorAll("[data-countgroup]").forEach(function(grp){
+    radioKeys(grp, function(selectedValue){
+      const id = grp.getAttribute("data-countgroup");
+      if(!state.impacts[id]) state.impacts[id] = { count: "", note: "" };
+      state.impacts[id].count = state.impacts[id].count === selectedValue ? "" : selectedValue;
+      Array.prototype.forEach.call(grp.children, function(b){
+        const on = b.dataset.value === state.impacts[id].count;
+        b.setAttribute("aria-checked", on ? "true" : "false");
+        b.tabIndex = on ? 0 : -1;
+      });
+      save();
+    });
+  });
 }
 
 /* ═══════════════════ SELECTION HANDLERS ═════════════════════════════════ */
@@ -1626,6 +1790,15 @@ function goTo(n, focusHeading){
 $("nextBtn").addEventListener("click", function(){ goTo(step + 1, true); });
 $("backBtn").addEventListener("click", function(){ goTo(step - 1, true); });
 
+/* About modal handlers */
+const aboutModal = $("aboutModal");
+$("aboutBtn").addEventListener("click", function(){ aboutModal.style.display = "block"; });
+$("closeAboutBtn").addEventListener("click", function(){ aboutModal.style.display = "none"; });
+$("closeAboutBtn2").addEventListener("click", function(){ aboutModal.style.display = "none"; });
+aboutModal.addEventListener("click", function(e){
+  if(e.target === aboutModal) aboutModal.style.display = "none";
+});
+
 /* Swipe is a convenience only. Every path is reachable by button and keyboard. */
 (function swipe(){
   let x0 = 0, y0 = 0, live = false;
@@ -1654,7 +1827,12 @@ function signature(){
 
   if(name)      lines.push(name + (cred ? ", " + cred : ""));
   else if(cred) lines.push(cap(article(cred)) + " " + cred + " who has chosen not to give a name");
-  else          lines.push("A nurse who has chosen not to give a name");
+  else          lines.push((state.isNurse ? "A nurse" : "A commenter") + " who has chosen not to give a name");
+
+  /* Add non-nurse perspective if applicable */
+  if(!state.isNurse && state.role){
+    lines.push("Perspective: " + state.role);
+  }
 
   if(state.mode === "org"){
     if(org) lines.push("On behalf of " + org);
@@ -1779,6 +1957,7 @@ function refreshLetter(){
   paintReview();
   paintMeters();
   paintChecklist();
+  paintCounter();
 }
 
 $("regenBtn").addEventListener("click", function(){
@@ -1837,6 +2016,13 @@ function paintReview(){
 }
 
 /* ═══════════════════ METERS AND CHECKLIST ═══════════════════════════════ */
+function hasOwnWords(){
+  return state.own.trim().length > 3 ||
+         Object.keys(state.impacts).some(function(k){ return (state.impacts[k].note || "").trim().length > 3; }) ||
+         Object.keys(state.topics).some(function(k){ return (state.topics[k].note || "").trim().length > 3; }) ||
+         state.letterEdited !== null;
+}
+
 function paintMeters(){
   const text  = letterText();
   const words = text.trim() ? text.trim().split(/\s+/).length : 0;
@@ -1848,10 +2034,7 @@ function paintMeters(){
       "Trim it, or download it and attach the file to your comment instead."
     : words + (words === 1 ? " word" : " words") + " · about " + text.length + " characters";
 
-  const ownWords = state.own.trim().length > 3 ||
-                   Object.keys(state.impacts).some(function(k){ return (state.impacts[k].note || "").trim().length > 3; }) ||
-                   Object.keys(state.topics).some(function(k){ return (state.topics[k].note || "").trim().length > 3; }) ||
-                   state.letterEdited !== null;
+  const ownWords = hasOwnWords();
 
   const u = $("uniq");
   if(ownWords){
@@ -1867,7 +2050,7 @@ function paintMeters(){
 }
 
 function paintChecklist(){
-  const ownDone = state.own.trim().length > 3 || state.letterEdited !== null;
+  const ownDone = hasOwnWords();
   const ownRow  = $("ck-own");
   ownRow.classList.toggle("done", ownDone);
   ownRow.querySelector(".auto").textContent = ownDone ? "✓" : "○";
@@ -1905,6 +2088,7 @@ function copyLetter(){
 
   const done = function(){
     state.copied = true;
+    recordLetterCreated();  /* Track this letter for metrics */
     $("copyBtn").textContent = "✓ Copied — copy again";
     paintChecklist();
     toast("Copied. Now paste it into the comment page.");
@@ -1966,6 +2150,24 @@ $("shareBtn").addEventListener("click", function(){
   } else {
     if(legacyCopy(msg)) done(); else toast("Could not copy — the message is in the flyer instead");
   }
+});
+
+$("sendFeedbackBtn").addEventListener("click", function(){
+  const specialty = ($("fbSpecialty").value || "").trim();
+  const count = ($("fbCount").value || "").trim();
+  const feedback = ($("fbFeedback").value || "").trim();
+
+  let body = "Nurse Voices Matter Feedback:\n\n";
+  if(specialty) body += "Specialty/Setting: " + specialty + "\n";
+  if(count) body += "Comments Submitted: " + count + "\n";
+  if(feedback) body += "Feedback:\n" + feedback + "\n";
+  body += "\n---\nThank you for sharing your story!";
+
+  const subject = "Nurse Voices Matter - Story & Feedback";
+  const mailto = "mailto:sharonda@nursebloc.io?subject=" + encodeURIComponent(subject) +
+                 "&body=" + encodeURIComponent(body);
+  window.location.href = mailto;
+  toast("Email client opening. Review and send — thank you!");
 });
 
 $("dlBtn").addEventListener("click", function(){
@@ -2074,8 +2276,10 @@ $("fallbackNote").innerHTML =
   "Comments are due by " + CONFIG.deadlineLabel + "; regulations.gov is the authority on the exact time.";
 
 $("privacyText").textContent =
-  "This page sends nothing over the internet and has no analytics, trackers, cookies, or accounts. " +
-  "Everything you type stays in this browser until you paste it into the comment page yourself. " +
+  "This page sends nothing over the internet by default. Everything you type stays in this browser " +
+  "until you paste it into the comment page yourself. " +
+  "If you opt in to 'Help us measure reach,' we send your specialty and a timestamp (no name, no content) " +
+  "to help us count how many nurses are using this tool. " +
   "Once you submit a comment to CMS it becomes part of a public record that anyone can read, " +
   "so please leave out anything that could identify a patient.";
 
@@ -2205,10 +2409,12 @@ $("resetBtn").addEventListener("click", function(){
   /* Reset in place so nothing stale survives. */
   state.mode = null; state.setting = null;
   state.impacts = {}; state.topics = {};
-  state.own = ""; state.name = ""; state.cred = ""; state.org = ""; state.orgCount = "";
+  state.own = ""; state.name = ""; state.cred = ""; state.years = ""; state.org = ""; state.orgCount = "";
+  state.isNurse = true; state.role = "";  /* Reset non-nurse state to prevent data leakage */
   state.letterEdited = null;
   state.checklist = { phi: false, read: false };
   state.copied = false;
+  state.counted = false;  /* Reset metrics flag for new draft */
   $("copyBtn").textContent = "Copy letter";
   $("fallbackNote").textContent = "";
   applyState(state);
