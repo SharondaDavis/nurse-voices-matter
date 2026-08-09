@@ -67,10 +67,11 @@
     *{box-sizing:border-box;}
     html, body, main{max-width:100%;overflow-x:hidden;}
 
-    /* Header wraps on mobile */
+    /* Header wraps on mobile; simplify title */
     .toprow{flex-wrap:wrap;justify-content:flex-start;gap:8px;}
-    h1.brand{flex:1;min-width:0;font-size:12px;line-height:1.2;}
-    h1.brand span{font-size:10px;}
+    h1.brand{flex:1;min-width:0;font-size:13px;line-height:1.1;font-weight:800;}
+    h1.brand span{display:none;} /* Hide "CMS-1848-P" on mobile */
+    h1.brand::after{content:"Nurse Voices Matter";}
     .clock{flex:none;font-size:10.5px;padding:4px 9px;white-space:nowrap;}
 
     /* Buttons move to second row */
@@ -116,6 +117,7 @@
   .step-n{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
           color:var(--accent-ink);margin:0 0 8px;}
   h2{font-size:27px;line-height:1.14;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;}
+  h2:focus-visible{outline:2px solid var(--accent-ink);outline-offset:4px;border-radius:4px;}
   h3{font-size:17px;font-weight:800;margin:26px 0 10px;}
   .say{font-size:15.5px;color:var(--text-2);margin:0 0 18px;max-width:52ch;}
   .say b{color:var(--text);}
@@ -682,12 +684,15 @@
         This tool is informed by the <strong>Belgian Nursing Minimum Data Set</strong>, a landmark study on nursing work and patient outcomes.
       </p>
       <p style="line-height:1.6;">
-        <strong>Key finding:</strong> Nursing assessment independently predicts patient resource needs—more significantly than diagnosis, patient age, hospital department, or hospital size.
+        <strong>Key finding:</strong> Nursing-care intensity can be measured independently of common administrative factors. In one acute-hospital study, nursing-intensity classification explained more variation in measured care intensity than age, diagnosis-related groups, department type, hospital characteristics, and severity combined.
+      </p>
+      <p style="line-height:1.6; font-size:13px; color:var(--text-2);">
+        <em>Note: This is evidence from Belgian acute hospitals, not a direct U.S. Medicare reimbursement study. It demonstrates that nursing work is measurable and should inform resource-allocation decisions.</em>
       </p>
 
       <h3>How This Shapes the Tool</h3>
       <ul style="line-height:1.8; margin: 10px 0;">
-        <li><strong>Acuity Assessment card</strong> emphasizes your predictive clinical judgment about patient complexity</li>
+        <li><strong>Acuity Assessment card</strong> helps you document nursing complexity and clinical judgment</li>
         <li><strong>"Measurable outcomes" language</strong> shows nursing work drives outcomes that Medicare measures and pays for</li>
         <li><strong>Framework questions</strong> ask: What do you assess? What do you predict? What outcomes result? These are the evidence CMS needs to hear.</li>
       </ul>
@@ -866,17 +871,17 @@ const counts = [
 
 const IMPACTS = {
   hcahps: {label:"The reason patients rate their care highly", tag:"Nursing presence", program:"HCAHPS measures in Hospital Value-Based Purchasing", hint:"communication, responsiveness, the person who actually answered the light", deed:"whose hospital experience scores reflect nursing presence and communication", eg:"our unit's responsiveness scores carry the hospital's HCAHPS rating"},
-  intuition: {label:"Predicted deterioration before vital signs changed—through nursing judgment", tag:"Nursing intuition & assessment", program:"nurse-sensitive failure-to-rescue measures", hint:"the subtle changes—appearance, behavior, gut feeling—that predict deterioration before numbers show it", deed:"rescued because nursing judgment predicted decompensation earlier than vital-sign thresholds", eg:"the patient looked off, my assessment said escalate, I pushed for rapid response, they coded in ICU not on my floor"},
+  intuition: {label:"Caught deterioration before vital signs showed it", tag:"Nursing intuition & assessment", program:"nurse-sensitive failure-to-rescue measures", hint:"subtle changes in appearance, behavior, or demeanor that signal risk", deed:"rescued because nursing assessment caught decompensation earlier than vital-sign thresholds", eg:"the patient looked off, I escalated, rapid response caught them in ICU—not on my floor"},
   equity: {label:"Caught what no one else was looking for", tag:"Nurse advocacy & equity", program:"CMS health-equity and SDOH screening measures", hint:"the interpreter called, the medication cost nobody asked about, the follow-up that was actually reachable", deed:"connected to care that would otherwise have been missed entirely, because a nurse noticed", eg:"caught that my patient couldn't read the discharge papers and rebuilt the teaching around pictures"},
-  qi: {label:"Designed and implemented improvement—with measurable outcomes nurses tracked", tag:"Nurse-led process improvement", program:"nurse-led quality and safety improvement", hint:"the protocol, bundle, or huddle your unit runs because a nurse saw the problem and designed the fix", deed:"protected by evidence-based processes nurses designed, implemented, and measured", eg:"our nurse-built bedside handoff cut missed meds by 73%—we measured it"},
-  medrec: {label:"Predicted medication errors through systematic assessment—catching discrepancies", tag:"Nursing judgment & verification", program:"Hospital Readmissions Reduction Program", hint:"medication reconciliation at admit, transfer, discharge—predicting and catching errors before they reach the patient", deed:"protected from medication error through nursing reconciliation and judgment", eg:"I catch an error on most med lists I check—my assessment predicts problems"},
-  transitional: {label:"Assessed readiness and taught for safe discharge—preventing readmission", tag:"Nurse teaching & assessment", program:"Hospital Readmissions Reduction Program", hint:"discharge readiness assessment, teaching, follow-up calls—predicting who stays home", deed:"whose discharge was timed and taught by nursing judgment, staying well enough to remain home", eg:"my assessment of readiness, plus 30–45 minutes of teaching per discharge and callbacks, predicts who doesn't bounce back"},
+  qi: {label:"Designed and tested a care improvement that works", tag:"Nurse-led process improvement", program:"nurse-led quality and safety improvement", hint:"protocol, bundle, or workflow change you designed based on what you saw broken", deed:"protected by a nurse-designed process that was tested and measured", eg:"our bedside handoff reduced missed meds by 73%—because a nurse designed it and we measured it"},
+  medrec: {label:"Caught medication errors at reconciliation points", tag:"Nursing judgment & verification", program:"Hospital Readmissions Reduction Program", hint:"systematic checks at admit, transfer, and discharge", deed:"protected from medication error through nursing reconciliation", eg:"I catch an error on most med lists I check—discrepancies others miss"},
+  transitional: {label:"Taught for safe discharge, preventing readmission", tag:"Nurse teaching & assessment", program:"Hospital Readmissions Reduction Program", hint:"discharge readiness assessment, teaching, follow-up calls", deed:"whose discharge readiness was assessed and taught by nursing judgment, keeping them home", eg:"my discharge assessment and 30–45 minutes of teaching per discharge, plus callbacks, predicts who stays out of the hospital"},
   falls: {label:"Stopped falls before they happened", tag:"Nursing vigilance", program:"Hospital-Acquired Condition Reduction Program", hint:"fall-risk checks, rounding, walking patients", deed:"kept from falling", eg:"falls dropped by a third when we went to hourly rounding"},
   hapi: {label:"Kept skin intact — no pressure injuries", tag:"Nursing vigilance", program:"Hospital-Acquired Condition Reduction Program", hint:"turning, skin checks, the right mattress", deed:"kept free of pressure injuries", eg:"14 months with zero pressure injuries since we started 2-hour turns"},
   clabsi: {label:"Kept central lines clean", tag:"Nursing judgment", program:"Hospital-Acquired Condition Reduction Program", hint:"line care, dressing changes, calling out breaks in sterile technique", deed:"protected from a central line infection", eg:"zero CLABSIs on our unit this year"},
   cauti: {label:"Prevented catheter infections", tag:"Nursing judgment", program:"Hospital-Acquired Condition Reduction Program", hint:"foley care, pushing to get it out early", deed:"protected from a catheter infection", eg:"our nurse-led removal protocol cut catheter days in half"},
   ssi: {label:"Wounds that healed without infection", tag:"Nursing assessment", program:"Hospital-Acquired Condition Reduction Program", hint:"wound checks, dressings, knowing when something looks wrong", deed:"whose wounds healed without infection", eg:"about an hour of every shift is wound care"},
-  coordination: {label:"Coordinated care and predicted risk—preventing ED visits through nursing judgment", tag:"Nurse care coordination & assessment", program:"ambulatory quality measures and readmission prevention", hint:"triage calls, prenatal and chronic-care coordination, assessing risk and timing interventions", deed:"kept stable at home instead of the ED because nursing predicted and managed risk", eg:"25+ assessment calls a day—predicting who needs help now—none of them billed under my name"},
+  coordination: {label:"Coordinated care, prevented ED visits", tag:"Nurse care coordination & assessment", program:"ambulatory quality measures and readmission prevention", hint:"triage calls, prenatal and chronic-care coordination, risk assessment", deed:"kept stable at home instead of the ED through nursing assessment and coordination", eg:"25+ assessment calls a day, managing risk—none of them billed under my name"},
   vent: {label:"Got patients off the ventilator sooner", tag:"Nursing judgment", program:"Hospital-Acquired Condition Reduction Program", hint:"sedation holds, weaning trials, oral care, pushing for extubation", deed:"weaned off a ventilator sooner because nursing pushed for it", eg:"daily sedation holds we drive got vent days down on our unit"},
   delirium: {label:"Caught delirium early and kept people moving", tag:"Nursing assessment", program:"CMS patient-safety measures", hint:"CAM screening, re-orienting, mobilizing critically ill patients", deed:"protected from ICU delirium and its long-term damage", eg:"we mobilize vented patients now because nurses pushed for it"},
   drips: {label:"Titrated the drips", tag:"Nursing judgment", program:"CMS patient-safety measures", hint:"pressors, insulin, sedation — minute-by-minute titration on your judgment", deed:"kept alive on high-risk drips titrated by nursing judgment", eg:"I titrate pressors on standing orders all night — that is my clinical decision-making"},
