@@ -61,6 +61,47 @@
   ol.bars button[data-state="now"]::before{background:var(--accent);border-color:var(--accent-ink);}
   ol.bars button:focus-visible{outline:3px solid var(--text);outline-offset:3px;}
 
+  /* ---------- mobile breakpoint (375px and narrower) ---------- */
+  @media (max-width:600px){
+    /* Prevent document overflow */
+    *{box-sizing:border-box;}
+    html, body, main{max-width:100%;overflow-x:hidden;}
+
+    /* Header wraps on mobile */
+    .toprow{flex-wrap:wrap;justify-content:flex-start;gap:8px;}
+    h1.brand{flex:1;min-width:0;font-size:12px;line-height:1.2;}
+    h1.brand span{font-size:10px;}
+    .clock{flex:none;font-size:10.5px;padding:4px 9px;white-space:nowrap;}
+
+    /* Buttons move to second row */
+    .toprow a, .toprow button{flex:0 1 auto;order:10;font-size:12px;padding:6px 10px;min-height:40px;}
+
+    /* Step content padding tighter on mobile */
+    .slide{padding:18px 14px 24px;}
+
+    /* Reduce margins on headings */
+    h2{font-size:22px;margin:0 0 8px;}
+    h3{font-size:15px;margin:18px 0 8px;}
+
+    /* Chips smaller tap targets still safe */
+    .chip{min-height:40px;padding:7px 11px;font-size:13.5px;}
+    .chip.sm{min-height:40px;padding:7px 10px;font-size:13px;}
+
+    /* Cards stay full width */
+    .card{margin:0;}
+    .card-head{padding:12px 13px;min-height:52px;}
+    .card-title{font-size:15px;}
+    .card-sub{font-size:13px;}
+
+    /* Buttons stack on narrow screens */
+    .lbtns{flex-direction:column;}
+    .lbtns button, .lbtns a{width:100%;}
+
+    /* About modal scales to viewport */
+    #aboutModal > div{max-width:90vw;margin:20px auto;}
+    #aboutModal h2{font-size:18px;}
+  }
+
   /* ---------- steps ---------- */
   /* The step-in animation shifts 26px; clip it so a transition never widens the page. */
   .stage{flex:1;min-height:0;padding:0;min-width:0;overflow-x:hidden;overflow-x:clip;}
