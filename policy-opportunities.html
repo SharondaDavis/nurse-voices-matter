@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nursing Policy Opportunities</title>
+  <style>
+    :root {
+      --void: #f5f5f7;
+      --panel: #e8e8ed;
+      --text: #1b2733;
+      --text-2: #6b7280;
+      --accent-ink: #0066cc;
+      --line: #d1d5db;
+      --serif: Georgia, serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --void: #0f0f12;
+        --panel: #1a1a1f;
+        --text: #e4e4e7;
+        --text-2: #a1a1a6;
+        --accent-ink: #5ca3ff;
+        --line: #3a3a42;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; font-family: var(--sans); }
+    body {
+      background: var(--void);
+      color: var(--text);
+      line-height: 1.6;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    header {
+      padding: 24px 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--void);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+
+    h1 span {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-ink);
+      margin-bottom: 4px;
+    }
+
+    main {
+      padding: 24px 18px 40px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .opportunity {
+      background: var(--panel);
+      border: 2px solid var(--line);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .opportunity.current {
+      border-color: var(--accent-ink);
+      border-width: 2.5px;
+    }
+
+    .status {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 9px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    .status.current {
+      background: var(--accent-ink);
+      color: white;
+    }
+
+    .status.monitoring {
+      background: var(--text-2);
+      color: white;
+      opacity: 0.6;
+    }
+
+    .opp-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0 0 12px;
+      line-height: 1.25;
+    }
+
+    .opp-meta {
+      font-size: 13px;
+      color: var(--text-2);
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    .opp-meta strong {
+      display: block;
+      color: var(--text);
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .opp-relevance {
+      font-size: 15px;
+      line-height: 1.55;
+      margin: 12px 0;
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .opp-action {
+      margin-top: 16px;
+    }
+
+    .cta-btn {
+      display: inline-block;
+      background: var(--accent-ink);
+      color: white;
+      padding: 12px 18px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .cta-btn:hover {
+      opacity: 0.85;
+    }
+
+    .cta-link {
+      color: var(--accent-ink);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .cta-link:hover {
+      text-decoration: underline;
+    }
+
+    .divider {
+      margin: 32px 0;
+      padding: 20px 0;
+      border-top: 2px dashed var(--line);
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-2);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .monitoring-note {
+      font-size: 12px;
+      color: var(--text-2);
+      font-style: italic;
+      margin-bottom: 16px;
+    }
+
+    .monitoring-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .monitoring-item {
+      background: var(--void);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .monitoring-title {
+      font-weight: 700;
+      font-size: 14px;
+      margin: 0 0 6px;
+    }
+
+    .monitoring-detail {
+      font-size: 12px;
+      color: var(--text-2);
+      margin: 4px 0;
+    }
+
+    footer {
+      padding: 24px 18px;
+      border-top: 1px solid var(--line);
+      margin-top: 40px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-2);
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: var(--accent-ink);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      main {
+        padding: 18px 14px 30px;
+      }
+
+      .opportunity {
+        padding: 16px;
+      }
+
+      .opp-title {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>
+      <span>Nursing Policy</span>
+      Opportunities
+    </h1>
+  </header>
+
+  <main>
+    <a href="index.html" class="back-link">← Back to Medicare Comment Builder</a>
+
+    <!-- CURRENT OPPORTUNITY -->
+    <div class="opportunity current">
+      <div class="status current">Now Open</div>
+
+      <h2 class="opp-title">2027 Medicare Physician Fee Schedule</h2>
+
+      <div class="opp-meta">
+        <strong>Agency:</strong> Centers for Medicare & Medicaid Services (CMS)
+        <strong>Docket Number:</strong> CMS-2026-2377-0002
+        <strong>Deadline:</strong> September 14, 2026 at 11:59 PM EDT
+        <strong>Time Remaining:</strong> <span id="countdown"></span>
+      </div>
+
+      <div class="opp-relevance">
+        <strong>Why this matters for nursing:</strong> This regulation determines which nursing contributions are visible, counted, and reimbursable in Medicare. Your comment shows CMS that nursing assessment, judgment, and coordination drive patient outcomes.
+      </div>
+
+      <div class="opp-action">
+        <a href="index.html" class="cta-btn">Use Nurse Voices Matter Tool</a>
+      </div>
+
+      <div style="margin-top: 14px; font-size: 12px; color: var(--text-2);">
+        <strong>Official submission:</strong> <a href="https://www.regulations.gov/commenton/CMS-2026-2377-0002" class="cta-link" target="_blank">Submit on regulations.gov →</a>
+      </div>
+    </div>
+
+    <!-- MONITORING SECTION -->
+    <div class="divider">Monitoring: Coming Later</div>
+
+    <p class="monitoring-note">
+      These issues affect nursing. We're tracking them. No public comment period is open yet—when they do, we'll update this page and adapt the tool to help you comment.
+    </p>
+
+    <div class="monitoring-list">
+      <div class="monitoring-item">
+        <div class="monitoring-title">OSHA Healthcare Worker Violence Prevention Standard</div>
+        <div class="monitoring-detail"><strong>Agency:</strong> Occupational Safety & Health Administration</div>
+        <div class="monitoring-detail"><strong>Expected:</strong> Q1 2027 (estimated)</div>
+        <div class="monitoring-detail"><strong>Nursing angle:</strong> Workplace safety, staffing impact, violence-prevention protocols</div>
+      </div>
+
+      <div class="monitoring-item">
+        <div class="monitoring-title">FDA Guidance: AI in Patient Care</div>
+        <div class="monitoring-detail"><strong>Agency:</strong> Food and Drug Administration</div>
+        <div class="monitoring-detail"><strong>Expected:</strong> Q2 2027 (estimated)</div>
+        <div class="monitoring-detail"><strong>Nursing angle:</strong> Nursing scope of practice, override authority, liability when AI guides care</div>
+      </div>
+    </div>
+
+    <!-- INFO -->
+    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 12px; color: var(--text-2);">
+      <p><strong>Questions?</strong> Email <a href="mailto:sharonda@nursebloc.io" style="color: var(--accent-ink); text-decoration: none;">sharonda@nursebloc.io</a></p>
+      <p><strong>See an issue we should monitor?</strong> Let us know—<a href="mailto:sharonda@nursebloc.io" style="color: var(--accent-ink); text-decoration: none;">send us a note</a></p>
+      <p style="margin-top: 16px; font-size: 11px; opacity: 0.7;">
+        Last verified: August 9, 2026
+      </p>
+    </div>
+  </main>
+
+  <footer>
+    <p style="margin: 0;">Nurse Voices Matter</p>
+  </footer>
+
+  <script>
+    // Calculate countdown to deadline
+    function updateCountdown() {
+      const deadline = new Date("2026-09-14T23:59:00").getTime();
+      const now = new Date().getTime();
+      const diff = deadline - now;
+
+      if (diff < 0) {
+        document.getElementById("countdown").textContent = "Comment period closed";
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+      if (days > 0) {
+        document.getElementById("countdown").textContent = `${days}d ${hours}h`;
+      } else if (hours > 0) {
+        document.getElementById("countdown").textContent = `${hours}h ${minutes}m`;
+      } else {
+        document.getElementById("countdown").textContent = `${minutes}m remaining`;
+      }
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 60000); // Update every minute
+  </script>
+
+</body>
+</html>
