@@ -1,0 +1,2456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F1F6FC">
+<meta name="referrer" content="no-referrer">
+<title>Medicare Comment Builder for Nurses</title>
+<style>
+  :root{
+    --void:#EEF4FD; --panel:#FFFFFF; --panel-2:#DEEAFA;
+    --line:#BFD4EE; --line-2:#7C9CC4;
+    --text:#0E1A28; --text-2:#33506E; --text-3:#54708F;
+    --paper:#FFFDF7; --paper-ink:#14202E;
+    /* step accents — bold fills (white text) + a deeper ink for borders and small text */
+    --c1:#1C6FD8; --i1:#0E4A96;
+    --c2:#1560CC; --i2:#0C408A;
+    --c3:#1A4FC0; --i3:#10357E;
+    --c4:#2E3FB8; --i4:#1C2878;
+    --c5:#4B2FB0; --i5:#331B7A;
+    --on-accent:#FFFFFF;
+    --hot:#A8291C; --hot-bg:#FCE7E2; --hot-line:#E0A79C;
+    --ok:#0B6A42; --ok-bg:#D6F0E1;
+    --warn:#6E4A00; --warn-bg:#FBEDC4;
+    --accent:var(--c1); --accent-ink:var(--i1);
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --serif:ui-serif,Georgia,"Times New Roman",serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{margin:0;background:var(--void);color:var(--text);font-family:var(--sans);
+       font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+  .app{display:flex;flex-direction:column;min-height:100dvh;max-width:760px;margin:0 auto;}
+
+  /* ---------- skip link ---------- */
+  .skip{position:absolute;left:0;top:0;z-index:100;background:var(--text);color:#fff;
+        padding:12px 18px;border-radius:0 0 10px 0;font-weight:700;text-decoration:none;
+        transform:translateY(-200%);}
+  .skip:focus{transform:none;}
+
+  /* ---------- header ---------- */
+  .top{flex:none;padding:calc(10px + env(safe-area-inset-top)) 18px 10px;border-bottom:1px solid var(--line);
+       background:var(--void);position:sticky;top:0;z-index:20;}
+  .toprow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px;}
+  h1.brand{font-size:13px;font-weight:800;letter-spacing:.02em;color:var(--text);margin:0;}
+  h1.brand span{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;
+                text-transform:uppercase;color:var(--accent-ink);}
+  .clock{font-size:11.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--hot);
+         background:var(--hot-bg);border:1.5px solid var(--hot-line);border-radius:999px;
+         padding:5px 11px;white-space:nowrap;}
+  .clock.closed{background:var(--panel-2);border-color:var(--line-2);color:var(--text-2);}
+  ol.bars{display:flex;gap:5px;list-style:none;margin:0;padding:0;}
+  ol.bars li{align-items:center;}
+  ol.bars li{flex:1;display:flex;}
+  /* The bar reads as 8px but the tap target is 24px tall, per WCAG 2.2 target size. */
+  ol.bars button{flex:1;height:24px;padding:8px 0;min-height:0;border:0;background:none;cursor:pointer;}
+  ol.bars button::before{content:"";display:block;height:8px;border-radius:99px;
+                         background:var(--line);border:1px solid transparent;}
+  ol.bars button[data-state="done"]::before{background:var(--line-2);}
+  ol.bars button[data-state="now"]::before{background:var(--accent);border-color:var(--accent-ink);}
+  ol.bars button:focus-visible{outline:3px solid var(--text);outline-offset:3px;}
+
+  /* ---------- steps ---------- */
+  /* The step-in animation shifts 26px; clip it so a transition never widens the page. */
+  .stage{flex:1;min-height:0;padding:0;min-width:0;overflow-x:hidden;overflow-x:clip;}
+  .slide{padding:24px 18px 34px;}
+  .slide[hidden]{display:none;}
+  @media (prefers-reduced-motion:no-preference){
+    .slide.enter{animation:sl .32s cubic-bezier(.33,.9,.25,1) both;}
+    .slide.enter.back{animation-name:slb;}
+    @keyframes sl { from{opacity:0;transform:translateX(26px)} to{opacity:1;transform:none} }
+    @keyframes slb{ from{opacity:0;transform:translateX(-26px)} to{opacity:1;transform:none} }
+  }
+  .step-n{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+          color:var(--accent-ink);margin:0 0 8px;}
+  h2{font-size:27px;line-height:1.14;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;}
+  h3{font-size:17px;font-weight:800;margin:26px 0 10px;}
+  .say{font-size:15.5px;color:var(--text-2);margin:0 0 18px;max-width:52ch;}
+  .say b{color:var(--text);}
+
+  .do{display:flex;gap:11px;align-items:flex-start;background:var(--panel);
+      border:2px solid var(--accent-ink);border-left-width:7px;border-radius:12px;
+      padding:13px 15px;margin:0 0 20px;}
+  .do .ic{flex:none;font-size:17px;line-height:1.35;}
+  .do-txt{font-size:15px;line-height:1.5;}
+  .do-txt ol{margin:7px 0 0;padding-left:20px;}
+  .do-txt li{margin-bottom:5px;}
+  .do-txt li:last-child{margin-bottom:0;}
+
+  fieldset{border:0;margin:0 0 22px;padding:0;}
+  legend{display:block;font-size:13.5px;font-weight:800;color:var(--text-2);margin-bottom:9px;
+         letter-spacing:.02em;text-transform:uppercase;padding:0;}
+  .req{color:var(--hot);}
+
+  /* ---------- chips ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:9px;}
+  .chip{display:inline-flex;align-items:center;gap:8px;min-height:52px;padding:12px 18px;border-radius:14px;
+        border:2px solid var(--line-2);background:var(--panel);color:var(--text);
+        font-family:var(--sans);font-size:16.5px;font-weight:700;cursor:pointer;}
+  .chip .tick{flex:none;width:20px;height:20px;border-radius:6px;border:2px solid var(--line-2);
+              display:grid;place-items:center;font-size:13px;line-height:1;color:transparent;}
+  .chip[aria-checked="true"], .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent-ink);
+        color:var(--on-accent);}
+  .chip[aria-checked="true"] .tick, .chip[aria-pressed="true"] .tick{
+        background:#fff;border-color:#fff;color:var(--accent-ink);}
+  .chip:hover{border-color:var(--accent-ink);}
+  .chip:focus-visible{outline:3px solid var(--text);outline-offset:3px;}
+  .chip.sm{min-height:46px;padding:9px 14px;font-size:15px;}
+  .chip.sm .tick{width:17px;height:17px;font-size:11px;}
+
+  /* ---------- cards ---------- */
+  .cards{display:flex;flex-direction:column;gap:10px;}
+  .card{border:2px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden;}
+  .card.on{border-color:var(--accent-ink);background:var(--accent);color:var(--on-accent);}
+  .card-head{display:flex;align-items:flex-start;gap:13px;padding:15px 16px;cursor:pointer;min-height:60px;}
+  .card-head input{appearance:none;-webkit-appearance:none;flex:none;width:26px;height:26px;margin:0;
+    border:2.5px solid var(--line-2);border-radius:8px;background:var(--panel);cursor:pointer;
+    display:grid;place-items:center;}
+  .card.on .card-head input{background:#fff;border-color:#fff;}
+  .card.on .card-head input::after{content:"";width:11px;height:6px;border:2.5px solid var(--accent-ink);
+    border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px);}
+  .card-head input:focus-visible{outline:3px solid var(--text);outline-offset:3px;}
+  .card-txt{display:block;flex:1;min-width:0;}
+  .card-title{display:block;font-size:16.5px;font-weight:800;line-height:1.25;margin-bottom:3px;}
+  .card-sub{display:block;font-size:14px;line-height:1.42;color:var(--text-2);}
+  .card.on .card-sub{color:rgba(255,255,255,.88);}
+  .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+       padding:4px 9px;border-radius:999px;background:var(--panel-2);color:var(--text-2);margin-top:9px;}
+  .card.on .tag{background:#fff;color:var(--accent-ink);}
+  .card-body{display:none;padding:2px 16px 16px;}
+  .card.on .card-body{display:block;}
+  .card-body label{display:block;font-size:13.5px;font-weight:800;margin-bottom:7px;color:rgba(255,255,255,.95);}
+  .peek{background:#fff;border:1.5px solid #fff;border-radius:9px;padding:9px 13px;margin-bottom:11px;
+        font-family:var(--sans);font-size:13.5px;font-weight:800;color:var(--accent-ink);cursor:pointer;min-height:44px;}
+  .quote{font-family:var(--serif);font-size:15px;line-height:1.6;color:#1B2733;
+         background:#fff;border-radius:11px;padding:13px 15px;margin:0 0 13px;}
+  .flag{font-size:13px;line-height:1.45;font-weight:600;color:#fff;
+        background:rgba(255,255,255,.18);border-left:4px solid #fff;border-radius:0 9px 9px 0;
+        padding:9px 12px;margin:0 0 13px;}
+  .also{margin-top:16px;padding-top:14px;border-top:2px dashed var(--line-2);}
+  .also h3{margin:0 0 4px;font-size:15px;}
+  .also p{font-size:13.5px;color:var(--text-2);margin:0 0 10px;}
+
+  /* ---------- inputs ---------- */
+  .field{margin-bottom:18px;}
+  .field > label{display:block;font-size:13.5px;font-weight:800;color:var(--text-2);margin-bottom:8px;
+                 letter-spacing:.02em;text-transform:uppercase;}
+  .field .opt{text-transform:none;letter-spacing:0;font-weight:600;color:var(--text-3);}
+  input[type=text], textarea{
+    width:100%;font-family:var(--sans);font-size:16.5px;font-weight:500;color:var(--text);
+    background:var(--panel);border:2px solid var(--line-2);border-radius:13px;padding:14px 15px;min-height:54px;}
+  textarea{line-height:1.55;resize:vertical;}
+  .card textarea{background:#fff;min-height:92px;font-size:16px;}
+  input:focus, textarea:focus{outline:3px solid var(--text);outline-offset:2px;border-color:var(--text);}
+  ::placeholder{color:var(--text-3);}
+  .hint{font-size:13.5px;color:var(--text-2);margin:7px 0 0;}
+  .bigbox{min-height:170px;font-size:17px;}
+
+  /* PHI reminder */
+  .phi{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;line-height:1.45;
+       background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:10px 12px;margin:9px 0 0;font-weight:600;}
+  .phi .ic{flex:none;}
+
+  /* ---------- examples ---------- */
+  .exlead{font-size:14px;color:var(--text-2);margin:20px 0 10px;}
+  .examples{display:flex;flex-direction:column;gap:9px;}
+  .ex{text-align:left;font-family:var(--serif);font-size:15.5px;line-height:1.5;font-weight:400;
+      color:var(--text);background:var(--panel);border:2px dashed var(--line-2);border-radius:13px;
+      padding:13px 15px;cursor:pointer;}
+  .ex:hover{border-color:var(--accent-ink);border-style:solid;}
+  .ex:focus-visible{outline:3px solid var(--text);outline-offset:3px;}
+  .ex .plus{display:block;font-family:var(--sans);font-size:12px;font-weight:800;
+            letter-spacing:.07em;text-transform:uppercase;color:var(--accent-ink);margin-top:8px;}
+
+  details.ready{margin-top:26px;border-top:1px solid var(--line);padding-top:16px;}
+  details.ready summary, details.disc summary{cursor:pointer;font-size:15px;font-weight:800;
+    color:var(--accent-ink);list-style:none;min-height:48px;display:flex;align-items:center;gap:8px;}
+  details summary::-webkit-details-marker{display:none;}
+  details.ready summary::before, details.disc summary::before{content:"\25B8";}
+  details.ready[open] summary::before, details.disc[open] summary::before{content:"\25BE";}
+  details.ready summary:focus-visible, details.disc summary:focus-visible{outline:3px solid var(--text);outline-offset:3px;}
+  .readynote{font-size:14px;color:var(--text-2);margin:4px 0 14px;}
+
+  /* ---------- review summary ---------- */
+  .review{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:4px 16px;margin-bottom:18px;}
+  .rrow{display:flex;gap:12px;align-items:baseline;justify-content:space-between;
+        padding:13px 0;border-bottom:1px solid var(--line);}
+  .rrow:last-child{border-bottom:0;}
+  .rrow dt{font-size:12.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+           color:var(--text-2);margin:0 0 3px;}
+  .rrow dd{margin:0;font-size:15px;}
+  .rrow .none{color:var(--text-3);font-style:italic;}
+  .rlink{flex:none;font-size:14px;font-weight:800;color:var(--accent-ink);background:none;border:0;
+         padding:8px;min-height:44px;cursor:pointer;text-decoration:underline;}
+  .rlink:focus-visible{outline:3px solid var(--text);outline-offset:2px;}
+
+  /* ---------- letter ---------- */
+  .meters{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px;}
+  .meter{font-size:13px;font-weight:800;padding:8px 13px;border-radius:999px;}
+  .meter.warn{background:var(--warn-bg);color:var(--warn);}
+  .meter.good{background:var(--ok-bg);color:var(--ok);}
+  .meter.dim{background:var(--panel-2);color:var(--text-2);}
+  .letterwrap{position:relative;}
+  #letter{background:var(--paper);color:var(--paper-ink);border:2px solid var(--line);border-radius:16px;
+          padding:20px;font-family:var(--serif);font-size:16px;line-height:1.7;min-height:300px;}
+  .lbtns{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px;}
+  .lbtns button{flex:1;min-width:150px;}
+
+  /* ---------- checklist ---------- */
+  .check{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:6px 16px 14px;margin-top:22px;}
+  .citem{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line);}
+  .citem:last-child{border-bottom:0;}
+  .citem input{appearance:none;-webkit-appearance:none;flex:none;width:26px;height:26px;margin:0;
+    border:2.5px solid var(--line-2);border-radius:8px;background:var(--panel);cursor:pointer;display:grid;place-items:center;}
+  .citem input:checked{background:var(--ok);border-color:var(--ok);}
+  .citem input:checked::after{content:"";width:11px;height:6px;border:2.5px solid #fff;border-top:0;border-right:0;
+    transform:rotate(-45deg) translate(1px,-1px);}
+  .citem input:focus-visible{outline:3px solid var(--text);outline-offset:3px;}
+  .citem .auto{flex:none;width:26px;height:26px;display:grid;place-items:center;font-size:17px;}
+  .citem label, .citem .lbl{font-size:15px;font-weight:600;cursor:pointer;}
+  .citem .sub{display:block;font-size:13.5px;font-weight:500;color:var(--text-2);margin-top:2px;}
+  .citem.done .lbl{color:var(--ok);}
+
+  .howto{background:var(--panel-2);border:2px solid var(--line);border-radius:14px;padding:15px 16px;margin-top:20px;}
+  .howto h3{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+            color:var(--accent-ink);margin:0 0 9px;}
+  .howto ol{margin:0;padding-left:19px;font-size:14.5px;color:var(--text-2);line-height:1.6;}
+  .howto li{margin-bottom:5px;}
+  .howto a{color:var(--accent-ink);font-weight:700;}
+  .fine{font-size:13px;color:var(--text-2);margin:11px 0 0;line-height:1.55;}
+
+  /* ---------- nav ---------- */
+  .nav{position:sticky;bottom:0;z-index:20;display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+       padding:12px 18px calc(12px + env(safe-area-inset-bottom));
+       border-top:1px solid var(--line);background:var(--void);}
+  .btn{font-family:var(--sans);font-size:16.5px;font-weight:800;padding:15px 20px;border-radius:14px;
+       cursor:pointer;border:2px solid var(--accent-ink);background:var(--accent);color:var(--on-accent);
+       min-height:56px;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+       text-decoration:none;flex:1;box-shadow:0 2px 0 var(--accent-ink);}
+  .btn:active{box-shadow:none;transform:translateY(1px);}
+  .btn.ghost{background:var(--panel);color:var(--text-2);border-color:var(--line-2);
+             box-shadow:none;flex:none;min-width:84px;}
+  .btn.ghost:hover{color:var(--text);border-color:var(--text-2);}
+  .btn:focus-visible{outline:3px solid var(--text);outline-offset:3px;}
+  .card.on .card-head input:focus-visible, .card.on .peek:focus-visible{outline:3px solid #fff;outline-offset:3px;}
+  .btn[hidden]{display:none;}
+  .btn[disabled]{opacity:.5;cursor:not-allowed;box-shadow:none;}
+  #goBtn{flex:1 0 100%;}
+
+  /* ---------- messages ---------- */
+  .alert{display:none;gap:10px;align-items:flex-start;background:var(--hot-bg);border:2px solid var(--hot);
+         color:var(--hot);border-radius:12px;padding:12px 14px;margin:0 0 18px;font-size:15px;font-weight:700;}
+  .alert.show{display:flex;}
+  .alert .ic{flex:none;}
+  .toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translate(-50%,14px);
+         background:var(--text);color:#fff;font-size:14.5px;font-weight:700;padding:13px 19px;border-radius:999px;
+         opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;z-index:60;max-width:90vw;text-align:center;}
+  .toast.show{opacity:1;transform:translate(-50%,0);}
+  @media (prefers-reduced-motion:reduce){ .toast{transition:none;} }
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+      clip-path:inset(50%);white-space:nowrap;border:0;padding:0;margin:-1px;}
+
+  /* ---------- footer ---------- */
+  .foot{padding:22px 18px 40px;border-top:1px solid var(--line);font-size:13.5px;color:var(--text-2);line-height:1.6;}
+  .foot h3{font-size:14px;margin:0 0 8px;color:var(--text);}
+  .foot p{margin:0 0 12px;}
+  .foot .linkbtn{background:none;border:0;padding:8px 0;min-height:44px;font-size:13.5px;font-weight:800;
+                 color:var(--hot);text-decoration:underline;cursor:pointer;font-family:var(--sans);}
+  .foot .linkbtn:focus-visible{outline:3px solid var(--text);outline-offset:2px;}
+
+  /* ---------- paper ----------
+     Three printable artifacts live at the end of <body>, hidden on screen.
+     A body class (pm-letter / pm-worksheet / pm-flyer) picks which one prints;
+     the app itself never prints. The letter is copied into a plain <div> first,
+     because printing a <textarea> clips anything beyond its visible box. */
+  .paper-artifact{display:none;}
+  @media print{
+    body{background:#fff;}
+    .app, .toast, .skip{display:none !important;}
+    body.pm-letter    #printLetter,
+    body.pm-worksheet #printWorksheet,
+    body.pm-flyer     #printFlyer{display:block;}
+    @page{margin:2cm;}
+  }
+  #printLetter{font-family:var(--serif);font-size:12pt;line-height:1.6;color:#000;}
+  #printLetter .addr{white-space:pre-line;margin:0 0 24pt;}
+  #printLetter .body{white-space:pre-wrap;}
+  #printLetter .filecode{margin-top:18pt;font-size:10pt;}
+  #printWorksheet, #printFlyer{font-family:var(--sans);color:#000;font-size:12pt;line-height:1.5;}
+  .ws-h{font-size:17pt;font-weight:800;margin:0 0 4pt;}
+  .ws-sub{font-size:10.5pt;margin:0 0 14pt;}
+  .ws-sec{font-weight:800;font-size:11pt;text-transform:uppercase;letter-spacing:.05em;
+          border-top:1.5pt solid #000;padding-top:8pt;margin:14pt 0 6pt;}
+  .ws-line{border-bottom:1pt solid #888;height:22pt;}
+  .ws-opt{margin:0 0 5pt;padding-left:22pt;position:relative;}
+  .ws-opt::before{content:"";position:absolute;left:0;top:1pt;width:11pt;height:11pt;border:1.5pt solid #000;}
+  .ws-small{font-size:9.5pt;color:#333;}
+  .fl-big{font-size:24pt;font-weight:800;line-height:1.15;margin:0 0 10pt;}
+  .fl-step{display:flex;gap:10pt;margin:0 0 10pt;font-size:13pt;}
+  .fl-n{font-weight:800;}
+  .fl-url{font-size:16pt;font-weight:800;border:2pt solid #000;padding:8pt 12pt;margin:8pt 0;
+          text-align:center;word-break:break-all;}
+  .fl-dead{font-size:15pt;font-weight:800;margin:12pt 0 4pt;}
+  @media (max-width:380px){
+    h2{font-size:23px;}
+    .chip{font-size:15.5px;padding:11px 14px;}
+  }
+</style>
+</head>
+<body>
+<noscript>
+  <div style="max-width:720px;margin:0 auto;padding:24px 18px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.6">
+    <h1 style="font-size:22px">This page needs JavaScript turned on</h1>
+    <p>Nothing here connects to the internet — the letter is built entirely on your device —
+       but the buttons cannot work with JavaScript off.</p>
+    <p>You can still comment without this tool: open
+       <strong>regulations.gov</strong>, search for docket <strong>CMS-2026-2377</strong>,
+       and choose <strong>Comment</strong> on the proposed rule.</p>
+  </div>
+</noscript>
+<a class="skip" href="#main">Skip to the current step</a>
+<div class="app">
+
+  <header class="top">
+    <div class="toprow">
+      <h1 class="brand"><span id="ruleLabel">&nbsp;</span>Medicare Comment Builder for Nurses</h1>
+      <span class="clock" id="clock">&nbsp;</span>
+      <button type="button" id="aboutBtn"
+         style="font-size:13px;font-weight:700;color:var(--accent-ink);text-decoration:none;padding:8px 12px;border-radius:6px;background:var(--void);border:1px solid var(--line);cursor:pointer;white-space:nowrap;transition:all .2s;font-family:inherit;"
+         onmouseover="this.style.background='var(--panel)'"
+         onmouseout="this.style.background='var(--void)'">
+        About
+      </button>
+      <a href="mailto:sharonda@nursebloc.io?subject=Feedback on Nurse Voices Matter Tool"
+         style="font-size:13px;font-weight:700;color:var(--accent-ink);text-decoration:none;padding:8px 12px;border-radius:6px;background:var(--void);border:1px solid var(--line);cursor:pointer;white-space:nowrap;transition:all .2s;"
+         onmouseover="this.style.background='var(--panel)'"
+         onmouseout="this.style.background='var(--void)'">
+        Feedback
+      </a>
+    </div>
+    <nav aria-label="Progress">
+      <ol class="bars" id="bars"></ol>
+    </nav>
+  </header>
+
+  <main class="stage" id="main" tabindex="-1">
+
+    <!-- ══════════════ STEP 1 ══════════════ -->
+    <section class="slide" id="s0" aria-labelledby="h0">
+      <p class="step-n">Step 1 of 5</p>
+      <h2 id="h0">Tell us who you are</h2>
+      <div class="do">
+        <span class="ic" aria-hidden="true">&#128073;</span>
+        <span class="do-txt"><b>Answer both questions below.</b> Tap one answer for each, then press
+          <b>Next</b> at the bottom. Your setting decides which questions you get asked next.
+          Nothing is chosen for you.</span>
+      </div>
+
+      <div class="alert" id="alert0" role="alert">
+        <span class="ic" aria-hidden="true">&#9888;</span><span id="alert0txt"></span>
+      </div>
+
+      <fieldset>
+        <legend id="lgMode">Question 1 &mdash; who is this letter from? <span class="req">(required)</span></legend>
+        <div class="chips" role="radiogroup" aria-labelledby="lgMode" id="modeChips"></div>
+        <details class="disc" id="orgHelp" hidden>
+          <summary>Who can submit on behalf of a unit or organization?</summary>
+          <p class="hint">Speak for a group only if the people in it have agreed, or if your role
+            authorizes you to represent them. Many employers have their own rules about speaking publicly
+            on the organization's behalf, and this tool cannot check them for you. If you are unsure,
+            submitting as yourself is always available, always counted, and never requires anyone's permission.</p>
+        </details>
+      </fieldset>
+
+      <fieldset>
+        <legend id="lgSet">Question 2 &mdash; where do you nurse? <span class="req">(required)</span></legend>
+        <div class="chips" role="radiogroup" aria-labelledby="lgSet" id="settingChips"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Not a nurse? <span class="opt">&mdash; optional</span></legend>
+        <label style="display:flex;align-items:center;gap:10px;margin-bottom:12px;cursor:pointer;font-size:16px;font-weight:600;">
+          <input type="checkbox" id="notNurseCheck" style="width:20px;height:20px;cursor:pointer;">
+          I am not a nurse, but want to comment on this issue
+        </label>
+        <div id="roleField" hidden>
+          <label for="fRole" style="display:block;font-size:13.5px;font-weight:800;color:var(--text-2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.02em;">
+            Your role or perspective <span class="opt">&mdash; optional</span>
+          </label>
+          <input type="text" id="fRole" placeholder="e.g., patient advocate, healthcare worker, family member">
+        </div>
+      </fieldset>
+    </section>
+
+    <!-- ══════════════ STEP 2 ══════════════ -->
+    <section class="slide" id="s1" aria-labelledby="h1s" hidden>
+      <p class="step-n">Step 2 of 5</p>
+      <h2 id="h1s">Count the patients you have protected</h2>
+      <div class="do">
+        <span class="ic" aria-hidden="true">&#128073;</span>
+        <span class="do-txt"><b>This whole step is optional.</b> If you would rather go straight to writing
+          in your own words, press Next.
+          <ol>
+            <li>Check any box that describes work you do. Check as many as you like.</li>
+            <li>Each box you check opens up. Inside, choose roughly how many patients &mdash; a rough guess is fine.</li>
+          </ol>
+        </span>
+      </div>
+      <p class="say">The turn that saved someone's skin. The med error you caught. The gut feeling that made
+        you look twice. <b>Some of your work is in the chart. The best of it never is.</b></p>
+      <p class="say">One real number beats a page of opinion &mdash; <b>"our falls dropped by a third in six
+        months"</b> is exactly the kind of fact CMS can act on. If you know a number you own, put it in.</p>
+      <div class="cards" id="impactList"></div>
+      <div class="also" id="alsoWrap" hidden>
+        <h3>Also selected</h3>
+        <p>You checked these while a different setting was selected. They stay in your letter unless you uncheck them.</p>
+        <div class="cards" id="alsoList"></div>
+      </div>
+    </section>
+
+    <!-- ══════════════ STEP 3 ══════════════ -->
+    <section class="slide" id="s2" aria-labelledby="h2s" hidden>
+      <p class="step-n">Step 3 of 5</p>
+      <h2 id="h2s">What would you like CMS to know?</h2>
+      <div class="do">
+        <span class="ic" aria-hidden="true">&#128073;</span>
+        <span class="do-txt"><b>Say it however you would say it out loud.</b> A few sentences is plenty and
+          there is no wrong way to write it. Whatever you type goes into your letter word for word.
+          <br><br>Your own experience carries further than any sample text. Reviewers read a great many
+          letters, and the ones that stay with them describe something only that nurse could have seen.</span>
+      </div>
+
+      <div class="field">
+        <label for="freeText">In your own words <span class="opt">&mdash; optional, but this is the part that matters most</span></label>
+        <textarea id="freeText" class="bigbox" rows="8"
+          placeholder="Type here, in your own words"
+          aria-describedby="phiOwn"></textarea>
+        <p class="phi" id="phiOwn">
+          <span class="ic" aria-hidden="true">&#9888;</span>
+          <span>Please leave out anything that could identify a patient &mdash; no names, dates of birth,
+          medical record numbers, dates of care, or details so specific that someone could work out who
+          you mean. Describe what happened, not who it happened to. Your comment becomes a public record.</span>
+        </p>
+      </div>
+
+      <p class="exlead">Not sure how to start? Here is how some nurses have put it. Tap one to drop it in,
+        then change it until it sounds like you &mdash; a sentence of your own is worth more than any of these as written.</p>
+      <div class="examples" id="examples"></div>
+
+      <details class="ready">
+        <summary>Or add a ready-written paragraph about Medicare policy</summary>
+        <p class="readynote">Optional. These are written in the formal language CMS is used to reading.
+          Tick any that match what you believe, or skip this entirely. Many people will send these same
+          paragraphs, so anything you write yourself will stand out more.</p>
+        <div class="cards" id="topics"></div>
+      </details>
+    </section>
+
+    <!-- ══════════════ STEP 4 ══════════════ -->
+    <section class="slide" id="s3" aria-labelledby="h3s" hidden>
+      <p class="step-n">Step 4 of 5</p>
+      <h2 id="h3s">Sign your letter</h2>
+      <div class="do">
+        <span class="ic" aria-hidden="true">&#128073;</span>
+        <span class="do-txt"><b>Every box on this screen is optional.</b> Fill in what you are comfortable
+          with and skip the rest. If you leave your name out, your letter signs off as an anonymous nurse
+          and is still read and still counted.</span>
+      </div>
+
+      <div class="field">
+        <label for="fcred">Your credentials <span class="opt">&mdash; tap one, or type your own</span></label>
+        <div class="chips" id="credChips" role="group" aria-label="Common credentials"></div>
+        <input type="text" id="fcred" placeholder="RN, BSN, CCRN"
+               style="margin-top:10px;" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="fyears">Years of nursing experience <span class="opt">&mdash; optional</span></label>
+        <input type="text" id="fyears" inputmode="numeric" placeholder="23">
+      </div>
+
+      <div class="field">
+        <label for="fname">Your name <span class="opt">&mdash; optional</span></label>
+        <input type="text" id="fname" autocomplete="name" placeholder="Jordan Ellis">
+      </div>
+
+      <div class="field org-only" hidden>
+        <label for="forg">Name of your unit or organization <span class="opt">&mdash; optional</span></label>
+        <input type="text" id="forg" autocomplete="organization" placeholder="4 West Med-Surg, Mercy General">
+      </div>
+
+      <div class="field org-only" hidden>
+        <label for="fcount">How many nurses are you speaking for? <span class="opt">&mdash; optional</span></label>
+        <input type="text" id="fcount" inputmode="numeric" placeholder="32">
+        <p class="hint">Only give a number you could stand behind if someone asked.</p>
+      </div>
+    </section>
+
+    <!-- ══════════════ STEP 5 ══════════════ -->
+    <section class="slide" id="s4" aria-labelledby="h4s" hidden>
+      <p class="step-n">Step 5 of 5</p>
+      <h2 id="h4s">Review and send</h2>
+
+      <h3>What you have chosen</h3>
+      <dl class="review" id="review"></dl>
+
+      <h3>Your letter</h3>
+      <p class="say">You can edit this directly &mdash; it is a normal text box. Change any wording that does
+        not sound like you.</p>
+      <div class="meters">
+        <span class="meter dim" id="uniq">&nbsp;</span>
+        <span class="meter dim" id="wordCount">&nbsp;</span>
+      </div>
+      <div class="letterwrap">
+        <label class="sr" for="letter">Your letter, editable</label>
+        <textarea id="letter" rows="16" spellcheck="true" aria-describedby="phiLetter"></textarea>
+      </div>
+      <p class="phi" id="phiLetter">
+        <span class="ic" aria-hidden="true">&#9888;</span>
+        <span>Last check before this becomes public: read it once for anything that could identify a patient
+        or a colleague.</span>
+      </p>
+      <div class="lbtns">
+        <button type="button" class="btn ghost" id="regenBtn" hidden>Rebuild from my choices</button>
+        <button type="button" class="btn ghost" id="dlBtn">Download as a text file</button>
+      </div>
+
+      <h3>Before you send</h3>
+      <div class="check" id="checklist">
+        <div class="citem" id="ck-own">
+          <span class="auto" aria-hidden="true">&#9675;</span>
+          <span class="lbl">Something in your own words<span class="sub" id="ck-own-sub">Not yet &mdash; step 3 is where to add it.</span></span>
+        </div>
+        <div class="citem">
+          <input type="checkbox" id="ck-phi">
+          <label for="ck-phi">No patient-identifying details<span class="sub">No names, dates of birth, record numbers, or details that could single someone out.</span></label>
+        </div>
+        <div class="citem">
+          <input type="checkbox" id="ck-read">
+          <label for="ck-read">I have read the whole letter<span class="sub">It says what I mean, in words I am comfortable putting my name to.</span></label>
+        </div>
+        <div class="citem" id="ck-copy">
+          <span class="auto" aria-hidden="true">&#9675;</span>
+          <span class="lbl">Letter copied<span class="sub" id="ck-copy-sub">Not yet &mdash; use the Copy button below.</span></span>
+        </div>
+      </div>
+
+      <h3>Prefer paper?</h3>
+      <div class="howto">
+        <h3>Print and mail it &mdash; just as official</h3>
+        <ol>
+          <li>Press <b>Print my letter</b>. It comes out addressed and ready to sign.</li>
+          <li>Sign it, seal it, and mail it to the address printed on the letter.</li>
+          <li>Mail early &mdash; CMS must <b>receive</b> it by <span data-deadline></span>, not just see a postmark.</li>
+        </ol>
+        <div class="lbtns">
+          <button type="button" class="btn ghost" id="printLetterBtn">Print my letter</button>
+          <button type="button" class="btn ghost" id="printWorksheetBtn">Print a blank worksheet</button>
+          <button type="button" class="btn ghost" id="printFlyerBtn">Print a break-room flyer</button>
+        </div>
+        <p class="fine">The worksheet is for writing by hand on a break &mdash; yours or a colleague's.
+          Anything written on it can be typed in here later, or mailed as-is inside a signed letter.
+          The flyer is for the board by the time clock.</p>
+      </div>
+
+      <div class="howto">
+        <h3>Then multiply it</h3>
+        <p id="letterCounter" style="display:none;font-size:16px;font-weight:700;color:var(--accent-ink);margin:0 0 11px;"></p>
+        <p class="fine" style="margin-top:0">One comment is a voice. The goal is <b>100,000 nurse
+          comments</b> before the period closes &mdash; and that happens ten nurses at a time.
+          After you submit, send this to <b>ten nurses you know</b>: text the link, forward this file,
+          or put the flyer up by the time clock.</p>
+        <div class="lbtns">
+          <button type="button" class="btn ghost" id="shareBtn">Copy a message to send to nurses</button>
+        </div>
+      </div>
+
+      <div class="howto">
+        <h3>How to send it</h3>
+        <ol>
+          <li>Press <b>Copy letter</b> at the bottom of this screen.</li>
+          <li>Press <b>Open the comment page</b>. It opens in a new tab.</li>
+          <li>Paste into the box marked <b>Comment</b>, then submit it on that page.</li>
+        </ol>
+        <p class="fine" id="fallbackNote"></p>
+      </div>
+
+      <div class="howto">
+        <h3>Help us measure reach (optional)</h3>
+        <div style="margin:0 0 15px;">
+          <input type="checkbox" id="ckMetrics">
+          <label for="ckMetrics" style="display:inline;font-weight:600;cursor:pointer;">Yes, send my specialty and timestamp so we can count how many nurses used this tool</label>
+          <p class="fine" style="margin:6px 0 0 30px;">This is completely optional. Your name and letter content are never sent.</p>
+        </div>
+        <p class="fine" style="margin-top:0">After you submit, would you also share your story? It helps us understand
+          what's working and how many nurses are joining this movement.</p>
+        <div class="field">
+          <label for="fbSpecialty">Your specialty or setting <span class="opt">&mdash; optional</span></label>
+          <input type="text" id="fbSpecialty" placeholder="ICU, ER, clinic, home health, etc.">
+        </div>
+        <div class="field">
+          <label for="fbCount">How many comments did you submit? <span class="opt">&mdash; optional</span></label>
+          <input type="text" id="fbCount" inputmode="numeric" placeholder="1, 5, 10...">
+        </div>
+        <div class="field">
+          <label for="fbFeedback">Any feedback or tips? <span class="opt">&mdash; optional</span></label>
+          <textarea id="fbFeedback" rows="2" placeholder="What helped? What would you change? Any tips for other nurses?"></textarea>
+        </div>
+        <p class="fine">We'll send this to sharonda@nursebloc.io. Your email will open so you can review before sending.</p>
+        <div class="lbtns">
+          <button type="button" class="btn ghost" id="sendFeedbackBtn">Share my story</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="nav">
+    <button type="button" class="btn ghost" id="backBtn">Back</button>
+    <button type="button" class="btn" id="nextBtn">Next</button>
+    <button type="button" class="btn" id="copyBtn" hidden>Copy letter</button>
+    <a class="btn ghost" id="goBtn" hidden href="#" target="_blank" rel="noopener noreferrer">Open the comment page</a>
+  </div>
+
+  <footer class="foot">
+    <h3>Your privacy</h3>
+    <p id="privacyText"></p>
+    <h3>Saving your progress</h3>
+    <p id="saveText"></p>
+    <button type="button" class="linkbtn" id="resetBtn">Start over and erase my saved draft</button>
+  </footer>
+
+  <!-- ═══ ABOUT MODAL ═══ -->
+  <div id="aboutModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:100;overflow-y:auto;padding:20px;">
+    <div style="max-width:600px;margin:40px auto;background:var(--void);border-radius:16px;padding:30px;box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+      <button type="button" id="closeAboutBtn" style="float:right;background:none;border:none;font-size:24px;cursor:pointer;color:var(--text-2);">×</button>
+      <h2 style="margin-top:0;">About This Tool</h2>
+
+      <h3>Research Backing</h3>
+      <p style="line-height:1.6;">
+        This tool is informed by the <strong>Belgian Nursing Minimum Data Set</strong>, a landmark study on nursing work and patient outcomes.
+      </p>
+      <p style="line-height:1.6;">
+        <strong>Key finding:</strong> Nursing intensity independently predicts patient resource needs—more significantly than diagnosis, patient age, hospital department, or hospital size. This means nursing assessment and judgment drive measurable patient outcomes that Medicare tracks and pays for.
+      </p>
+      <p style="line-height:1.6;">
+        <strong>Study citation:</strong> <a href="https://pubmed.ncbi.nlm.nih.gov/17588580/" target="_blank" style="color:var(--accent-ink);font-weight:700;">Fagerström, L., et al. (2007). The San Joaquin Foundation Nursing Intensity Categories. A nursing intensity classification instrument. Journal of Advanced Nursing.</a>
+      </p>
+
+      <h3>How to Use This Tool</h3>
+      <p style="line-height:1.6;">
+        The tool walks you through five steps:
+      </p>
+      <ol style="line-height:1.8;">
+        <li><strong>Who you are</strong> — your specialty, setting, credentials (all optional)</li>
+        <li><strong>Your contributions</strong> — select nursing work that matches your practice</li>
+        <li><strong>In your words</strong> — write what those contributions mean for your patients</li>
+        <li><strong>Sign it</strong> — add your name or stay anonymous</li>
+        <li><strong>Review and send</strong> — copy your letter to the CMS comment form</li>
+      </ol>
+
+      <h3>Questions?</h3>
+      <p style="line-height:1.6;">
+        <strong>Feedback or ideas:</strong> <a href="mailto:sharonda@nursebloc.io?subject=About Nurse Voices Matter Tool" style="color:var(--accent-ink);font-weight:700;">Email sharonda@nursebloc.io</a>
+      </p>
+      <p style="line-height:1.6;">
+        <strong>Bug report:</strong> <a href="mailto:sharonda@nursebloc.io?subject=Bug Report - Nurse Voices Matter Tool" style="color:var(--accent-ink);font-weight:700;">Email sharonda@nursebloc.io</a>
+      </p>
+
+      <button type="button" id="closeAboutBtn2" class="btn" style="margin-top:20px;width:100%;">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ printable artifacts: hidden on screen, one prints at a time ═══ -->
+<div class="paper-artifact" id="printLetter" aria-hidden="true">
+  <p class="addr" id="plAddr"></p>
+  <p class="addr" id="plDate"></p>
+  <div class="body" id="plBody"></div>
+  <p class="filecode">Submitted by mail in reference to file code <span data-rule></span>.
+     A signature above the printed name makes this letter complete.</p>
+</div>
+
+<div class="paper-artifact" id="printWorksheet" aria-hidden="true">
+  <p class="ws-h">My comment to Medicare &mdash; worksheet</p>
+  <p class="ws-sub">File code <span data-rule></span> &middot; comments close <span data-deadline></span>.
+     Fill this in on paper. Then either hand it to someone with the online tool,
+     or copy it into a signed letter and mail it to:
+     <span id="wsAddr"></span></p>
+  <p class="ws-sec">Who I am</p>
+  <p>Name (optional): <span class="ws-line" style="display:inline-block;width:44%"></span>
+     &nbsp;Credentials: <span class="ws-line" style="display:inline-block;width:28%"></span></p>
+  <p>Where I nurse: <span class="ws-line" style="display:inline-block;width:60%"></span></p>
+  <p class="ws-sec">Work of mine that Medicare never sees &mdash; check any</p>
+  <div id="wsImpacts"></div>
+  <p class="ws-sec">In my own words &mdash; what I want CMS to know</p>
+  <div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div>
+  <div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div>
+  <p class="ws-small">Please leave out anything that could identify a patient &mdash; no names,
+     dates, or details that could single someone out. Comments become public record.</p>
+</div>
+
+<div class="paper-artifact" id="printFlyer" aria-hidden="true">
+  <p class="fl-big">Medicare is deciding what nursing is worth.<br>Nurses get a say &mdash; until <span data-deadline></span>.</p>
+  <p>CMS is taking public comments on the rule that shapes how care is paid for &mdash;
+     including AI in patient care and whether nursing's work is counted at all.
+     Comments from working nurses carry real weight. It takes about ten minutes.</p>
+  <p class="fl-step"><span class="fl-n">1.</span><span>Go to the address below (any phone or computer works).</span></p>
+  <p class="fl-url">regulations.gov/commenton/<wbr><span data-doc></span></p>
+  <p class="fl-step"><span class="fl-n">2.</span><span>Write what you see at the bedside, in your own words. A few sentences is plenty.</span></p>
+  <p class="fl-step"><span class="fl-n">3.</span><span>Press Submit Comment. Done.</span></p>
+  <p>Rather mail it? Post a signed letter mentioning file code <b><span data-rule></span></b> to:<br>
+     <span id="flAddr"></span> &mdash; arriving before the deadline.</p>
+  <p class="fl-dead">Comments close <span data-deadline></span>.</p>
+  <p>The goal is <b>100,000 nurse comments</b> &mdash; unique ones, in nurses' own words.
+     Identical copy-paste letters get counted as one. Yours counts because it is yours.</p>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+<p class="sr" id="live" role="status" aria-live="polite" aria-atomic="true"></p>
+
+<script>
+"use strict";
+/* ═══════════════════════════════════════════════════════════════════════════
+   MEDICARE COMMENT BUILDER FOR NURSES
+   One static HTML file. No frameworks, no build step, no network calls,
+   no analytics, no cookies. Everything runs in the visitor's browser.
+
+   ── HOW TO UPDATE FOR THE NEXT RULE CYCLE ────────────────────────────────
+   1. CONFIG below is the only place with rule-specific facts. Update every
+      field in it, then have a person open CONFIG.commentUrl in a browser and
+      confirm it lands on the comment form for the right document. Automated
+      checks cannot do this: regulations.gov blocks scripted requests.
+   2. Bump CONFIG.policyVersion. Any saved draft from an older policy version
+      is discarded on load, so nobody submits last year's language.
+   3. Review `topics[]`. Each entry has `named: true|false` — true means the
+      ask maps to a provision the rule names directly. If you cannot point at
+      the provision in the rule text, it must be false, which makes the app
+      show an honest "supporting background" note.
+   4. Review `IMPACTS[].program`. These name real CMS measurement programs and
+      are asserted in the letter, so confirm each still exists and still
+      applies before publishing.
+   5. Nothing else in this file encodes policy claims. Search for "CONFIG." to
+      see every place a rule fact is used.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════ CONFIG — verify all of this before publishing ═══════ */
+const CONFIG = {
+  /* Rule identity */
+  ruleId:      "CMS-1848-P",
+  ruleTitle:   "CY 2027 Medicare Physician Fee Schedule Proposed Rule",
+  docketId:    "CMS-2026-2377",
+
+  /* Where comments go. Verified against the live form 2026-08-05: the proposed
+     rule is document CMS-2026-2377-0002 (-0001 does not accept comments), the
+     form loads with a 5,000-character box, and the period ends Sep 14, 2026
+     11:59 PM EDT. Re-verify whenever the rule or cycle changes. */
+  commentUrl:  "https://www.regulations.gov/commenton/CMS-2026-2377-0002",
+  docketUrl:   "https://www.regulations.gov/docket/CMS-2026-2377",
+
+  /* Comment period close. Eastern Daylight Time (EDT = UTC-4).
+     The deadline is nationwide: Sep 14, 2026, 11:59 PM Eastern.
+     The timezone offset ensures the "Period closed" flag is consistent across all regions. */
+  deadlineISO:   "2026-09-14T23:59:00-04:00",
+  deadlineLabel: "September 14, 2026",
+
+  /* Verified from the rule's ADDRESSES section on regulations.gov, 2026-08-05.
+     Comments must be RECEIVED by the deadline — mailed letters need lead time.
+     Re-verify each cycle; the P.O. Box changes with the file code. */
+  mailAddress: [
+    "Centers for Medicare & Medicaid Services",
+    "Department of Health and Human Services",
+    "Attention: CMS-1848-P",
+    "P.O. Box 8016",
+    "Baltimore, MD 21244-8016"
+  ],
+
+  /* Confirmed on the live form 2026-08-05: the comment box shows
+     "5000 characters remaining" when empty. Longer text must go in as an
+     attachment. Re-verify each cycle; set to 0 to turn the warning off. */
+  commentBoxLimit: 5000,
+
+  /* Bump when any letter language changes. Older drafts are then discarded. */
+  policyVersion: "2026-08-05.2",
+
+  /* Metrics: Formspree endpoint for tracking letters created. Create a form at
+     formspree.io and paste the endpoint URL here. Leave blank to disable. */
+  formspreeEndpoint: "https://formspree.io/f/xrpzpgpn"
+};
+
+/* ═══════════════════ CONTENT DATA ═══════════════════════════════════════ */
+const settings = [
+  {id:'icu',      label:'ICU / Critical care',    phrase:'working at the bedside in an intensive care unit', sig:'Critical care nursing'},
+  {id:'pcu',      label:'PCU / Step-down',        phrase:'working at the bedside on a progressive care unit', sig:'Progressive care nursing'},
+  {id:'medsurg',  label:'Med-Surg',               phrase:'working at the bedside on a medical-surgical unit', sig:'Medical-surgical nursing'},
+  {id:'er',       label:'ER',                     phrase:'working in an emergency department',                sig:'Emergency nursing'},
+  {id:'ld',       label:'Labor & Delivery',       phrase:'working in labor and delivery',                     sig:'Labor & delivery nursing'},
+  {id:'nicupeds', label:'NICU / Peds',            phrase:'working in neonatal and pediatric care',            sig:'Neonatal / pediatric nursing'},
+  {id:'orpacu',   label:'OR / PACU',              phrase:'working in perioperative care',                     sig:'Perioperative nursing'},
+  {id:'onc',      label:'Oncology',               phrase:'working at the bedside in oncology',                sig:'Oncology nursing'},
+  {id:'psych',    label:'Psych / Behavioral',     phrase:'working in behavioral health',                      sig:'Behavioral health nursing'},
+  {id:'clinic',   label:'Clinic / Primary care',  phrase:'working in an ambulatory primary care setting',     sig:'Ambulatory / primary care nursing'},
+  {id:'ltc',      label:'Long-term care / SNF',   phrase:'working in long-term care and skilled nursing',     sig:'Long-term care / skilled nursing'},
+  {id:'homehealth',label:'Home health',           phrase:'working in home health',                            sig:'Home health nursing'},
+  {id:'school',   label:'School / Public health', phrase:'working in school and public health nursing',       sig:'School / public health nursing'},
+  {id:'retired',  label:'Retired',                phrase:'as a retired nurse',                                sig:'Retired nursing'},
+  {id:'academia', label:'Nursing education',     phrase:'working in nursing education',                      sig:'Nursing education'},
+  {id:'other',    label:'Other',                  phrase:'working in direct patient care',                    sig:'Direct patient care'}
+];
+
+const counts = [
+  {id:'few',  label:'A few',      phrase:'several patients'},
+  {id:'doz',  label:'Dozens',     phrase:'dozens of patients'},
+  {id:'hund', label:'Hundreds',   phrase:'hundreds of patients'},
+  {id:'lots', label:'Countless',  phrase:'more patients than I could ever count'}
+];
+
+const IMPACTS = {
+  hcahps: {label:"The reason patients rate their care highly", tag:"Nursing presence", program:"HCAHPS measures in Hospital Value-Based Purchasing", hint:"communication, responsiveness, the person who actually answered the light", deed:"whose hospital experience scores reflect nursing presence and communication", eg:"our unit's responsiveness scores carry the hospital's HCAHPS rating"},
+  intuition: {label:"Predicted deterioration before vital signs changed—through nursing judgment", tag:"Nursing intuition & assessment", program:"nurse-sensitive failure-to-rescue measures", hint:"the subtle changes—appearance, behavior, gut feeling—that predict deterioration before numbers show it", deed:"rescued because nursing judgment predicted decompensation earlier than vital-sign thresholds", eg:"the patient looked off, my assessment said escalate, I pushed for rapid response, they coded in ICU not on my floor"},
+  equity: {label:"Caught what no one else was looking for", tag:"Nurse advocacy & equity", program:"CMS health-equity and SDOH screening measures", hint:"the interpreter called, the medication cost nobody asked about, the follow-up that was actually reachable", deed:"connected to care that would otherwise have been missed entirely, because a nurse noticed", eg:"caught that my patient couldn't read the discharge papers and rebuilt the teaching around pictures"},
+  qi: {label:"Designed and implemented improvement—with measurable outcomes nurses tracked", tag:"Nurse-led process improvement", program:"nurse-led quality and safety improvement", hint:"the protocol, bundle, or huddle your unit runs because a nurse saw the problem and designed the fix", deed:"protected by evidence-based processes nurses designed, implemented, and measured", eg:"our nurse-built bedside handoff cut missed meds by 73%—we measured it"},
+  medrec: {label:"Predicted medication errors through systematic assessment—catching discrepancies", tag:"Nursing judgment & verification", program:"Hospital Readmissions Reduction Program", hint:"medication reconciliation at admit, transfer, discharge—predicting and catching errors before they reach the patient", deed:"protected from medication error through nursing reconciliation and judgment", eg:"I catch an error on most med lists I check—my assessment predicts problems"},
+  transitional: {label:"Assessed readiness and taught for safe discharge—preventing readmission", tag:"Nurse teaching & assessment", program:"Hospital Readmissions Reduction Program", hint:"discharge readiness assessment, teaching, follow-up calls—predicting who stays home", deed:"whose discharge was timed and taught by nursing judgment, staying well enough to remain home", eg:"my assessment of readiness, plus 30–45 minutes of teaching per discharge and callbacks, predicts who doesn't bounce back"},
+  falls: {label:"Stopped falls before they happened", tag:"Nursing vigilance", program:"Hospital-Acquired Condition Reduction Program", hint:"fall-risk checks, rounding, walking patients", deed:"kept from falling", eg:"falls dropped by a third when we went to hourly rounding"},
+  hapi: {label:"Kept skin intact — no pressure injuries", tag:"Nursing vigilance", program:"Hospital-Acquired Condition Reduction Program", hint:"turning, skin checks, the right mattress", deed:"kept free of pressure injuries", eg:"14 months with zero pressure injuries since we started 2-hour turns"},
+  clabsi: {label:"Kept central lines clean", tag:"Nursing judgment", program:"Hospital-Acquired Condition Reduction Program", hint:"line care, dressing changes, calling out breaks in sterile technique", deed:"protected from a central line infection", eg:"zero CLABSIs on our unit this year"},
+  cauti: {label:"Prevented catheter infections", tag:"Nursing judgment", program:"Hospital-Acquired Condition Reduction Program", hint:"foley care, pushing to get it out early", deed:"protected from a catheter infection", eg:"our nurse-led removal protocol cut catheter days in half"},
+  ssi: {label:"Wounds that healed without infection", tag:"Nursing assessment", program:"Hospital-Acquired Condition Reduction Program", hint:"wound checks, dressings, knowing when something looks wrong", deed:"whose wounds healed without infection", eg:"about an hour of every shift is wound care"},
+  coordination: {label:"Coordinated care and predicted risk—preventing ED visits through nursing judgment", tag:"Nurse care coordination & assessment", program:"ambulatory quality measures and readmission prevention", hint:"triage calls, prenatal and chronic-care coordination, assessing risk and timing interventions", deed:"kept stable at home instead of the ED because nursing predicted and managed risk", eg:"25+ assessment calls a day—predicting who needs help now—none of them billed under my name"},
+  vent: {label:"Got patients off the ventilator sooner", tag:"Nursing judgment", program:"Hospital-Acquired Condition Reduction Program", hint:"sedation holds, weaning trials, oral care, pushing for extubation", deed:"weaned off a ventilator sooner because nursing pushed for it", eg:"daily sedation holds we drive got vent days down on our unit"},
+  delirium: {label:"Caught delirium early and kept people moving", tag:"Nursing assessment", program:"CMS patient-safety measures", hint:"CAM screening, re-orienting, mobilizing critically ill patients", deed:"protected from ICU delirium and its long-term damage", eg:"we mobilize vented patients now because nurses pushed for it"},
+  drips: {label:"Titrated the drips", tag:"Nursing judgment", program:"CMS patient-safety measures", hint:"pressors, insulin, sedation — minute-by-minute titration on your judgment", deed:"kept alive on high-risk drips titrated by nursing judgment", eg:"I titrate pressors on standing orders all night — that is my clinical decision-making"},
+  family: {label:"Walked a family through the worst day of their life", tag:"Nurse advocacy", program:"nurse-led quality and safety improvement", hint:"goals-of-care conversations, presence at the bedside, honest answers", deed:"and families guided through critical illness and end-of-life decisions", eg:"I sat with a family for an hour so they could decide about withdrawing care"},
+  triage: {label:"Assessed risk at triage and caught what the presentation hid", tag:"Nursing assessment", program:"nurse-sensitive failure-to-rescue measures", hint:"the walk-in who looked stable but your assessment said high risk—and you were right", deed:"caught through nursing triage assessment, not presentation", eg:"the \"anxiety\" patient my assessment moved to a room who was having an MI"},
+  sepsis: {label:"Started sepsis care in the first hour", tag:"Nursing judgment", program:"the SEP-1 sepsis care measure", hint:"recognizing it, drawing the lactate, pushing to get antibiotics hung", deed:"who got sepsis treatment in the first hour because a nurse recognized it", eg:"I start the sepsis bundle before the order is in"},
+  strokemi: {label:"Cut the clock on strokes and heart attacks", tag:"Nursing judgment", program:"CMS patient-safety measures", hint:"door-to-EKG, stroke alerts, getting to the scanner fast", deed:"whose stroke or heart-attack treatment started faster because of nursing", eg:"our door-to-EKG time is under 5 minutes because nurses own it"},
+  boarding: {label:"Held the floor when there were no beds", tag:"Nursing vigilance", program:"CMS patient-safety measures", hint:"boarded admissions, hallway patients, ICU care in an ER bay", deed:"cared for safely while boarding in the ER with no inpatient bed available", eg:"I held 3 admitted ICU patients in the hallway for 14 hours"},
+  pph: {label:"Caught a postpartum hemorrhage early", tag:"Nursing assessment", program:"CMS maternal health and Birthing-Friendly measures", hint:"fundal checks, quantified blood loss, calling it before the numbers dropped", deed:"whose postpartum hemorrhage was caught early by nursing assessment", eg:"I called the hemorrhage on my QBL count before anyone else saw it"},
+  preg_htn: {label:"Recognized severe hypertension and got treatment started", tag:"Nursing judgment", program:"CMS maternal health and Birthing-Friendly measures", hint:"severe-range pressures, preeclampsia signs, pushing for treatment inside an hour", deed:"treated for severe hypertension in time because a nurse escalated it", eg:"I got the severe-range pressure treated within 30 minutes"},
+  strip: {label:"Read the strip and called it", tag:"Nursing intuition", program:"CMS maternal health and Birthing-Friendly measures", hint:"fetal monitoring, category changes, knowing when to move to the OR", deed:"delivered safely because a nurse read the strip and escalated", eg:"I called the section on a category II strip and the cord was around the neck"},
+  mateq: {label:"Made sure she was believed", tag:"Nurse advocacy & equity", program:"CMS health-equity and SDOH screening measures", hint:"the pain that got dismissed, the language barrier, maternal outcomes that differ by race", deed:"whose symptoms were taken seriously because a nurse insisted", eg:"I kept pushing until my patient’s pain was taken seriously"},
+  newborn: {label:"Got mother and baby feeding and safe", tag:"Nurse teaching", program:"CMS maternal health and Birthing-Friendly measures", hint:"feeding support, safe sleep, warning signs before discharge", deed:"sent home knowing the warning signs and how to feed their baby", eg:"every mom leaves my unit able to name the danger signs"},
+  feeding: {label:"Got a baby feeding and growing", tag:"Nursing assessment", program:"nurse-led quality and safety improvement", hint:"feeding cues, weight gain, the hours it takes to get there", deed:"who fed and grew well enough to go home", eg:"our nurse-driven feeding protocol shortened length of stay"},
+  weightdose: {label:"Caught a weight-based dosing error", tag:"Nursing judgment", program:"CMS patient-safety measures", hint:"the decimal point, the kg-vs-lb mix-up, the dose that was ten times too high", deed:"protected from a pediatric dosing error caught by a nurse", eg:"I caught a 10x dosing error on a neonate last month"},
+  parents: {label:"Taught parents to care for a fragile child", tag:"Nurse teaching", program:"Hospital Readmissions Reduction Program", hint:"tube feeds, monitors, CPR, the confidence to go home", deed:"whose parents were taught well enough to bring a fragile child home safely", eg:"I teach parents until they can do the tube feed without me"},
+  timeout: {label:"Stopped the room when something wasn’t right", tag:"Nursing judgment", program:"CMS patient-safety measures", hint:"the time-out, the count, the wrong-site catch", deed:"protected from a wrong-site, wrong-procedure, or retained-item event", eg:"I stopped a case over a count discrepancy and we found the sponge"},
+  emergence: {label:"Caught a problem in recovery", tag:"Nursing intuition", program:"nurse-sensitive failure-to-rescue measures", hint:"the airway, the bleed, the reaction — before it became a code", deed:"rescued in recovery because a nurse caught it early", eg:"I caught a post-op airway obstruction in PACU before it became a code"},
+  positioning: {label:"Prevented harm from positioning", tag:"Nursing vigilance", program:"Hospital-Acquired Condition Reduction Program", hint:"padding, nerve protection, normothermia, skin under a long case", deed:"protected from positioning injuries and pressure damage during surgery", eg:"no positioning injuries on my cases, including 8-hour ones"},
+  chemo: {label:"Caught a chemo dosing or infusion problem", tag:"Nursing judgment", program:"CMS patient-safety measures", hint:"double-checks, the dose that was wrong, the pump that was set wrong", deed:"protected from a chemotherapy error caught by nursing double-check", eg:"I have stopped doses at the bedside that made it through pharmacy"},
+  reaction: {label:"Recognized a reaction and stopped it", tag:"Nursing assessment", program:"nurse-sensitive failure-to-rescue measures", hint:"infusion reactions, extravasation, the first sign something was off", deed:"whose infusion reaction or extravasation was caught immediately by a nurse", eg:"I caught an extravasation in the first minute and saved the arm"},
+  symptoms: {label:"Managed symptoms and prevented ER visits", tag:"Nurse care coordination", program:"Hospital Readmissions Reduction Program", hint:"nausea, pain, neutropenic fever calls, the phone triage nobody bills for", deed:"kept out of the emergency room through nurse-managed symptom care", eg:"I take symptom calls all day that keep people out of the ED"},
+  deescalate: {label:"De-escalated without restraints", tag:"Nursing judgment", program:"CMS patient-safety measures", hint:"reading the room, talking someone down, avoiding seclusion", deed:"de-escalated safely without restraint or seclusion", eg:"our restraint rate dropped after nurses redesigned the response"},
+  suicide: {label:"Caught risk the screening missed", tag:"Nursing intuition", program:"nurse-sensitive failure-to-rescue measures", hint:"what gets said at 3am that never shows up on a form", deed:"whose true risk was identified by a nurse, not a screening tool", eg:"the patient who denied it on the form and told me at 3am"},
+  psychmeds: {label:"Watched for what the meds were doing", tag:"Nursing assessment", program:"CMS patient-safety measures", hint:"side effects, metabolic changes, the physical health nobody else checks", deed:"whose medication side effects and physical health were monitored by nursing", eg:"I caught early NMS on a patient nobody else was watching"},
+  phonecall: {label:"Heard it in a phone call", tag:"Nursing intuition", program:"nurse-sensitive failure-to-rescue measures", hint:"the voice on the phone that made you say come in now", deed:"sent in urgently because a nurse heard something wrong over the phone", eg:"I sent a caller straight to the ED and it was a PE"},
+  gaps: {label:"Closed the gaps — screenings, shots, follow-ups", tag:"Nurse care coordination", program:"ambulatory quality measures", hint:"the recall lists, the reminders, the chasing nobody sees", deed:"brought in for screening, immunization, or follow-up because a nurse chased it", eg:"I run our recall list — that is why our screening rates are where they are"},
+  chronic: {label:"Taught people to manage their own conditions", tag:"Nurse teaching", program:"ambulatory quality measures", hint:"insulin, inhalers, blood pressure, what to do when it goes wrong", deed:"taught to manage their chronic condition at home", eg:"I do all the diabetes teaching in our practice"},
+  avoidtransfer: {label:"Kept a resident out of the hospital", tag:"Nursing judgment", program:"Hospital Readmissions Reduction Program", hint:"treating in place, calling early, knowing your residents", deed:"treated in place instead of being sent to the hospital", eg:"I treat in place most nights instead of shipping residents out"},
+  dignity: {label:"Knew each resident well enough to notice a change", tag:"Nursing assessment", program:"nurse-sensitive failure-to-rescue measures", hint:"the resident who is just not themselves today", deed:"whose decline was caught early because a nurse knew each resident well", eg:"I knew she was septic because she was quiet, and she is never quiet"},
+  polypharm: {label:"Questioned the medication list", tag:"Nursing judgment", program:"CMS patient-safety measures", hint:"the 18 meds, the fall risk, the one nobody has reviewed in a year", deed:"whose medication list was challenged and reduced because a nurse questioned it", eg:"I got 4 meds stopped on a resident who kept falling"},
+  thehome: {label:"Saw what nobody else sees — the home", tag:"Nurse advocacy & equity", program:"CMS health-equity and SDOH screening measures", hint:"the empty fridge, the stairs, the meds in a shoebox, the unsafe situation", deed:"whose real barriers to recovery were found by a nurse in their home", eg:"I found my patient had no working refrigerator for their insulin"},
+  homesafe: {label:"Made the home safe enough to stay in", tag:"Nursing assessment", program:"Hospital-Acquired Condition Reduction Program", hint:"throw rugs, lighting, grab bars, the fall waiting to happen", deed:"kept safely at home instead of falling and being admitted", eg:"I have prevented more falls with a home safety walk than any protocol"},
+  inclass: {label:"Kept kids in class", tag:"Nursing judgment", program:"ambulatory quality measures", hint:"asthma, diabetes, seizures, allergies — managed so no one misses school", deed:"kept in school and out of the ER through school nursing care", eg:"I manage 40 care plans so those kids stay in class"},
+  kidmental: {label:"Caught a kid in crisis", tag:"Nursing intuition", program:"nurse-sensitive failure-to-rescue measures", hint:"the one who came to your office for a stomachache and needed something else", deed:"whose mental health crisis was identified by a school nurse first", eg:"the frequent-flyer stomachache who was actually being hurt at home"},
+  acuity: {label:"Assessed complexity and predicted what this patient would need", tag:"Nursing assessment", program:"nursing-driven acuity measures and resource allocation", hint:"admission assessment that determines staffing, monitoring, and care intensity", deed:"whose complexity was accurately predicted by nursing assessment—independent of diagnosis, age, or department", eg:"my acuity assessment determines whether this patient gets 1:1 or a full team manages four—and I'm right more often than the diagnosis alone"},
+  other: {label:"Other nursing work not listed here", tag:"Custom", program:"nursing practice", hint:"describe your own work if it's not captured above", deed:"", eg:"describe what your nursing care meant for your patients"},
+};
+
+const SPEC_IMPACTS = {
+  "icu": [
+    "intuition",
+    "drips",
+    "clabsi",
+    "vent",
+    "delirium",
+    "hapi",
+    "family",
+    "medrec",
+    "equity",
+    "qi",
+    "other"
+  ],
+  "pcu": [
+    "intuition",
+    "falls",
+    "hapi",
+    "medrec",
+    "transitional",
+    "clabsi",
+    "hcahps",
+    "equity",
+    "qi",
+    "other"
+  ],
+  "medsurg": [
+    "intuition",
+    "falls",
+    "hapi",
+    "medrec",
+    "transitional",
+    "ssi",
+    "cauti",
+    "hcahps",
+    "equity",
+    "qi",
+    "other"
+  ],
+  "er": [
+    "triage",
+    "sepsis",
+    "strokemi",
+    "boarding",
+    "intuition",
+    "equity",
+    "medrec",
+    "qi",
+    "other"
+  ],
+  "ld": [
+    "pph",
+    "preg_htn",
+    "strip",
+    "mateq",
+    "newborn",
+    "intuition",
+    "equity",
+    "qi",
+    "other"
+  ],
+  "nicupeds": [
+    "intuition",
+    "weightdose",
+    "feeding",
+    "parents",
+    "clabsi",
+    "equity",
+    "qi",
+    "other"
+  ],
+  "orpacu": [
+    "timeout",
+    "emergence",
+    "positioning",
+    "ssi",
+    "intuition",
+    "medrec",
+    "qi",
+    "other"
+  ],
+  "onc": [
+    "chemo",
+    "reaction",
+    "symptoms",
+    "clabsi",
+    "intuition",
+    "transitional",
+    "hcahps",
+    "equity",
+    "qi",
+    "other"
+  ],
+  "psych": [
+    "deescalate",
+    "suicide",
+    "psychmeds",
+    "equity",
+    "falls",
+    "qi",
+    "other"
+  ],
+  "clinic": [
+    "phonecall",
+    "coordination",
+    "gaps",
+    "chronic",
+    "medrec",
+    "equity",
+    "qi",
+    "other"
+  ],
+  "ltc": [
+    "dignity",
+    "avoidtransfer",
+    "falls",
+    "hapi",
+    "polypharm",
+    "equity",
+    "qi",
+    "other"
+  ],
+  "homehealth": [
+    "thehome",
+    "homesafe",
+    "transitional",
+    "medrec",
+    "coordination",
+    "equity",
+    "other"
+  ],
+  "school": [
+    "inclass",
+    "kidmental",
+    "gaps",
+    "coordination",
+    "equity",
+    "qi",
+    "other"
+  ],
+  "retired": [
+    "intuition",
+    "hcahps",
+    "equity",
+    "qi",
+    "medrec",
+    "falls",
+    "transitional",
+    "family",
+    "other"
+  ],
+  "academia": [
+    "intuition",
+    "equity",
+    "qi",
+    "medrec",
+    "transitional",
+    "hcahps",
+    "other"
+  ],
+  "other": [
+    "intuition",
+    "equity",
+    "qi",
+    "medrec",
+    "falls",
+    "transitional"
+  ],
+  "__default__": [
+    "intuition",
+    "hcahps",
+    "equity",
+    "qi",
+    "medrec",
+    "falls",
+    "transitional",
+    "other"
+  ]
+};
+
+const topics = [
+  {
+    id:"codes", tag:"Count nurses in", named:false,
+    title:"Build codes so nursing work can be paid for",
+    ask:"Today there is no billing code for most nursing care — it is bundled into the room-and-board charge, so it cannot be reimbursed no matter how much it saves. You can ask CMS to build nursing codes.",
+    sample:"Nursing care is responsible for outcomes CMS measures and pays for, yet the work itself has no billing codes of its own: in the hospital it is bundled into the facility room-and-board payment, and in ambulatory settings it is folded into other clinicians' billing. Work that cannot be coded cannot be counted, compared, or reimbursed. I ask CMS to correct this misalignment by developing HCPCS-level codes for nurse-delivered services — beginning with the nursing work that drives the outcomes CMS already tracks, such as readmission prevention, infection prevention, and transition-of-care management — so that nursing care becomes visible in the payment system that depends on it.",
+    promptHint:"the nursing service you would code first, and the outcome it drives"
+  },
+  {
+    id:"contribution", tag:"Count nurses in", named:true,
+    title:"Nursing deserves to be part of the picture",
+    ask:"So much of how patients do comes down to nursing care. You can ask CMS to make that visible in the way quality is measured.",
+    sample:"Many value-based payment metrics — including Hospital Value-Based Purchasing — are nurse-sensitive or fully nurse-driven, yet current reporting rarely makes nursing's contribution visible. I ask CMS to require transparency in how methodologies attribute outcome improvement to nursing care, and to reward the nursing workforce for its role in achieving these metrics.",
+    promptHint:"a number your unit improved — falls, infections, readmissions — and what nursing did to move it",
+  },
+  {
+    id:"aisafety", tag:"AI safety", named:true,
+    title:"Let's be sure AI is safe before it's paid for",
+    ask:"New AI tools are arriving in patient care faster than the safety checks are. You can ask CMS to set the standards first — real testing, a clinician in the loop, and a way to report problems.",
+    sample:"I urge CMS not to expand reimbursement for AI-supported CPT codes until a safety baseline for healthcare AI is in place. At present there is no requirement for real-world clinical validation before deployment, no mandated clinician-in-the-loop review, no standardized performance auditing, and no incident-reporting system for AI-related harm comparable to those required for drugs or medical devices. I ask CMS to pause expansion of AI-related CPT reimbursement until baseline safety, validation, and incident-reporting standards exist, developed in coordination with FDA, and to require clinician-in-the-loop safeguards as a condition of payment for any AI-supported service.",
+    promptHint:"a time the computer's suggestion was wrong and a nurse caught it",
+  },
+  {
+    id:"aibias", tag:"Responsible AI", named:false,
+    title:"Check that AI works for every patient",
+    ask:"A tool can look good on average and still miss the people you care for. You can ask CMS to require testing across the patients it will actually be used on.",
+    sample:"I ask CMS to require that AI-supported services demonstrate performance across the full range of patients they will be used on — including differences in age, race and ethnicity, primary language, disability, body size, pregnancy status, and rural or underserved status — and to require that this performance data be reported publicly. A tool that performs unevenly across populations can widen the very disparities CMS is working to close. Nurses are frequently the first to notice when a tool does not fit the patient in front of us.",
+    promptHint:"a score or tool that did not seem to fit the patients you care for",
+  },
+  {
+    id:"aitransparency", tag:"Responsible AI", named:false,
+    title:"Everyone should know when AI is involved",
+    ask:"Patients, and the nurses caring for them, should be able to tell when a recommendation came from software. You can ask CMS to require that.",
+    sample:"I ask CMS to require clear disclosure wherever an AI-supported service is billed: that the clinical record identify where AI contributed to a decision, that clinicians be able to see the basis for an AI recommendation, and that patients be informed when AI has played a material role in their care. Nurses are asked to carry out the plan of care every day, and professional judgment is difficult to exercise about a recommendation whose origin and reasoning are not visible to us.",
+    promptHint:"an alert or score you act on without being able to see how it was calculated",
+  },
+  {
+    id:"aioverride", tag:"Responsible AI", named:false,
+    title:"Protect the nurse who says “that is not right for my patient”",
+    ask:"Clinicians need to be able to disagree with a tool without it counting against them, and someone needs to keep watching the tool over time. You can ask CMS for both.",
+    sample:"I ask CMS to require, as a condition of payment for AI-supported services, that a qualified clinician retain the authority to override an AI recommendation without penalty, and that overrides be logged and reviewed as safety signals rather than treated as deviations. I further ask CMS to require ongoing post-deployment monitoring for performance drift, since a tool that was accurate at the time of approval may not remain accurate as patients, practice patterns, and underlying data change.",
+    promptHint:"a time you disagreed with a tool and were right, or felt discouraged from saying so",
+  },
+  {
+    id:"aidata", tag:"Responsible AI", named:false,
+    title:"Patient information used by AI should stay protected",
+    ask:"These tools run on patient data. You can ask CMS to be clear about how it is used, kept, and shared.",
+    sample:"I ask CMS to require transparency about the patient data used to develop, operate, and improve AI-supported services for which Medicare pays — including what data is retained, how long it is kept, whether it is used to train commercial models, and what disclosures patients receive. Patients share information with us in confidence, and that confidence should not quietly extend to uses they were never told about.",
+    promptHint:"a question you could not answer when a patient asked where their information goes",
+  },
+  {
+    id:"incidentto", tag:"Count nurses in", named:true,
+    title:"Clinic nursing work deserves its own name",
+    ask:"In clinics, the calls, teaching, and follow-up RNs provide are recorded in a way that does not show they were nursing care. You can ask CMS to identify nursing care as nursing care.",
+    sample:"In ambulatory settings, RNs provide much of the recurring care that drives patient outcomes, yet that work is largely invisible in Medicare claims data because it is captured under incident-to billing rather than identified as nursing care. I ask CMS to require distinct identification of RN-delivered ambulatory services, and to ensure quality metrics reflect the nursing work behind them.",
+    promptHint:"how much of your day is calls and teaching that gets billed under the doctor",
+  },
+  {
+    id:"ruc", tag:"A seat at the table", named:true,
+    title:"Nurses could help decide what care is worth",
+    ask:"CMS is asking whether there is a better way to decide what medical services are worth. You can say that nurses belong in that conversation.",
+    sample:"I support CMS's interest in alternatives to the current process for valuing CPT codes. I urge CMS to establish an independent, multidisciplinary body — including nurses and nurse practitioners — to take part in valuing codes, especially those tied to AI-supported care, so that everyone who delivers that care is represented in how it is valued.",
+    promptHint:"care your patients can't get nearby, or pay gaps you've seen between specialties and primary care",
+  },
+  {
+    id:"workforce", tag:"Protect staffing", named:false,
+    title:"Let's keep nurse staffing protected",
+    ask:"If new technology makes care more efficient, you can ask CMS to make sure those gains do not come at the cost of nurse staffing.",
+    sample:"I ask CMS to adopt clinical workforce non-reduction measures so that efficiency gains from AI are not realized through reductions in nursing staff. I further ask CMS to require public reporting of workforce spending, to exclude clinical labor from cost-reduction targets, and to expand hospital performance metrics to include workforce outcomes such as turnover and workload.",
+    promptHint:"your ratios today, how many open positions your unit has, or a cut you watched happen",
+  },
+  {
+    id:"aigains", tag:"Protect staffing", named:false,
+    title:"Savings from AI could come back to the bedside",
+    ask:"New AI billing codes will bring in new money. You can ask CMS to track where it goes and keep a meaningful share in patient care.",
+    sample:"As CMS considers new CPT codes tied to AI-supported medical decision-making, I urge the agency to ensure that the resulting gains are reinvested in patient care. I ask CMS to require reporting on how AI-related reimbursement is spent, and to tie a meaningful share of it to the clinical workforce.",
+    promptHint:"new tech your hospital bought while the unit stayed short-staffed",
+  },
+  {
+    id:"aiscope", tag:"Scope of practice", named:false,
+    title:"Nurses working alongside AI could use some clarity",
+    ask:"When technology helps guide the plan of care, the rules have not caught up with how that care actually happens. You can ask CMS to take a look at that gap.",
+    sample:"AI-related CPT codes attach to physician and qualified health professional decision-making rather than to the nurses implementing the plan of care, and nurse practice acts do not yet address AI-driven orders. As a result, an additional signature may be required even when the plan of care is already clear. I ask CMS to acknowledge this gap and to consider whether expanded nursing scope is warranted where AI performs much of the decision-making.",
+    promptHint:"a protocol or alert you follow every shift that still needs a signature to act on",
+  },
+];
+
+const EXAMPLES = [
+  "I have spent my career keeping people safe from things that never ended up happening. None of that shows up anywhere. I would like it counted.",
+  "Before Medicare pays for AI in patient care, please make sure someone has checked that it is safe. At the bedside we are the ones who catch it when a tool gets something wrong.",
+  "Please ask a bedside nurse before deciding what our work is worth. We are the ones doing it.",
+  "If new technology saves money, please do not let that money come out of nurse staffing. Fewer nurses is not a safer hospital.",
+  "Most of what I do for patients is never written down as nursing. I would like Medicare to be able to see it.",
+  "I want my patients to have a nurse who has time for them. Everything else follows from that.",
+  "When a computer suggests something that does not fit my patient, I need to be able to say so and be listened to.",
+  "Please make sure these tools are tested on patients like mine before Medicare pays for them."
+];
+
+/* ═══════════════════ SMALL HELPERS ══════════════════════════════════════ */
+const $  = function(id){ return document.getElementById(id); };
+const el = function(tag, cls){ var n = document.createElement(tag); if(cls) n.className = cls; return n; };
+
+/* "a" vs "an": covers RN, LPN, MSN, APRN, and ordinary words alike. */
+function article(word){
+  return /^[aeiou]/i.test(word) || /^[AEFHILMNORSX](?![a-z])/.test(word) ? "an" : "a";
+}
+function sentence(s){
+  s = s.trim();
+  if(!s) return "";
+  return /[.!?]$/.test(s) ? s : s + ".";
+}
+function lowerFirst(s){ return s.charAt(0).toLowerCase() + s.slice(1); }
+function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+/* CMS program names that are proper nouns read better with "the". */
+function programPhrase(p){ return /Program$/.test(p) && !/^the /i.test(p) ? "the " + p : p; }
+
+/* ═══════════════════ STATE ══════════════════════════════════════════════ */
+/* One object holds everything. Every render reads from here, so switching
+   settings can never leave a stale selection hidden in the DOM. */
+const state = {
+  mode:      null,   /* "me" | "org" | null — no default, step 1 requires a choice */
+  setting:   null,   /* settings[].id      | null */
+  impacts:   {},     /* id -> { count: "", note: "" }  (presence = selected)     */
+  topics:    {},     /* id -> { note: "" }             (presence = selected)     */
+  own:       "",
+  name: "", cred: "", years: "", org: "", orgCount: "",
+  isNurse:   true,   /* false if non-nurse commenting */
+  role:      "",     /* non-nurse's role or perspective */
+  letterEdited: null,   /* string once the visitor edits the letter, else null   */
+  checklist: { phi: false, read: false },
+  copied: false,
+  counted: false        /* true once this draft has been counted in metrics */
+};
+
+const STEPS = 5;
+let step = 0;
+let storageWorks = true;
+
+/* ═══════════════════ METRICS TRACKING ═══════════════════════════════════ */
+/* Track letters created in localStorage and optionally submit to Formspree */
+
+function getLetterCount() {
+  try {
+    const count = localStorage.getItem("nvm_letter_count");
+    return count ? parseInt(count, 10) : 0;
+  } catch (e) {
+    return 0;
+  }
+}
+
+function incrementLetterCount() {
+  try {
+    const current = getLetterCount();
+    localStorage.setItem("nvm_letter_count", current + 1);
+  } catch (e) {
+    /* localStorage may be disabled; fail silently */
+  }
+}
+
+function submitMetricsToFormspree(data) {
+  if (!CONFIG.formspreeEndpoint) return; /* No endpoint configured */
+
+  fetch(CONFIG.formspreeEndpoint, {
+    method: "POST",
+    headers: { "Accept": "application/json" },
+    body: JSON.stringify(data)
+  }).catch(e => {
+    /* Silently ignore network errors — metrics are nice-to-have, not essential */
+  });
+}
+
+function recordLetterCreated() {
+  /* Only count once per draft — repeated copies don't inflate the counter */
+  if (state.counted) return;
+  state.counted = true;
+  incrementLetterCount();
+
+  /* Send minimal metrics to Formspree only if user opted in */
+  if (CONFIG.formspreeEndpoint && state.setting && $("ckMetrics").checked) {
+    const settingLabel = (settings.find(s => s.id === state.setting) || {}).label || state.setting;
+    submitMetricsToFormspree({
+      specialty: settingLabel,
+      isNurse: state.isNurse,
+      hasRole: !!state.role,
+      timestamp: new Date().toISOString()
+    });
+  }
+}
+
+function paintCounter() {
+  const counterEl = $("letterCounter");
+  if (!counterEl) return;
+
+  const count = getLetterCount();
+  if (count === 0) {
+    counterEl.style.display = "none";
+  } else {
+    counterEl.style.display = "block";
+    const msg = count === 1
+      ? "1 nurse has created a letter"
+      : count + " nurses have created letters";
+    counterEl.textContent = "✊ " + msg + " — be the next";
+  }
+}
+
+const shownImpactIds = function(){
+  return (state.setting && SPEC_IMPACTS[state.setting]) || SPEC_IMPACTS.__default__ || [];
+};
+/* Selections carried over from a previously chosen setting. Shown, never hidden. */
+const strayImpactIds = function(){
+  const inView = shownImpactIds();
+  return Object.keys(state.impacts).filter(function(id){
+    return inView.indexOf(id) === -1 && IMPACTS[id];
+  });
+};
+const selectedImpactIds = function(){
+  return shownImpactIds().filter(function(id){ return state.impacts[id]; }).concat(strayImpactIds());
+};
+const selectedTopicIds = function(){
+  return topics.filter(function(t){ return state.topics[t.id]; }).map(function(t){ return t.id; });
+};
+
+/* ═══════════════════ MESSAGES ═══════════════════════════════════════════ */
+let toastTimer = null;
+function toast(msg){
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove("show"); }, 3600);
+}
+function announce(msg){ $("live").textContent = msg; }
+
+/* Non-sensitive failures are shown, never swallowed. The app stays usable. */
+function reportProblem(where, err){
+  const detail = (err && err.message) ? " (" + err.message + ")" : "";
+  toast(where + detail);
+  if(window.console && console.warn) console.warn(where, err);
+}
+
+/* ═══════════════════ BUILD THE CONTROLS ═════════════════════════════════ */
+$("ruleLabel").textContent = CONFIG.ruleId;
+
+/* --- progress bar --- */
+(function buildBars(){
+  const names = ["Who you are", "Your patients", "Your words", "Sign it", "Review and send"];
+  const ol = $("bars");
+  for(let i = 0; i < STEPS; i++){
+    const li = el("li");
+    const b  = el("button");
+    b.type = "button";
+    b.dataset.go = String(i);
+    b.setAttribute("aria-label", "Step " + (i + 1) + " of " + STEPS + ": " + names[i]);
+    li.appendChild(b);
+    ol.appendChild(li);
+  }
+})();
+
+/* --- radiogroup chips (single choice, arrow-key navigable) --- */
+function buildRadioGroup(host, items, getSelected){
+  host.innerHTML = "";
+  items.forEach(function(item){
+    const b = el("button", "chip");
+    b.type = "button";
+    b.setAttribute("role", "radio");
+    b.dataset.value = item.id;
+    const tick = el("span", "tick");
+    tick.setAttribute("aria-hidden", "true");
+    tick.textContent = "✓";
+    b.appendChild(tick);
+    b.appendChild(document.createTextNode(item.label));
+    host.appendChild(b);
+  });
+  syncRadioGroup(host, getSelected());
+}
+function syncRadioGroup(host, selected){
+  const kids = Array.prototype.slice.call(host.children);
+  kids.forEach(function(b){
+    const on = b.dataset.value === selected;
+    b.setAttribute("aria-checked", on ? "true" : "false");
+    /* Roving tabindex: one stop for the whole group, as radios should behave. */
+    b.tabIndex = on ? 0 : -1;
+  });
+  if(!selected && kids.length) kids[0].tabIndex = 0;
+}
+/* Arrow keys move between radios, matching the standard radiogroup pattern. */
+function radioKeys(host, onPick){
+  host.addEventListener("keydown", function(e){
+    const keys = ["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp", "Home", "End"];
+    if(keys.indexOf(e.key) === -1) return;
+    const kids = Array.prototype.slice.call(host.children);
+    const cur  = kids.indexOf(document.activeElement);
+    if(cur === -1) return;
+    e.preventDefault();
+    let next;
+    if(e.key === "Home") next = 0;
+    else if(e.key === "End") next = kids.length - 1;
+    else if(e.key === "ArrowRight" || e.key === "ArrowDown") next = (cur + 1) % kids.length;
+    else next = (cur - 1 + kids.length) % kids.length;
+    kids[next].focus();
+    onPick(kids[next].dataset.value);
+  });
+}
+
+buildRadioGroup($("modeChips"), [
+  { id: "me",  label: "Just me" },
+  { id: "org", label: "My unit or organization" }
+], function(){ return state.mode; });
+
+buildRadioGroup($("settingChips"), settings.map(function(s){
+  return { id: s.id, label: s.label };
+}), function(){ return state.setting; });
+
+radioKeys($("modeChips"),    setMode);
+radioKeys($("settingChips"), setSetting);
+
+/* --- credential chips (multi-choice look, single value) --- */
+(function buildCreds(){
+  const list = ["RN", "RN, BSN", "RN, MSN", "APRN", "NP", "LPN", "Nursing student"];
+  $("credChips").innerHTML = "";
+  list.forEach(function(c){
+    const b = el("button", "chip sm");
+    b.type = "button";
+    b.dataset.cred = c;
+    b.setAttribute("aria-pressed", "false");
+    const tick = el("span", "tick");
+    tick.setAttribute("aria-hidden", "true");
+    tick.textContent = "✓";
+    b.appendChild(tick);
+    b.appendChild(document.createTextNode(c));
+    $("credChips").appendChild(b);
+  });
+})();
+
+/* --- examples --- */
+(function buildExamples(){
+  $("examples").innerHTML = "";
+  EXAMPLES.forEach(function(text, i){
+    const b = el("button", "ex");
+    b.type = "button";
+    b.dataset.ex = String(i);
+    b.appendChild(document.createTextNode(text));
+    const plus = el("span", "plus");
+    plus.textContent = "Tap to add";
+    b.appendChild(plus);
+    $("examples").appendChild(b);
+  });
+})();
+
+/* --- policy paragraph cards --- */
+(function buildTopics(){
+  const host = $("topics");
+  host.innerHTML = "";
+  topics.forEach(function(t){
+    const card = el("div", "card");
+    card.id = "card-" + t.id;
+    card.innerHTML =
+      '<label class="card-head" for="chk-' + t.id + '">' +
+        '<input type="checkbox" id="chk-' + t.id + '" data-topic="' + t.id + '">' +
+        '<span class="card-txt">' +
+          '<span class="card-title"></span>' +
+          '<span class="card-sub"></span>' +
+          '<span class="tag"></span>' +
+        '</span>' +
+      '</label>' +
+      '<div class="card-body">' +
+        '<button type="button" class="peek" data-peek="' + t.id + '" aria-expanded="false" ' +
+                'aria-controls="ask-' + t.id + '">Read the paragraph</button>' +
+        '<p class="quote" id="ask-' + t.id + '" hidden></p>' +
+        (t.named ? "" : '<p class="flag"></p>') +
+        '<label for="note-' + t.id + '">Anything from your own experience? One sentence is plenty</label>' +
+        '<textarea id="note-' + t.id + '" data-tnote="' + t.id + '" rows="3" ' +
+                  'aria-describedby="phiOwn"></textarea>' +
+        '<p class="phi"><span class="ic" aria-hidden="true">&#9888;</span>' +
+        '<span>Nothing that could identify a patient, please.</span></p>' +
+      '</div>';
+    card.querySelector(".card-title").textContent = t.title;
+    card.querySelector(".card-sub").textContent   = t.ask;
+    card.querySelector(".tag").textContent        = t.tag;
+    card.querySelector(".quote").textContent      = t.sample;
+    if(!t.named){
+      card.querySelector(".flag").textContent =
+        "Good to know: the rule does not name this one directly, so your letter includes it as " +
+        "supporting background rather than a point-by-point reply.";
+    }
+    card.querySelector("#note-" + t.id).placeholder = t.promptHint;
+    host.appendChild(card);
+  });
+})();
+
+/* ═══════════════════ STEP 2 RENDERING ═══════════════════════════════════ */
+function impactCard(id){
+  const i   = IMPACTS[id];
+  const on  = !!state.impacts[id];
+  const st  = state.impacts[id] || { count: "", note: "" };
+  const card = el("div", "card" + (on ? " on" : ""));
+  card.id = "impact-" + id;
+
+  /* Special rendering for "other" — just a checkbox and text input */
+  if(id === "other"){
+    card.innerHTML =
+      '<label class="card-head" for="ichk-' + id + '">' +
+        '<input type="checkbox" id="ichk-' + id + '" data-impact="' + id + '"' + (on ? " checked" : "") + '>' +
+        '<span class="card-txt">' +
+          '<span class="card-title"></span><span class="card-sub"></span>' +
+        '</span>' +
+      '</label>' +
+      '<div class="card-body">' +
+        '<label for="inote-' + id + '">Describe your nursing work:</label>' +
+        '<textarea id="inote-' + id + '" data-inote="' + id + '" rows="3"></textarea>' +
+        '<p class="phi"><span class="ic" aria-hidden="true">&#9888;</span>' +
+        '<span>Nothing that could identify a patient, please.</span></p>' +
+      '</div>';
+    card.querySelector(".card-title").textContent = i.label;
+    card.querySelector(".card-sub").textContent   = i.hint;
+    const ta = card.querySelector("#inote-" + id);
+    ta.value = st.note || "";
+    ta.placeholder = i.eg;
+    return card;
+  }
+
+  /* Standard rendering for all other impacts */
+  card.innerHTML =
+    '<label class="card-head" for="ichk-' + id + '">' +
+      '<input type="checkbox" id="ichk-' + id + '" data-impact="' + id + '"' + (on ? " checked" : "") + '>' +
+      '<span class="card-txt">' +
+        '<span class="card-title"></span><span class="card-sub"></span><span class="tag"></span>' +
+      '</span>' +
+    '</label>' +
+    '<div class="card-body">' +
+      '<fieldset><legend style="text-transform:none;letter-spacing:0;font-size:13.5px;color:rgba(255,255,255,.95)">' +
+        'About how many patients? A rough guess is fine.</legend>' +
+        '<div class="chips" role="radiogroup" aria-label="About how many patients" ' +
+             'data-countgroup="' + id + '"></div>' +
+      '</fieldset>' +
+      '<label for="inote-' + id + '" style="margin-top:12px">' +
+        'A number or a short story makes this land harder &mdash; optional</label>' +
+      '<textarea id="inote-' + id + '" data-inote="' + id + '" rows="3"></textarea>' +
+      '<p class="phi"><span class="ic" aria-hidden="true">&#9888;</span>' +
+      '<span>Nothing that could identify a patient, please.</span></p>' +
+    '</div>';
+  card.querySelector(".card-title").textContent = i.label;
+  card.querySelector(".card-sub").textContent   = i.hint;
+  card.querySelector(".tag").textContent        = i.tag;
+  const ta = card.querySelector("#inote-" + id);
+  ta.value = st.note || "";
+  ta.placeholder = i.eg;
+  const grp = card.querySelector("[data-countgroup]");
+  counts.forEach(function(c){
+    const b = el("button", "chip sm");
+    b.type = "button";
+    b.setAttribute("role", "radio");
+    b.dataset.cnt = id + ":" + c.id;
+    b.dataset.value = c.id;
+    b.setAttribute("aria-checked", st.count === c.id ? "true" : "false");
+    b.tabIndex = st.count === c.id ? 0 : -1;
+    const tick = el("span", "tick");
+    tick.setAttribute("aria-hidden", "true");
+    tick.textContent = "✓";
+    b.appendChild(tick);
+    b.appendChild(document.createTextNode(c.label));
+    grp.appendChild(b);
+  });
+  if(!grp.querySelector('[aria-checked="true"]') && grp.firstChild) grp.firstChild.tabIndex = 0;
+  return card;
+}
+
+function renderImpacts(){
+  const host = $("impactList");
+  host.innerHTML = "";
+  shownImpactIds().forEach(function(id){ if(IMPACTS[id]) host.appendChild(impactCard(id)); });
+
+  const stray = strayImpactIds();
+  $("alsoWrap").hidden = stray.length === 0;
+  const also = $("alsoList");
+  also.innerHTML = "";
+  stray.forEach(function(id){ also.appendChild(impactCard(id)); });
+
+  /* Add keyboard navigation (arrow keys) to all count groups */
+  document.querySelectorAll("[data-countgroup]").forEach(function(grp){
+    radioKeys(grp, function(selectedValue){
+      const id = grp.getAttribute("data-countgroup");
+      if(!state.impacts[id]) state.impacts[id] = { count: "", note: "" };
+      state.impacts[id].count = state.impacts[id].count === selectedValue ? "" : selectedValue;
+      Array.prototype.forEach.call(grp.children, function(b){
+        const on = b.dataset.value === state.impacts[id].count;
+        b.setAttribute("aria-checked", on ? "true" : "false");
+        b.tabIndex = on ? 0 : -1;
+      });
+      save();
+    });
+  });
+}
+
+/* ═══════════════════ SELECTION HANDLERS ═════════════════════════════════ */
+function setMode(v){
+  state.mode = v;
+  syncRadioGroup($("modeChips"), v);
+  $("orgHelp").hidden = v !== "org";
+  Array.prototype.forEach.call(document.querySelectorAll(".org-only"), function(n){
+    n.hidden = v !== "org";
+  });
+  clearAlert();
+  save(); refreshLetter();
+}
+
+function setSetting(v){
+  const had = Object.keys(state.impacts).length;
+  const before = shownImpactIds().slice();
+  state.setting = v;
+  syncRadioGroup($("settingChips"), v);
+  renderImpacts();
+  clearAlert();
+  save(); refreshLetter();
+
+  /* Explain, never silently hide. */
+  if(had){
+    const nowHidden = before.filter(function(id){
+      return state.impacts[id] && shownImpactIds().indexOf(id) === -1;
+    });
+    if(nowHidden.length){
+      toast("Your earlier ticks are kept, under “Also selected” on the next step");
+    }
+  }
+  announce("Questions set for " + settingById(v).label + ". Nothing has been chosen for you.");
+}
+
+function settingById(id){
+  for(let i = 0; i < settings.length; i++) if(settings[i].id === id) return settings[i];
+  return null;
+}
+
+/* ═══════════════════ EVENTS ═════════════════════════════════════════════ */
+document.addEventListener("click", function(e){
+  const jump = e.target.closest("[data-go]");
+  if(jump){ goTo(Number(jump.dataset.go), true); return; }
+
+  const radio = e.target.closest('[role="radio"]');
+  if(radio && radio.parentNode === $("modeChips"))    { setMode(radio.dataset.value); return; }
+  if(radio && radio.parentNode === $("settingChips")) { setSetting(radio.dataset.value); return; }
+
+  const cnt = e.target.closest("[data-cnt]");
+  if(cnt){
+    const bits = cnt.dataset.cnt.split(":");
+    const id = bits[0], val = bits[1];
+    if(!state.impacts[id]) state.impacts[id] = { count: "", note: "" };
+    state.impacts[id].count = state.impacts[id].count === val ? "" : val;
+    const grp = cnt.parentNode;
+    Array.prototype.forEach.call(grp.children, function(b){
+      const on = b.dataset.value === state.impacts[id].count;
+      b.setAttribute("aria-checked", on ? "true" : "false");
+      b.tabIndex = on ? 0 : -1;
+    });
+    if(!grp.querySelector('[aria-checked="true"]')) grp.children[0].tabIndex = 0;
+    save(); refreshLetter();
+    return;
+  }
+
+  const cred = e.target.closest("[data-cred]");
+  if(cred){
+    const v = cred.dataset.cred;
+    state.cred = (state.cred === v) ? "" : v;
+    $("fcred").value = state.cred;
+    syncCredChips();
+    save(); refreshLetter();
+    return;
+  }
+
+  const ex = e.target.closest("[data-ex]");
+  if(ex){
+    const box = $("freeText");
+    const add = EXAMPLES[Number(ex.dataset.ex)];
+    box.value = box.value.trim() ? box.value.trim() + "\n\n" + add : add;
+    state.own = box.value;
+    box.focus();
+    try { box.setSelectionRange(box.value.length, box.value.length); } catch(err){ /* selection is cosmetic */ }
+    save(); refreshLetter();
+    toast("Added. Now change it so it sounds like you.");
+    return;
+  }
+
+  const peek = e.target.closest("[data-peek]");
+  if(peek){
+    const p = $("ask-" + peek.dataset.peek);
+    p.hidden = !p.hidden;
+    peek.setAttribute("aria-expanded", p.hidden ? "false" : "true");
+    peek.textContent = p.hidden ? "Read the paragraph" : "Hide the paragraph";
+    return;
+  }
+
+  const rlink = e.target.closest("[data-edit]");
+  if(rlink){ goTo(Number(rlink.dataset.edit), true); return; }
+});
+
+document.addEventListener("change", function(e){
+  const t = e.target;
+  if(t.dataset && t.dataset.impact){
+    const id = t.dataset.impact;
+    const wasStray = !!t.closest("#alsoList");
+    if(t.checked){ if(!state.impacts[id]) state.impacts[id] = { count: "", note: "" }; }
+    else { delete state.impacts[id]; }
+    t.closest(".card").classList.toggle("on", t.checked);
+    /* Unticking a carried-over item removes it from "Also selected" so the
+       heading never describes something that is no longer selected. */
+    if(wasStray && !t.checked) renderImpacts();
+    save(); refreshLetter();
+    return;
+  }
+  if(t.dataset && t.dataset.topic){
+    const id = t.dataset.topic;
+    if(t.checked){ if(!state.topics[id]) state.topics[id] = { note: "" }; }
+    else { delete state.topics[id]; }
+    t.closest(".card").classList.toggle("on", t.checked);
+    save(); refreshLetter();
+    return;
+  }
+  if(t.id === "ck-phi")  { state.checklist.phi  = t.checked; save(); paintChecklist(); }
+  if(t.id === "ck-read") { state.checklist.read = t.checked; save(); paintChecklist(); }
+  if(t.id === "notNurseCheck"){
+    state.isNurse = !t.checked;
+    $("roleField").hidden = !t.checked;
+    $("settingChips").parentNode.hidden = t.checked;  /* hide "where do you nurse" for non-nurses */
+    if(t.checked) state.setting = null;  /* clear setting if switching to non-nurse */
+    save(); refreshLetter();
+  }
+});
+
+document.addEventListener("input", function(e){
+  const t = e.target;
+  if(t.dataset && t.dataset.inote){
+    if(!state.impacts[t.dataset.inote]) state.impacts[t.dataset.inote] = { count: "", note: "" };
+    state.impacts[t.dataset.inote].note = t.value;
+    save(); refreshLetter(); return;
+  }
+  if(t.dataset && t.dataset.tnote){
+    if(!state.topics[t.dataset.tnote]) state.topics[t.dataset.tnote] = { note: "" };
+    state.topics[t.dataset.tnote].note = t.value;
+    save(); refreshLetter(); return;
+  }
+  if(t.id === "freeText"){ state.own = t.value; save(); refreshLetter(); return; }
+  if(t.id === "fname")   { state.name = t.value; save(); refreshLetter(); return; }
+  if(t.id === "fcred")   { state.cred = t.value; syncCredChips(); save(); refreshLetter(); return; }
+  if(t.id === "fyears")  { state.years = t.value.replace(/[^0-9]/g, ""); t.value = state.years;
+                           save(); refreshLetter(); return; }
+  if(t.id === "fRole")   { state.role = t.value; save(); refreshLetter(); return; }
+  if(t.id === "forg")    { state.org = t.value; save(); refreshLetter(); return; }
+  if(t.id === "fcount")  { state.orgCount = t.value.replace(/[^0-9]/g, ""); t.value = state.orgCount;
+                           save(); refreshLetter(); return; }
+  if(t.id === "letter"){
+    /* The visitor has taken the wheel. Stop overwriting their edits. */
+    state.letterEdited = t.value;
+    $("regenBtn").hidden = false;
+    save(); paintMeters(); paintChecklist();
+    return;
+  }
+});
+
+function syncCredChips(){
+  const v = (state.cred || "").trim().toLowerCase();
+  Array.prototype.forEach.call(document.querySelectorAll("[data-cred]"), function(b){
+    b.setAttribute("aria-pressed", b.dataset.cred.toLowerCase() === v ? "true" : "false");
+  });
+}
+
+/* ═══════════════════ NAVIGATION AND VALIDATION ══════════════════════════ */
+function clearAlert(){
+  $("alert0").classList.remove("show");
+}
+function showAlert(msg, focusEl){
+  $("alert0txt").textContent = msg;
+  $("alert0").classList.add("show");
+  announce(msg);
+  if(focusEl) focusEl.focus();
+}
+
+/* Step 1 is the only gated step: the letter cannot be written without it. */
+function validateStep(n){
+  if(n !== 0) return true;
+  if(!state.mode){
+    showAlert("Please answer question 1: is this letter from just you, or from your unit or organization?",
+              $("modeChips").querySelector('[tabindex="0"]'));
+    return false;
+  }
+  /* Non-nurses skip the setting question; nurses must answer it */
+  if(state.isNurse && !state.setting){
+    showAlert("Please answer question 2: where do you nurse?",
+              $("settingChips").querySelector('[tabindex="0"]'));
+    return false;
+  }
+  clearAlert();
+  return true;
+}
+
+function goTo(n, focusHeading){
+  n = Math.max(0, Math.min(STEPS - 1, n));
+  /* Moving forward past an incomplete step 1 is blocked; moving back is not. */
+  if(n > step && !validateStep(step)) return;
+  if(n > 0 && !validateStep(0)){ n = 0; }
+
+  /* Non-nurses skip Step 2 (contributions); redirect Step 2 to Step 3 (own words) */
+  if(!state.isNurse && n === 1) n = 2;
+
+  const back = n < step;
+  for(let i = 0; i < STEPS; i++){
+    const s = $("s" + i);
+    s.hidden = i !== n;
+    s.classList.remove("enter", "back");
+  }
+  const cur = $("s" + n);
+  cur.classList.add("enter");
+  if(back) cur.classList.add("back");
+
+  step = n;
+
+  Array.prototype.forEach.call($("bars").querySelectorAll("button"), function(b, i){
+    b.dataset.state = i === n ? "now" : (i < n ? "done" : "todo");
+    b.setAttribute("aria-current", i === n ? "step" : "false");
+  });
+
+  const accents = ["c1", "c2", "c3", "c4", "c5"];
+  document.documentElement.style.setProperty("--accent", "var(--" + accents[n] + ")");
+  document.documentElement.style.setProperty("--accent-ink", "var(--i" + (n + 1) + ")");
+
+  const last = n === STEPS - 1;
+  $("nextBtn").hidden = last;
+  $("copyBtn").hidden = !last;
+  $("goBtn").hidden   = !last;
+  $("backBtn").style.visibility = n === 0 ? "hidden" : "visible";
+  $("nextBtn").textContent =
+    ["Next: your patients", "Next: your words", "Next: sign it", "Next: review and send", ""][n];
+
+  if(last) refreshLetter();
+  window.scrollTo(0, 0);
+  if(focusHeading){
+    const h = cur.querySelector("h2");
+    if(h){ h.setAttribute("tabindex", "-1"); h.focus(); }
+    announce("Step " + (n + 1) + " of " + STEPS);
+  }
+}
+
+$("nextBtn").addEventListener("click", function(){ goTo(step + 1, true); });
+$("backBtn").addEventListener("click", function(){ goTo(step - 1, true); });
+
+/* About modal handlers */
+const aboutModal = $("aboutModal");
+$("aboutBtn").addEventListener("click", function(){ aboutModal.style.display = "block"; });
+$("closeAboutBtn").addEventListener("click", function(){ aboutModal.style.display = "none"; });
+$("closeAboutBtn2").addEventListener("click", function(){ aboutModal.style.display = "none"; });
+aboutModal.addEventListener("click", function(e){
+  if(e.target === aboutModal) aboutModal.style.display = "none";
+});
+
+/* Swipe is a convenience only. Every path is reachable by button and keyboard. */
+(function swipe(){
+  let x0 = 0, y0 = 0, live = false;
+  const stage = $("main");
+  stage.addEventListener("touchstart", function(e){
+    if(e.touches.length !== 1) return;
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; live = true;
+  }, { passive: true });
+  stage.addEventListener("touchend", function(e){
+    if(!live) return;
+    live = false;
+    if(e.target.closest("textarea, input")) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    const dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8) goTo(step + (dx < 0 ? 1 : -1), true);
+  }, { passive: true });
+})();
+
+/* ═══════════════════ THE LETTER ═════════════════════════════════════════ */
+function signature(){
+  const cred = state.cred.trim();
+  const name = state.name.trim();
+  const org  = state.org.trim();
+  const set  = state.setting ? settingById(state.setting) : null;
+  const lines = [];
+
+  if(name)      lines.push(name + (cred ? ", " + cred : ""));
+  else if(cred) lines.push(cap(article(cred)) + " " + cred + " who has chosen not to give a name");
+  else          lines.push((state.isNurse ? "A nurse" : "A commenter") + " who has chosen not to give a name");
+
+  /* Add non-nurse perspective if applicable */
+  if(!state.isNurse && state.role){
+    lines.push("Perspective: " + state.role);
+  }
+
+  if(state.mode === "org"){
+    if(org) lines.push("On behalf of " + org);
+    else    lines.push("Submitted on behalf of a group of nurses");
+  }
+  if(set) lines.push(set.sig);
+  return lines.join("\n");
+}
+
+function buildLetter(){
+  const isOrg = state.mode === "org";
+  const We    = isOrg ? "We"  : "I";
+  const our   = isOrg ? "our" : "my";
+  const set   = state.setting ? settingById(state.setting) : null;
+  const cred  = state.cred.trim();
+  const org   = state.org.trim();
+  const years = state.years.trim();
+  const impIds = selectedImpactIds();
+  const tps    = selectedTopicIds();
+  const own    = state.own.trim();
+
+  if(!impIds.length && !tps.length && !own) return "";
+
+  const out = [];
+  out.push("Re: " + CONFIG.ruleId + " — " + CONFIG.ruleTitle);
+
+  /* --- who is writing (grammatical in all four cases) --- */
+  if(!state.isNurse){
+    /* Non-nurse commenter */
+    const role = state.role.trim();
+    let who = role ? "a " + role : "someone who cares about healthcare policy";
+    out.push("I am " + who + ". I am submitting this comment on the proposed rule above.");
+  } else if(isOrg){
+    const n = state.orgCount ? parseInt(state.orgCount, 10) : 0;
+    let who = "I am writing on behalf of " + (org || "a group of nurses");
+    if(n > 0) who += ", speaking for " + n + (n === 1 ? " nurse" : " nurses");
+    if(set) who += " " + set.phrase;   /* reads correctly for 1 nurse or 400 */
+    out.push(who + ". We are submitting this comment on the proposed rule above.");
+  } else {
+    let who = cred ? article(cred) + " " + cred : "a nurse";
+    if(years) who += " with " + years + (years === "1" ? " year" : " years") + " of experience";
+    out.push("I am " + who + (set ? " " + set.phrase : "") +
+             ". I am submitting this comment on the proposed rule above.");
+  }
+
+  /* --- the nurse's own words come first --- */
+  if(own) out.push(own.replace(/\n{3,}/g, "\n\n"));
+
+  /* --- contributions: one sentence per program, so nothing is ambiguous --- */
+  /* Non-nurses skip the contributions section entirely */
+  if(impIds.length && state.isNurse){
+    const byProgram = {};
+    const order = [];
+    let customOther = "";
+    impIds.forEach(function(id){
+      const i  = IMPACTS[id];
+      const st = state.impacts[id] || {};
+
+      /* Handle "other" custom interventions separately */
+      if(id === "other"){
+        const note = (st.note || "").trim();
+        if(note) customOther = note;
+        return;
+      }
+
+      const c  = counts.filter(function(c){ return c.id === st.count; })[0];
+      let phrase = c ? c.phrase + " " + i.deed : "patients " + i.deed;
+      const note = (st.note || "").trim();
+      if(note) phrase += " (" + sentence(note).replace(/\.$/, "") + ")";
+      if(!byProgram[i.program]){ byProgram[i.program] = []; order.push(i.program); }
+      byProgram[i.program].push(phrase);
+    });
+    let para = "Here is some of what " + our + " direct care has meant, in terms Medicare already " +
+               "measures.";
+    order.forEach(function(prog){
+      para += " Under " + programPhrase(prog) + ": " + byProgram[prog].join("; ") + ".";
+    });
+    if(customOther) para += " " + sentence(customOther);
+    para += " This is harm prevented before it happened: nursing assessment, judgment and intuition " +
+            "applied reliably, to every patient. Medicare measures and pays for these outcomes, yet the " +
+            "nursing work behind them is bundled into room-and-board or other clinicians' billing — " +
+            "invisible in claims data, ineligible for reimbursement, and absent from the quality metrics " +
+            "these programs use. " +
+            /* If the build-codes paragraph is also in the letter, it carries the ask —
+               saying "fix this misalignment" twice reads like a form letter. */
+            (state.topics.codes
+              ? We + " ask CMS to change that."
+              : We + " ask CMS to fix this misalignment and to build codes that let nursing work be " +
+                     "seen, counted, and reimbursed.");
+    out.push(para);
+  }
+
+  /* --- optional formal paragraphs, in the same voice as the rest --- */
+  const voice = function(s){
+    return isOrg
+      ? s.replace(/\bI am writing\b/g, "We are writing")
+         .replace(/\bI further ask\b/g, "We further ask")
+         .replace(/\bI ask\b/g, "We ask")
+         .replace(/\bI urge\b/g, "We urge")
+         .replace(/\bI support\b/g, "We support")
+         .replace(/\bI object\b/g, "We object")
+      : s;
+  };
+  tps.forEach(function(id){
+    const t = topics.filter(function(x){ return x.id === id; })[0];
+    let para = voice(t.sample);
+    const note = ((state.topics[id] || {}).note || "").trim();
+    if(note) para += " From " + our + " own practice: " + sentence(lowerFirst(note));
+    out.push(para);
+  });
+
+  out.push("Thank you for considering " + (isOrg ? "our" : "these") + " comments.");
+  out.push("Sincerely,\n" + signature());
+  return out.join("\n\n");
+}
+
+/* The letter box is regenerated only while the visitor has not edited it. */
+function refreshLetter(){
+  const generated = buildLetter();
+  if(state.letterEdited === null) $("letter").value = generated;
+  $("regenBtn").hidden = state.letterEdited === null;
+  paintReview();
+  paintMeters();
+  paintChecklist();
+  paintCounter();
+}
+
+$("regenBtn").addEventListener("click", function(){
+  state.letterEdited = null;
+  refreshLetter();
+  toast("Rebuilt from your choices");
+  announce("Letter rebuilt from your choices.");
+});
+
+function letterText(){ return $("letter").value; }
+
+/* ═══════════════════ REVIEW SUMMARY ═════════════════════════════════════ */
+function paintReview(){
+  const dl = $("review");
+  dl.innerHTML = "";
+  const set = state.setting ? settingById(state.setting) : null;
+  const impIds = selectedImpactIds();
+  const tps = selectedTopicIds();
+
+  const rows = [
+    { step: 0, term: "Writing as",
+      val: state.mode === "org"
+             ? "My unit or organization" + (state.org.trim() ? " — " + state.org.trim() : "")
+             : (state.mode === "me" ? "Just me" : null) },
+    { step: 0, term: "Where you nurse", val: set ? set.label : null },
+    { step: 1, term: "Patients you have protected",
+      val: impIds.length
+             ? impIds.length + (impIds.length === 1 ? " contribution" : " contributions") + " selected"
+             : null },
+    { step: 2, term: "In your own words",
+      val: state.own.trim() ? state.own.trim().split(/\s+/).length + " words written" : null },
+    { step: 2, term: "Ready-written paragraphs",
+      val: tps.length ? tps.length + (tps.length === 1 ? " added" : " added") : null },
+    { step: 3, term: "Signed",
+      val: state.name.trim()
+             ? state.name.trim() + (state.cred.trim() ? ", " + state.cred.trim() : "")
+             : (state.cred.trim() ? state.cred.trim() + " (no name)" : null) }
+  ];
+
+  rows.forEach(function(r){
+    const row = el("div", "rrow");
+    const box = el("div");
+    const dt  = el("dt"); dt.textContent = r.term;
+    const dd  = el("dd");
+    if(r.val){ dd.textContent = r.val; }
+    else { dd.className = "none"; dd.textContent = "Nothing added — optional"; }
+    box.appendChild(dt); box.appendChild(dd);
+    const b = el("button", "rlink");
+    b.type = "button";
+    b.dataset.edit = String(r.step);
+    b.textContent = "Edit";
+    b.setAttribute("aria-label", "Edit " + r.term.toLowerCase() + ", go to step " + (r.step + 1));
+    row.appendChild(box); row.appendChild(b);
+    dl.appendChild(row);
+  });
+}
+
+/* ═══════════════════ METERS AND CHECKLIST ═══════════════════════════════ */
+function hasOwnWords(){
+  return state.own.trim().length > 3 ||
+         Object.keys(state.impacts).some(function(k){ return (state.impacts[k].note || "").trim().length > 3; }) ||
+         Object.keys(state.topics).some(function(k){ return (state.topics[k].note || "").trim().length > 3; }) ||
+         state.letterEdited !== null;
+}
+
+function paintMeters(){
+  const text  = letterText();
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  const over  = CONFIG.commentBoxLimit > 0 && text.length > CONFIG.commentBoxLimit;
+  $("wordCount").className = "meter " + (over ? "warn" : "dim");
+  $("wordCount").textContent = over
+    ? words + " words · " + text.length + " characters — longer than the " +
+      CONFIG.commentBoxLimit.toLocaleString() + "-character box on regulations.gov. " +
+      "Trim it, or download it and attach the file to your comment instead."
+    : words + (words === 1 ? " word" : " words") + " · about " + text.length + " characters";
+
+  const ownWords = hasOwnWords();
+
+  const u = $("uniq");
+  if(ownWords){
+    u.className = "meter good";
+    u.textContent = "✓ Includes your own words";
+  } else if(words > 0){
+    u.className = "meter warn";
+    u.textContent = "Sample text only — a sentence of your own would carry further";
+  } else {
+    u.className = "meter dim";
+    u.textContent = "Nothing added yet";
+  }
+}
+
+function paintChecklist(){
+  const ownDone = hasOwnWords();
+  const ownRow  = $("ck-own");
+  ownRow.classList.toggle("done", ownDone);
+  ownRow.querySelector(".auto").textContent = ownDone ? "✓" : "○";
+  $("ck-own-sub").textContent = ownDone
+    ? "Your letter includes words you wrote."
+    : "Not yet — step 3 is where to add it. Optional, but it carries the most weight.";
+
+  const copyRow = $("ck-copy");
+  copyRow.classList.toggle("done", state.copied);
+  copyRow.querySelector(".auto").textContent = state.copied ? "✓" : "○";
+  $("ck-copy-sub").textContent = state.copied
+    ? "Copied. Paste it into the comment page."
+    : "Not yet — use the Copy button below.";
+
+  $("ck-phi").checked  = state.checklist.phi;
+  $("ck-read").checked = state.checklist.read;
+  $("ck-phi").closest(".citem").classList.toggle("done", state.checklist.phi);
+  $("ck-read").closest(".citem").classList.toggle("done", state.checklist.read);
+
+  const empty = !letterText().trim();
+  $("copyBtn").disabled = empty;
+  $("dlBtn").disabled   = empty;
+}
+
+/* ═══════════════════ COPY AND DOWNLOAD ══════════════════════════════════ */
+function selectLetter(){
+  const box = $("letter");
+  box.focus();
+  try { box.setSelectionRange(0, box.value.length); } catch(err){ /* cosmetic only */ }
+}
+
+function copyLetter(){
+  const text = letterText();
+  if(!text.trim()) return;
+
+  const done = function(){
+    state.copied = true;
+    recordLetterCreated();  /* Track this letter for metrics */
+    $("copyBtn").textContent = "✓ Copied — copy again";
+    paintChecklist();
+    toast("Copied. Now paste it into the comment page.");
+    announce("Letter copied to the clipboard.");
+    $("goBtn").focus();
+    save();
+  };
+  const failed = function(err){
+    /* Never leave the visitor stuck: select the text and tell them what to press. */
+    selectLetter();
+    $("fallbackNote").textContent =
+      "Copying automatically did not work in this browser. Your letter is now selected — " +
+      "press Ctrl+C (or Command+C on a Mac), or press and hold on the text and choose Copy. " +
+      "You can also use “Download as a text file” above.";
+    toast("Could not copy automatically — see the note under How to send it");
+    announce("Automatic copying failed. The letter is selected so you can copy it yourself.");
+    if(window.console && console.warn) console.warn("clipboard", err);
+  };
+
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(done).catch(function(err){
+      if(!legacyCopy(text)) failed(err); else done();
+    });
+  } else {
+    if(legacyCopy(text)) done(); else failed(new Error("no clipboard API"));
+  }
+}
+
+/* Older browsers and file:// pages that block the async clipboard. */
+function legacyCopy(text){
+  try{
+    const ta = el("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "readonly");
+    ta.style.cssText = "position:fixed;top:-1000px;opacity:0";
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, text.length);
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  } catch(err){
+    return false;
+  }
+}
+
+$("copyBtn").addEventListener("click", copyLetter);
+
+$("shareBtn").addEventListener("click", function(){
+  const msg = "Medicare is rewriting how care is paid for, and nursing is invisible in it. " +
+    "It takes about ten minutes to tell CMS what your work is worth — in your own words, " +
+    "no account needed. Comments close " + CONFIG.deadlineLabel + ": " + CONFIG.commentUrl + " " +
+    "The goal is 100,000 nurse comments. Pass it on.";
+  const done = function(){ toast("Copied. Text it to ten nurses."); announce("Share message copied."); };
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(msg).then(done).catch(function(){
+      if(legacyCopy(msg)) done(); else toast("Could not copy — the message is in the flyer instead");
+    });
+  } else {
+    if(legacyCopy(msg)) done(); else toast("Could not copy — the message is in the flyer instead");
+  }
+});
+
+$("sendFeedbackBtn").addEventListener("click", function(){
+  const specialty = ($("fbSpecialty").value || "").trim();
+  const count = ($("fbCount").value || "").trim();
+  const feedback = ($("fbFeedback").value || "").trim();
+
+  let body = "Nurse Voices Matter Feedback:\n\n";
+  if(specialty) body += "Specialty/Setting: " + specialty + "\n";
+  if(count) body += "Comments Submitted: " + count + "\n";
+  if(feedback) body += "Feedback:\n" + feedback + "\n";
+  body += "\n---\nThank you for sharing your story!";
+
+  const subject = "Nurse Voices Matter - Story & Feedback";
+  const mailto = "mailto:sharonda@nursebloc.io?subject=" + encodeURIComponent(subject) +
+                 "&body=" + encodeURIComponent(body);
+  window.location.href = mailto;
+  toast("Email client opening. Review and send — thank you!");
+});
+
+$("dlBtn").addEventListener("click", function(){
+  const text = letterText();
+  if(!text.trim()) return;
+  try{
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const url  = URL.createObjectURL(blob);
+    const a    = el("a");
+    a.href = url;
+    a.download = CONFIG.ruleId + " comment.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    toast("Saved to your downloads");
+  } catch(err){
+    reportProblem("Could not save the file. Select the letter and copy it instead", err);
+    selectLetter();
+  }
+});
+
+/* ═══════════════════ PAPER ══════════════════════════════════════════════ */
+/* Fill the printable artifacts from CONFIG and live data, then print with a
+   body class choosing which artifact appears. Ctrl+P with no choice prints
+   the letter, never the app. */
+(function paper(){
+  Array.prototype.forEach.call(document.querySelectorAll("[data-rule]"),
+    function(n){ n.textContent = CONFIG.ruleId; });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-deadline]"),
+    function(n){ n.textContent = CONFIG.deadlineLabel; });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-doc]"),
+    function(n){ n.textContent = CONFIG.commentUrl.split("/commenton/")[1] || CONFIG.docketId; });
+  $("plAddr").textContent = CONFIG.mailAddress.join("\n");
+  $("wsAddr").textContent = CONFIG.mailAddress.join(", ") + ".";
+  $("flAddr").textContent = CONFIG.mailAddress.join(", ");
+  /* worksheet tick-list: the universal contributions, straight from the data */
+  $("wsImpacts").innerHTML = "";
+  (SPEC_IMPACTS.__default__ || []).forEach(function(id){
+    if(!IMPACTS[id]) return;
+    const p = el("p", "ws-opt");
+    p.textContent = IMPACTS[id].label;
+    $("wsImpacts").appendChild(p);
+  });
+
+  function doPrint(mode){
+    if(mode === "pm-letter"){
+      $("plBody").textContent = letterText();
+      $("plDate").textContent = new Date().toLocaleDateString(undefined,
+        { year: "numeric", month: "long", day: "numeric" });
+    }
+    document.body.classList.add(mode);
+    window.print();
+  }
+  window.addEventListener("afterprint", function(){
+    document.body.classList.remove("pm-letter", "pm-worksheet", "pm-flyer");
+  });
+  /* Someone pressing Ctrl+P / Cmd+P gets the letter, not the interface. */
+  window.addEventListener("beforeprint", function(){
+    if(!/pm-(letter|worksheet|flyer)/.test(document.body.className)){
+      $("plBody").textContent = letterText();
+      $("plDate").textContent = new Date().toLocaleDateString(undefined,
+        { year: "numeric", month: "long", day: "numeric" });
+      document.body.classList.add("pm-letter");
+    }
+  });
+  $("printLetterBtn").addEventListener("click", function(){ doPrint("pm-letter"); });
+  $("printWorksheetBtn").addEventListener("click", function(){ doPrint("pm-worksheet"); });
+  $("printFlyerBtn").addEventListener("click", function(){ doPrint("pm-flyer"); });
+})();
+
+/* ═══════════════════ DEADLINE ═══════════════════════════════════════════ */
+var periodClosed = false;
+(function deadline(){
+  const clock = $("clock");
+  const end   = new Date(CONFIG.deadlineISO);
+  if(isNaN(end.getTime())){
+    clock.textContent = "Check the deadline";
+    return;
+  }
+  /* The countdown uses the device's clock and timezone. Near the boundary it can
+     be off by a few hours from the official (Eastern time) close — regulations.gov
+     is the authority, and the fine print says so. */
+  const days = Math.ceil((end - new Date()) / 86400000);
+  if(days < 0){
+    periodClosed = true;
+    clock.textContent = "Period closed";
+    clock.classList.add("closed");
+  } else if(days === 0){
+    clock.textContent = "Closes today";
+  } else {
+    clock.textContent = days === 1 ? "1 day left" : days + " days left";
+  }
+  clock.title = "Comments close " + CONFIG.deadlineLabel;
+})();
+
+/* ═══════════════════ LINKS AND STANDING COPY ════════════════════════════ */
+/* After the period closes the comment form is gone; send visitors to the docket
+   so they can confirm the status and see any reopening for themselves. */
+$("goBtn").href = periodClosed ? CONFIG.docketUrl : CONFIG.commentUrl;
+if(periodClosed) $("goBtn").textContent = "Open the docket page";
+$("fallbackNote").innerHTML =
+  "If that page does not open the right form, go to " +
+  '<a href="' + CONFIG.docketUrl + '" target="_blank" rel="noopener noreferrer">docket ' +
+  CONFIG.docketId + "</a> and choose Comment on the proposed rule. " +
+  "Comments are due by " + CONFIG.deadlineLabel + "; regulations.gov is the authority on the exact time.";
+
+$("privacyText").textContent =
+  "This page sends nothing over the internet by default. Everything you type stays in this browser " +
+  "until you paste it into the comment page yourself. " +
+  "If you opt in to 'Help us measure reach,' we send your specialty and a timestamp (no name, no content) " +
+  "to help us count how many nurses are using this tool. " +
+  "Once you submit a comment to CMS it becomes part of a public record that anyone can read, " +
+  "so please leave out anything that could identify a patient.";
+
+$("saveText").textContent =
+  "Your draft is saved automatically in this browser on this device only. It is not sent anywhere and it " +
+  "will not appear on your phone if you started on a computer. Clearing your browsing data, using private " +
+  "browsing, or opening the file from a different folder will lose it. If a draft matters, download it as " +
+  "a text file.";
+
+/* ═══════════════════ SAVE AND RESTORE ═══════════════════════════════════ */
+const KEY = "nurse-comment-builder";
+
+function save(){
+  if(!storageWorks) return;
+  try{
+    localStorage.setItem(KEY, JSON.stringify({
+      v: 3,
+      policy: CONFIG.policyVersion,
+      rule: CONFIG.ruleId,
+      state: state
+    }));
+  } catch(err){
+    storageWorks = false;
+    reportProblem("Your draft cannot be saved in this browser — the app still works, but " +
+                  "download your letter before closing the tab", err);
+  }
+}
+
+/* Defensive: anything malformed, outdated, or from another rule is discarded. */
+function loadSaved(){
+  let raw;
+  try { raw = localStorage.getItem(KEY); }
+  catch(err){
+    storageWorks = false;
+    return null;   /* private mode or storage disabled — app still works */
+  }
+  if(!raw) return null;
+
+  let parsed;
+  try { parsed = JSON.parse(raw); }
+  catch(err){ dropSaved(); return null; }
+
+  if(!parsed || typeof parsed !== "object" || parsed.v !== 3 ||
+     parsed.policy !== CONFIG.policyVersion || parsed.rule !== CONFIG.ruleId ||
+     !parsed.state || typeof parsed.state !== "object"){
+    dropSaved();
+    return null;
+  }
+
+  const s = parsed.state;
+  const clean = {
+    mode:    (s.mode === "me" || s.mode === "org") ? s.mode : null,
+    setting: settingById(s.setting) ? s.setting : null,
+    impacts: {}, topics: {},
+    own:      typeof s.own === "string" ? s.own : "",
+    name:     typeof s.name === "string" ? s.name : "",
+    cred:     typeof s.cred === "string" ? s.cred : "",
+    years:    typeof s.years === "string" ? s.years.replace(/[^0-9]/g, "") : "",
+    org:      typeof s.org === "string" ? s.org : "",
+    orgCount: typeof s.orgCount === "string" ? s.orgCount.replace(/[^0-9]/g, "") : "",
+    isNurse:  typeof s.isNurse === "boolean" ? s.isNurse : true,
+    role:     typeof s.role === "string" ? s.role : "",
+    letterEdited: typeof s.letterEdited === "string" ? s.letterEdited : null,
+    checklist: { phi: !!(s.checklist && s.checklist.phi), read: !!(s.checklist && s.checklist.read) },
+    copied: false   /* never restore "copied" — it must be true for this session */
+  };
+  if(s.impacts && typeof s.impacts === "object"){
+    Object.keys(s.impacts).forEach(function(id){
+      if(!IMPACTS[id]) return;   /* content changed since the draft was saved */
+      const v = s.impacts[id] || {};
+      clean.impacts[id] = {
+        count: counts.some(function(c){ return c.id === v.count; }) ? v.count : "",
+        note:  typeof v.note === "string" ? v.note : ""
+      };
+    });
+  }
+  if(s.topics && typeof s.topics === "object"){
+    Object.keys(s.topics).forEach(function(id){
+      if(!topics.some(function(t){ return t.id === id; })) return;
+      const v = s.topics[id] || {};
+      clean.topics[id] = { note: typeof v.note === "string" ? v.note : "" };
+    });
+  }
+  return clean;
+}
+
+function dropSaved(){
+  try { localStorage.removeItem(KEY); } catch(err){ /* nothing more we can do */ }
+}
+
+function applyState(s){
+  Object.keys(s).forEach(function(k){ state[k] = s[k]; });
+  $("freeText").value = state.own;
+  $("fname").value    = state.name;
+  $("fcred").value    = state.cred;
+  $("fyears").value   = state.years;
+  $("forg").value     = state.org;
+  $("fcount").value   = state.orgCount;
+  $("notNurseCheck").checked = !state.isNurse;
+  $("fRole").value    = state.role;
+  $("roleField").hidden = state.isNurse;
+  $("settingChips").parentNode.hidden = !state.isNurse;
+  syncRadioGroup($("modeChips"), state.mode);
+  syncRadioGroup($("settingChips"), state.setting);
+  syncCredChips();
+  $("orgHelp").hidden = state.mode !== "org";
+  Array.prototype.forEach.call(document.querySelectorAll(".org-only"), function(n){
+    n.hidden = state.mode !== "org";
+  });
+  topics.forEach(function(t){
+    const cb = $("chk-" + t.id);
+    const on = !!state.topics[t.id];
+    cb.checked = on;
+    cb.closest(".card").classList.toggle("on", on);
+    $("note-" + t.id).value = (state.topics[t.id] || {}).note || "";
+  });
+  renderImpacts();
+  if(state.letterEdited !== null) $("letter").value = state.letterEdited;
+}
+
+$("resetBtn").addEventListener("click", function(){
+  const ok = window.confirm(
+    "Start over?\n\nThis erases everything you have entered and the draft saved in this browser. " +
+    "It cannot be undone.\n\nIf you want to keep this letter, cancel and download it as a text file first.");
+  if(!ok) return;
+  dropSaved();
+  /* Reset in place so nothing stale survives. */
+  state.mode = null; state.setting = null;
+  state.impacts = {}; state.topics = {};
+  state.own = ""; state.name = ""; state.cred = ""; state.years = ""; state.org = ""; state.orgCount = "";
+  state.isNurse = true; state.role = "";  /* Reset non-nurse state to prevent data leakage */
+  state.letterEdited = null;
+  state.checklist = { phi: false, read: false };
+  state.copied = false;
+  state.counted = false;  /* Reset metrics flag for new draft */
+  $("copyBtn").textContent = "Copy letter";
+  $("fallbackNote").textContent = "";
+  applyState(state);
+  refreshLetter();
+  goTo(0, true);
+  toast("Everything cleared. Starting fresh.");
+  announce("Everything cleared. You are back at step 1.");
+});
+
+/* ═══════════════════ START ══════════════════════════════════════════════ */
+(function start(){
+  const saved = loadSaved();
+  if(saved){
+    applyState(saved);
+    toast("Your saved draft has been restored");
+    announce("A saved draft was restored. Use Start over at the bottom of the page to clear it.");
+  } else {
+    renderImpacts();
+  }
+  if(!storageWorks){
+    /* Honest about it rather than pretending the draft is safe. */
+    $("saveText").textContent =
+      "This browser will not let the page save anything, so your draft will be lost if you close the tab. " +
+      "Everything else works normally. Use “Download as a text file” to keep a copy.";
+  }
+  refreshLetter();
+  goTo(0, false);
+
+  /* Only when saving is impossible: warn before the tab closes with work in it. */
+  window.addEventListener("beforeunload", function(e){
+    if(!storageWorks && letterText().trim()){
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  });
+})();
+</script>
+</body>
+</html>
