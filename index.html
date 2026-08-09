@@ -682,10 +682,18 @@
         This tool is informed by the <strong>Belgian Nursing Minimum Data Set</strong>, a landmark study on nursing work and patient outcomes.
       </p>
       <p style="line-height:1.6;">
-        <strong>Key finding:</strong> Nursing intensity independently predicts patient resource needs—more significantly than diagnosis, patient age, hospital department, or hospital size. This means nursing assessment and judgment drive measurable patient outcomes that Medicare tracks and pays for.
+        <strong>Key finding:</strong> Nursing assessment independently predicts patient resource needs—more significantly than diagnosis, patient age, hospital department, or hospital size.
       </p>
-      <p style="line-height:1.6;">
-        <strong>Study citation:</strong> <a href="https://pubmed.ncbi.nlm.nih.gov/17588580/" target="_blank" style="color:var(--accent-ink);font-weight:700;">Fagerström, L., et al. (2007). The San Joaquin Foundation Nursing Intensity Categories. A nursing intensity classification instrument. Journal of Advanced Nursing.</a>
+
+      <h3>How This Shapes the Tool</h3>
+      <ul style="line-height:1.8; margin: 10px 0;">
+        <li><strong>Acuity Assessment card</strong> emphasizes your predictive clinical judgment about patient complexity</li>
+        <li><strong>"Measurable outcomes" language</strong> shows nursing work drives outcomes that Medicare measures and pays for</li>
+        <li><strong>Framework questions</strong> ask: What do you assess? What do you predict? What outcomes result? These are the evidence CMS needs to hear.</li>
+      </ul>
+
+      <p style="line-height:1.6; margin-top:15px;">
+        <strong>Study citation:</strong> <a href="https://pubmed.ncbi.nlm.nih.gov/17588580/" target="_blank" style="color:var(--accent-ink);font-weight:700;">Fagerström, L., et al. (2007). The San Joaquin Foundation Nursing Intensity Categories. Journal of Advanced Nursing.</a>
       </p>
 
       <h3>How to Use This Tool</h3>
@@ -2179,10 +2187,9 @@ function legacyCopy(text){
 $("copyBtn").addEventListener("click", copyLetter);
 
 $("shareBtn").addEventListener("click", function(){
-  const msg = "Medicare is rewriting how care is paid for, and nursing is invisible in it. " +
-    "It takes about ten minutes to tell CMS what your work is worth — in your own words, " +
-    "no account needed. Comments close " + CONFIG.deadlineLabel + ": " + CONFIG.commentUrl + " " +
-    "The goal is 100,000 nurse comments. Pass it on.";
+  const msg = "CMS is asking for comments on the 2027 Medicare Physician Fee Schedule. " +
+    "It takes 10 minutes to describe your nursing work and why it matters for your patients. " +
+    "No account needed. Comments close " + CONFIG.deadlineLabel + ": " + CONFIG.commentUrl;
   const done = function(){ toast("Copied. Text it to ten nurses."); announce("Share message copied."); };
   if(navigator.clipboard && window.isSecureContext){
     navigator.clipboard.writeText(msg).then(done).catch(function(){
