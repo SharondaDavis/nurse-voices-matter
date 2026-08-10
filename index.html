@@ -71,7 +71,7 @@
     .toprow{flex-wrap:wrap;justify-content:flex-start;gap:8px;}
     h1.brand{flex:1;min-width:0;font-size:13px;line-height:1.1;font-weight:800;}
     h1.brand span{display:none;} /* Hide "CMS-1848-P" on mobile */
-    h1.brand::after{content:"Nurse Voices Matter";}
+    h1.brand::after{content:"Nurses' Voices Matter";}
     .clock{flex:none;font-size:10.5px;padding:4px 9px;white-space:nowrap;}
 
     /* Buttons move to second row */
@@ -375,7 +375,7 @@
          onmouseout="this.style.background='var(--void)'">
         About
       </button>
-      <a href="mailto:sharonda@nursebloc.io?subject=Feedback on Nurse Voices Matter Tool"
+      <a href="mailto:sharonda@nursebloc.io?subject=Feedback on Nurses' Voices Matter Tool"
          style="font-size:13px;font-weight:700;color:var(--accent-ink);text-decoration:none;padding:8px 12px;border-radius:6px;background:var(--void);border:1px solid var(--line);cursor:pointer;white-space:nowrap;transition:all .2s;"
          onmouseover="this.style.background='var(--panel)'"
          onmouseout="this.style.background='var(--void)'">
@@ -729,10 +729,10 @@
 
       <h3>Questions?</h3>
       <p style="line-height:1.6;">
-        <strong>Feedback or ideas:</strong> <a href="mailto:sharonda@nursebloc.io?subject=About Nurse Voices Matter Tool" style="color:var(--accent-ink);font-weight:700;">Email sharonda@nursebloc.io</a>
+        <strong>Feedback or ideas:</strong> <a href="mailto:sharonda@nursebloc.io?subject=About Nurses' Voices Matter Tool" style="color:var(--accent-ink);font-weight:700;">Email sharonda@nursebloc.io</a>
       </p>
       <p style="line-height:1.6;">
-        <strong>Bug report:</strong> <a href="mailto:sharonda@nursebloc.io?subject=Bug Report - Nurse Voices Matter Tool" style="color:var(--accent-ink);font-weight:700;">Email sharonda@nursebloc.io</a>
+        <strong>Bug report:</strong> <a href="mailto:sharonda@nursebloc.io?subject=Bug Report - Nurses' Voices Matter Tool" style="color:var(--accent-ink);font-weight:700;">Email sharonda@nursebloc.io</a>
       </p>
 
       <button type="button" id="closeAboutBtn2" class="btn" style="margin-top:20px;width:100%;">Close</button>
@@ -2257,13 +2257,13 @@ $("sendFeedbackBtn").addEventListener("click", function(){
   const count = ($("fbCount").value || "").trim();
   const feedback = ($("fbFeedback").value || "").trim();
 
-  let body = "Nurse Voices Matter Feedback:\n\n";
+  let body = "Nurses' Voices Matter Feedback:\n\n";
   if(specialty) body += "Specialty/Setting: " + specialty + "\n";
   if(count) body += "Comments Submitted: " + count + "\n";
   if(feedback) body += "Feedback:\n" + feedback + "\n";
   body += "\n---\nThank you for sharing your story!";
 
-  const subject = "Nurse Voices Matter - Story & Feedback";
+  const subject = "Nurses' Voices Matter - Story & Feedback";
   const mailto = "mailto:sharonda@nursebloc.io?subject=" + encodeURIComponent(subject) +
                  "&body=" + encodeURIComponent(body);
   window.location.href = mailto;
