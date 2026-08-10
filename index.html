@@ -548,9 +548,31 @@
       <h3>What you have chosen</h3>
       <dl class="review" id="review"></dl>
 
+      <div style="background:var(--panel);border-radius:12px;padding:20px;margin-bottom:24px;border:2px solid var(--accent-ink);">
+        <h3 style="margin-top:0;color:var(--accent-ink);">Before you can copy</h3>
+        <div class="check" id="checklist">
+          <div class="citem" id="ck-own">
+            <span class="auto" aria-hidden="true">&#9675;</span>
+            <span class="lbl">Something in your own words<span class="sub" id="ck-own-sub">Not yet &mdash; step 3 is where to add it.</span></span>
+          </div>
+          <div class="citem">
+            <input type="checkbox" id="ck-phi">
+            <label for="ck-phi">No patient-identifying details<span class="sub">No names, dates of birth, record numbers, or details that could single someone out.</span></label>
+          </div>
+          <div class="citem">
+            <input type="checkbox" id="ck-read">
+            <label for="ck-read">I have read the whole letter<span class="sub">It says what I mean, in words I am comfortable putting my name to.</span></label>
+          </div>
+          <div class="citem">
+            <input type="checkbox" id="ckAttestation">
+            <label for="ckAttestation">This is my authentic voice<span class="sub">I confirm this reflects my own experience, judgment, and policy views.</span></label>
+          </div>
+        </div>
+        <p id="requirementNote" style="display:none;color:var(--accent-ink);font-weight:600;margin:12px 0 0 0;"></p>
+      </div>
+
       <h3>Your letter</h3>
-      <p class="say">You can edit this directly &mdash; it is a normal text box. Change any wording that does
-        not sound like you.</p>
+      <p class="say">You can edit this directly — it is a normal text box. Change any wording that does not sound like you.</p>
       <div class="meters">
         <span class="meter dim" id="uniq">&nbsp;</span>
         <span class="meter dim" id="wordCount">&nbsp;</span>
@@ -561,32 +583,11 @@
       </div>
       <p class="phi" id="phiLetter">
         <span class="ic" aria-hidden="true">&#9888;</span>
-        <span>Last check before this becomes public: read it once for anything that could identify a patient
-        or a colleague.</span>
+        <span>Last check before this becomes public: read it once for anything that could identify a patient or a colleague.</span>
       </p>
       <div class="lbtns">
         <button type="button" class="btn ghost" id="regenBtn" hidden>Rebuild from my choices</button>
         <button type="button" class="btn ghost" id="dlBtn">Download as a text file</button>
-      </div>
-
-      <h3>Before you send</h3>
-      <div class="check" id="checklist">
-        <div class="citem" id="ck-own">
-          <span class="auto" aria-hidden="true">&#9675;</span>
-          <span class="lbl">Something in your own words<span class="sub" id="ck-own-sub">Not yet &mdash; step 3 is where to add it.</span></span>
-        </div>
-        <div class="citem">
-          <input type="checkbox" id="ck-phi">
-          <label for="ck-phi">No patient-identifying details<span class="sub">No names, dates of birth, record numbers, or details that could single someone out.</span></label>
-        </div>
-        <div class="citem">
-          <input type="checkbox" id="ck-read">
-          <label for="ck-read">I have read the whole letter<span class="sub">It says what I mean, in words I am comfortable putting my name to.</span></label>
-        </div>
-        <div class="citem" id="ck-copy">
-          <span class="auto" aria-hidden="true">&#9675;</span>
-          <span class="lbl">Letter copied<span class="sub" id="ck-copy-sub">Not yet &mdash; use the Copy button below.</span></span>
-        </div>
       </div>
 
       <h3>Prefer paper?</h3>
@@ -619,23 +620,15 @@
         </div>
       </div>
 
-      <div class="howto" style="background:var(--panel);border-radius:12px;padding:16px;margin-bottom:20px;border:2px solid var(--accent-ink);">
-        <h3 style="margin-top:0;color:var(--accent-ink);">Confirm this is your authentic voice</h3>
-        <div style="margin:0 0 15px;">
-          <input type="checkbox" id="ckAttestation">
-          <label for="ckAttestation" style="display:inline;font-weight:600;cursor:pointer;font-size:15px;">I confirm this comment reflects my own experience, judgment, and policy views. I reviewed and edited all text before submitting.</label>
-        </div>
-      </div>
-
-      <div class="howto">
-        <h3>How to send it</h3>
-        <ol>
-          <li>Press <b>Copy letter</b> at the bottom of this screen.</li>
-          <li>Press <b>Open the comment page</b>. It opens in a new tab.</li>
-          <li>Paste into the box marked <b>Comment</b>, then submit it on that page.</li>
+      <div class="howto" style="background:var(--accent-ink);color:white;border-radius:12px;padding:20px;margin:24px 0;text-align:center;">
+        <h3 style="margin-top:0;">Ready to submit?</h3>
+        <p style="margin:0 0 16px;font-size:15px;">Once you've checked all the boxes above, the Copy button below will be ready.</p>
+        <ol style="text-align:left;display:inline-block;">
+          <li><b>Copy your letter</b> using the button below.</li>
+          <li><b>Open the comment page</b> on regulations.gov (new tab).</li>
+          <li><b>Paste</b> into the comment box and submit.</li>
         </ol>
-        <p class="fine" id="fallbackNote"></p>
-        <p id="requirementNote" style="display:none;color:var(--accent-ink);font-weight:600;margin-top:12px;"></p>
+        <p class="fine" id="fallbackNote" style="color:rgba(255,255,255,0.9);"></p>
       </div>
 
       <div class="howto">
