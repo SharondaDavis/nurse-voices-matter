@@ -619,6 +619,14 @@
         </div>
       </div>
 
+      <div class="howto" style="background:var(--panel);border-radius:12px;padding:16px;margin-bottom:20px;border:2px solid var(--accent-ink);">
+        <h3 style="margin-top:0;color:var(--accent-ink);">Confirm this is your authentic voice</h3>
+        <div style="margin:0 0 15px;">
+          <input type="checkbox" id="ckAttestation">
+          <label for="ckAttestation" style="display:inline;font-weight:600;cursor:pointer;font-size:15px;">I confirm this comment reflects my own experience, judgment, and policy views. I reviewed and edited all text before submitting.</label>
+        </div>
+      </div>
+
       <div class="howto">
         <h3>How to send it</h3>
         <ol>
@@ -627,6 +635,7 @@
           <li>Paste into the box marked <b>Comment</b>, then submit it on that page.</li>
         </ol>
         <p class="fine" id="fallbackNote"></p>
+        <p id="requirementNote" style="display:none;color:var(--accent-ink);font-weight:600;margin-top:12px;"></p>
       </div>
 
       <div class="howto">
@@ -924,7 +933,7 @@ const IMPACTS = {
   homesafe: {label:"Made the home safe enough to stay in — preventing falls at home", tag:"Nursing assessment", program:"Hospital-Acquired Condition Reduction Program", hint:"throw rugs, lighting, grab bars, the fall waiting to happen", deed:"kept safely at home instead of falling and being admitted through nursing home safety assessment", eg:"my home safety walks prevent more falls than any hospital protocol—I see the dangers"},
   inclass: {label:"Managed chronic conditions so kids stayed in school — where they belong", tag:"Nursing judgment", program:"ambulatory quality measures", hint:"asthma, diabetes, seizures, allergies — managed so no one misses school", deed:"kept in school and out of the ER through school nursing care management", eg:"I manage 40 care plans so kids stay in class on good days instead of missing school"},
   kidmental: {label:"Caught a child in crisis — when they came in for a stomachache", tag:"Nursing intuition", program:"nurse-sensitive failure-to-rescue measures", hint:"the one who came to your office for a stomachache and needed something else", deed:"whose mental health crisis or abuse was identified by school nursing assessment first", eg:"the frequent-flyer stomachache who was actually being hurt at home—I noticed and asked"},
-  acuity: {label:"Assessed patient complexity and predicted what they would need — better than diagnosis", tag:"Nursing assessment", program:"nursing-driven acuity measures and resource allocation", hint:"admission assessment that determines staffing, monitoring, and care intensity", deed:"whose complexity was accurately predicted by nursing assessment—independent of diagnosis, age, or department—so resources matched their real needs", eg:"my acuity assessment predicts whether someone needs 1:1 care or a full team of four—and I’m right more often than diagnosis alone"},
+  acuity: {label:"Assessed patient complexity and anticipated care needs", tag:"Nursing assessment", program:"nursing-driven acuity measures and resource allocation", hint:"admission assessment that determines staffing, monitoring, and care intensity", deed:"whose complexity and care needs were assessed by nursing, informing staffing and monitoring decisions beyond diagnosis alone", eg:"my admission assessment determines whether this patient gets 1:1 care or a team manages four—nursing assessment informs those staffing decisions"},
   other: {label:"Other nursing work not listed here", tag:"Custom", program:"nursing practice", hint:"describe your own work if it’s not captured above", deed:"", eg:"describe what your nursing care meant for your patients"},
 };
 
@@ -1452,8 +1461,14 @@ radioKeys($("settingChips"), setSetting);
     b.dataset.ex = String(i);
     b.appendChild(document.createTextNode(text));
     const plus = el("span", "plus");
-    plus.textContent = "Tap to add";
+    plus.textContent = "Sample";
+    plus.style.opacity = "0.5";
+    plus.style.fontSize = "12px";
     b.appendChild(plus);
+    b.disabled = true;
+    b.style.opacity = "0.6";
+    b.style.cursor = "not-allowed";
+    b.title = "Write your own words instead — this is just an example";
     $("examples").appendChild(b);
   });
 })();
@@ -2012,6 +2027,27 @@ function buildLetter(){
 }
 
 /* The letter box is regenerated only while the visitor has not edited it. */
+function validateActionButtons(){
+  const hasOriginalInput = state.own.trim().length >= 20;
+  const attestationChecked = $("ckAttestation").checked;
+  const canProceed = hasOriginalInput && attestationChecked;
+
+  $("copyBtn").disabled = !canProceed;
+  $("goBtn").disabled = !canProceed;
+
+  const reqNote = $("requirementNote");
+  if(canProceed){
+    reqNote.style.display = "none";
+    reqNote.textContent = "";
+  } else {
+    reqNote.style.display = "block";
+    const missing = [];
+    if(!hasOriginalInput) missing.push("Add at least 20 characters of your own words in Step 3");
+    if(!attestationChecked) missing.push("Check the authenticity confirmation");
+    reqNote.textContent = "Before you can submit: " + missing.join(" and ");
+  }
+}
+
 function refreshLetter(){
   const generated = buildLetter();
   if(state.letterEdited === null) $("letter").value = generated;
@@ -2020,6 +2056,7 @@ function refreshLetter(){
   paintMeters();
   paintChecklist();
   paintCounter();
+  validateActionButtons();
 }
 
 $("regenBtn").addEventListener("click", function(){
@@ -2198,6 +2235,8 @@ function legacyCopy(text){
 }
 
 $("copyBtn").addEventListener("click", copyLetter);
+
+$("ckAttestation").addEventListener("change", validateActionButtons);
 
 $("shareBtn").addEventListener("click", function(){
   const msg = "CMS is asking for comments on the 2027 Medicare Physician Fee Schedule. " +
