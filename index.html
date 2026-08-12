@@ -487,8 +487,7 @@
         </p>
       </div>
 
-      <p class="exlead">Not sure how to start? Here is how some nurses have put it. Tap one to drop it in,
-        then change it until it sounds like you &mdash; a sentence of your own is worth more than any of these as written.</p>
+      <p class="exlead">Not sure how to start? Here is how some nurses have put it. Use these as inspiration, then write your own &mdash; a sentence of your own is worth more than any of these as written.</p>
       <div class="examples" id="examples"></div>
 
       <details class="ready">
@@ -842,7 +841,7 @@ const CONFIG = {
   commentBoxLimit: 5000,
 
   /* Bump when any letter language changes. Older drafts are then discarded. */
-  policyVersion: "2026-08-05.2",
+  policyVersion: "2026-08-10.1",
 
   /* Metrics: Formspree endpoint for tracking letters created. Create a form at
      formspree.io and paste the endpoint URL here. Leave blank to disable. */
@@ -2007,11 +2006,11 @@ function buildLetter(){
       : s;
   };
   tps.forEach(function(id){
-    const t = topics.filter(function(x){ return x.id === id; })[0];
-    let para = voice(t.sample);
     const note = ((state.topics[id] || {}).note || "").trim();
-    if(note) para += " From " + our + " own practice: " + sentence(lowerFirst(note));
-    out.push(para);
+    if(note) {
+      /* Only include topic if nurse wrote their own words; no pre-written samples */
+      out.push(note);
+    }
   });
 
   out.push("Thank you for considering " + (isOrg ? "our" : "these") + " comments.");
@@ -2109,7 +2108,7 @@ function paintReview(){
 
 /* ═══════════════════ METERS AND CHECKLIST ═══════════════════════════════ */
 function hasOwnWords(){
-  return state.own.trim().length > 3 ||
+  return state.own.trim().length >= 20 ||
          Object.keys(state.impacts).some(function(k){ return (state.impacts[k].note || "").trim().length > 3; }) ||
          Object.keys(state.topics).some(function(k){ return (state.topics[k].note || "").trim().length > 3; }) ||
          state.letterEdited !== null;
@@ -2163,8 +2162,8 @@ function paintChecklist(){
   $("ck-read").closest(".citem").classList.toggle("done", state.checklist.read);
 
   const empty = !letterText().trim();
-  $("copyBtn").disabled = empty;
   $("dlBtn").disabled   = empty;
+  /* copyBtn.disabled is controlled by validateActionButtons() to enforce authenticity requirements */
 }
 
 /* ═══════════════════ COPY AND DOWNLOAD ══════════════════════════════════ */
