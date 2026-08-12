@@ -2156,6 +2156,9 @@ function paintMeters(){
 }
 
 function paintChecklist(){
+  /* Only paint checklist if on Step 5 where these elements exist */
+  if(!$("ck-own")) return;
+
   const ownDone = hasOwnWords();
   const ownRow  = $("ck-own");
   ownRow.classList.toggle("done", ownDone);
@@ -2165,19 +2168,30 @@ function paintChecklist(){
     : "Not yet — step 3 is where to add it. Optional, but it carries the most weight.";
 
   const copyRow = $("ck-copy");
-  copyRow.classList.toggle("done", state.copied);
-  copyRow.querySelector(".auto").textContent = state.copied ? "✓" : "○";
-  $("ck-copy-sub").textContent = state.copied
-    ? "Copied. Paste it into the comment page."
-    : "Not yet — use the Copy button below.";
+  if(copyRow){
+    copyRow.classList.toggle("done", state.copied);
+    copyRow.querySelector(".auto").textContent = state.copied ? "✓" : "○";
+    $("ck-copy-sub").textContent = state.copied
+      ? "Copied. Paste it into the comment page."
+      : "Not yet — use the Copy button below.";
+  }
 
-  $("ck-phi").checked  = state.checklist.phi;
-  $("ck-read").checked = state.checklist.read;
-  $("ck-phi").closest(".citem").classList.toggle("done", state.checklist.phi);
-  $("ck-read").closest(".citem").classList.toggle("done", state.checklist.read);
+  const phiElt = $("ck-phi");
+  const readElt = $("ck-read");
+  if(phiElt) {
+    phiElt.checked = state.checklist.phi;
+    phiElt.closest(".citem").classList.toggle("done", state.checklist.phi);
+  }
+  if(readElt) {
+    readElt.checked = state.checklist.read;
+    readElt.closest(".citem").classList.toggle("done", state.checklist.read);
+  }
 
-  const empty = !letterText().trim();
-  $("dlBtn").disabled   = empty;
+  const dlBtn = $("dlBtn");
+  if(dlBtn) {
+    const empty = !letterText().trim();
+    dlBtn.disabled = empty;
+  }
   /* copyBtn.disabled is controlled by validateActionButtons() to enforce authenticity requirements */
 }
 
