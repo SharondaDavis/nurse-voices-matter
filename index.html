@@ -4,28 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="light">
-<meta name="theme-color" content="#F1F6FC">
+<meta name="theme-color" content="#FFFFFF">
 <meta name="referrer" content="no-referrer">
 <title>Nurses' Voices Matter</title>
 <style>
+  /* Calm clinical palette: cool mist ground, white surfaces, one quiet teal accent.
+     Every step shares the same accent so the app reads as one calm system. */
   :root{
-    --void:#EEF4FD; --panel:#FFFFFF; --panel-2:#DEEAFA;
-    --line:#BFD4EE; --line-2:#7C9CC4;
-    --text:#0E1A28; --text-2:#33506E; --text-3:#54708F;
-    --paper:#FFFDF7; --paper-ink:#14202E;
-    /* step accents — bold fills (white text) + a deeper ink for borders and small text */
-    --c1:#1C6FD8; --i1:#0E4A96;
-    --c2:#1560CC; --i2:#0C408A;
-    --c3:#1A4FC0; --i3:#10357E;
-    --c4:#2E3FB8; --i4:#1C2878;
-    --c5:#4B2FB0; --i5:#331B7A;
+    --void:#F3F6F6; --panel:#FFFFFF; --panel-2:#EDF3F3;
+    --line:#DDE5E6; --line-2:#BFCDCF;
+    --text:#15262B; --text-2:#46575D; --text-3:#66777D;
+    --paper:#FFFEFB; --paper-ink:#1A2428;
+    --c1:#0E7377; --i1:#0A5659;
+    --c2:#0E7377; --i2:#0A5659;
+    --c3:#0E7377; --i3:#0A5659;
+    --c4:#0E7377; --i4:#0A5659;
+    --c5:#0E7377; --i5:#0A5659;
+    --accent-soft:#E4F1F0;
     --on-accent:#FFFFFF;
-    --hot:#A8291C; --hot-bg:#FCE7E2; --hot-line:#E0A79C;
-    --ok:#0B6A42; --ok-bg:#D6F0E1;
-    --warn:#6E4A00; --warn-bg:#FBEDC4;
+    --hot:#AE2E24; --hot-bg:#FBEDEB; --hot-line:#EBC3BE;
+    --ok:#1D704A; --ok-bg:#E4F3EB;
+    --warn:#7A5300; --warn-bg:#FCF3DE;
     --accent:var(--c1); --accent-ink:var(--i1);
-    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    --serif:ui-serif,Georgia,"Times New Roman",serif;
+    --sans:"Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,system-ui,Roboto,Helvetica,Arial,sans-serif;
+    --display:"Segoe UI Variable Display","Segoe UI",-apple-system,BlinkMacSystemFont,system-ui,Roboto,Helvetica,Arial,sans-serif;
+    --serif:ui-serif,"Iowan Old Style",Georgia,"Times New Roman",serif;
+    --radius:12px;
+    --ring:0 0 0 3px rgba(14,115,119,.22);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{height:100%;}
@@ -422,6 +427,175 @@
     h2{font-size:23px;}
     .chip{font-size:15.5px;padding:11px 14px;}
   }
+
+  /* ═══════════ CALM VISUAL LAYER ═══════════════════════════════════════════
+     Restyles every component in place (same markup, same behavior).
+     Quiet surfaces, 1px hairlines, sentence-case labels, one teal accent.
+     It comes last so it wins over the earlier component rules. */
+  @media screen{
+  body{background:var(--panel);color:var(--text);font-size:16px;line-height:1.55;}
+  .app{max-width:720px;}
+
+  /* header: white bar, thin progress line */
+  .top{background:rgba(255,255,255,.94);-webkit-backdrop-filter:saturate(1.4) blur(10px);
+       backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line);padding-bottom:12px;}
+  h1.brand{font-family:var(--display);font-size:15px;font-weight:700;letter-spacing:-.005em;}
+  h1.brand span{font-size:11.5px;font-weight:600;letter-spacing:.01em;text-transform:none;color:var(--text-3);}
+  .clock{text-transform:none;letter-spacing:0;font-size:12.5px;font-weight:600;color:#8A4B00;
+         background:#FFF3E2;border:0;padding:5px 11px;}
+  .hbtn{border:0;color:var(--text-2);font-weight:600;}
+  ol.bars{gap:4px;}
+  ol.bars button{height:16px;padding:6px 0;}
+  ol.bars button::before{height:4px;border:0;background:var(--line);}
+  ol.bars button[data-state="done"]::before{background:var(--accent);opacity:.45;}
+  ol.bars button[data-state="now"]::before{background:var(--accent);border:0;}
+
+  /* step text */
+  .slide{padding:30px 20px 40px;}
+  .step-n{text-transform:none;letter-spacing:0;font-size:14px;font-weight:600;color:var(--accent-ink);margin:0 0 6px;}
+  h2{font-family:var(--display);font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.018em;
+     margin:0 0 12px;text-wrap:balance;}
+  h3{font-family:var(--display);font-weight:650;letter-spacing:-.005em;}
+  .lede, .say{font-size:16.5px;color:var(--text-2);line-height:1.6;max-width:56ch;}
+  .do{background:var(--panel-2);border:0;border-radius:var(--radius);padding:14px 16px;}
+  .do .ic{display:none;}
+  .do-txt{color:var(--text-2);}
+  .do-txt b{color:var(--text);}
+
+  /* labels: sentence case, quiet */
+  legend, .field > label, .qfind-label{text-transform:none;letter-spacing:0;font-size:15.5px;font-weight:650;
+     color:var(--text);margin-bottom:10px;}
+  .field .opt{color:var(--text-3);font-weight:400;}
+  .req{color:var(--text-3);font-weight:400;font-size:14px;}
+  .hint{color:var(--text-3);font-size:14px;}
+
+  /* choice chips: calm option pills */
+  .chips{gap:8px;}
+  .chip{min-height:48px;padding:10px 16px;border-radius:var(--radius);border:1px solid var(--line-2);
+        background:var(--panel);color:var(--text);font-size:15.5px;font-weight:500;
+        transition:border-color .15s, background .15s;}
+  .chip .tick{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line-2);font-size:11px;}
+  .chip[aria-checked="true"], .chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);
+        color:var(--text);box-shadow:inset 0 0 0 1px var(--accent);}
+  .chip[aria-checked="true"] .tick, .chip[aria-pressed="true"] .tick{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .chip:focus-visible{outline:none;box-shadow:var(--ring), inset 0 0 0 1px var(--accent);}
+
+  /* AI tools: full-width option rows, two columns on wider screens */
+  .toolchips{display:grid;grid-template-columns:1fr;gap:8px;}
+  @media (min-width:640px){ .toolchips{grid-template-columns:1fr 1fr;} }
+  .toolchips .chip{width:100%;justify-content:flex-start;text-align:left;min-height:56px;padding:12px 16px;
+        font-size:15.5px;gap:12px;}
+  .toolchips .chip .tick{width:20px;height:20px;border-radius:6px;}
+
+  /* theme filters: small quiet pills */
+  .qthemes .chip{min-height:36px;padding:6px 13px;border-radius:999px;font-size:14px;}
+  .qthemes .chip[aria-pressed="true"]{background:var(--accent);color:#fff;box-shadow:none;}
+
+  /* inputs */
+  input[type=text], input[type=search], textarea, .qsearch input{border:1px solid var(--line-2);border-radius:var(--radius);
+        background:var(--panel);font-weight:400;font-size:16px;min-height:50px;padding:12px 14px;
+        transition:border-color .15s, box-shadow .15s;}
+  .qsearch input{padding-left:44px;box-shadow:0 1px 2px rgba(21,38,43,.05);}
+  input:focus, textarea:focus, .qsearch input:focus{outline:none;border-color:var(--accent);box-shadow:var(--ring);}
+  .bigbox{min-height:150px;}
+  ::placeholder{color:#8C9A9F;}
+
+  /* cards */
+  .cards{gap:10px;}
+  .card{border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(21,38,43,.04);}
+  .card.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent), 0 8px 24px -16px rgba(10,86,89,.5);}
+  .card-head{padding:16px 18px;gap:14px;}
+  .card-head input{width:22px;height:22px;border:1.5px solid var(--line-2);border-radius:6px;margin-top:1px;}
+  .card.on .card-head input{background:var(--accent);border-color:var(--accent);}
+  .card-head input:focus-visible{outline:none;box-shadow:var(--ring);}
+  .card-title{font-family:var(--display);font-size:16.5px;font-weight:650;line-height:1.3;letter-spacing:-.005em;}
+  .card-sub{color:var(--text-2);font-size:14.5px;line-height:1.5;}
+  .tag{text-transform:none;letter-spacing:0;font-size:12.5px;font-weight:500;background:var(--panel-2);
+       color:var(--text-3);padding:3px 9px;margin-top:10px;}
+  .card.on .tag{background:var(--accent-soft);color:var(--accent-ink);}
+  .card-body{padding:2px 18px 18px 54px;}
+  .card-body label{font-weight:650;font-size:14.5px;}
+  .card textarea{min-height:96px;}
+  .peek{color:var(--accent-ink);font-weight:600;font-size:14px;}
+  .sug{font-weight:600;}
+  .qgroup{font-size:13.5px;font-weight:600;color:var(--text-3);margin:18px 2px 2px;}
+  .qcount{color:var(--text-3);font-weight:500;}
+  .coach{color:var(--text-3);}
+  .starter{background:var(--accent-soft);border:0;color:var(--accent-ink);font-weight:600;border-radius:999px;}
+  .starter:focus-visible{outline:none;box-shadow:var(--ring);}
+  .qempty{border:1px dashed var(--line-2);}
+
+  /* notices */
+  .phi{background:var(--warn-bg);color:var(--warn);font-weight:500;border-radius:10px;font-size:13.5px;}
+  .alert{border:1px solid var(--hot-line);border-radius:var(--radius);font-weight:600;}
+  .reqnote{border:1px solid var(--hot-line);font-weight:600;}
+
+  /* examples */
+  .exlead{color:var(--text-3);}
+  .ex{border:1px solid var(--line);background:var(--panel);font-size:15px;color:var(--text-2);border-radius:var(--radius);}
+
+  /* disclosure sections */
+  details.ready{border-top:1px solid var(--line);}
+  details.ready summary, details.disc summary, details.story summary{color:var(--accent-ink);font-weight:600;}
+
+  /* step 5 */
+  h3.sec{font-size:18px;margin-top:30px;}
+  .meter{font-weight:600;font-size:12.5px;padding:6px 11px;}
+  #letter{border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 3px rgba(21,38,43,.06);font-size:16px;}
+  .check{border:1px solid var(--line);border-radius:14px;}
+  .citem input{width:22px;height:22px;border:1.5px solid var(--line-2);border-radius:6px;}
+  .citem input:checked{background:var(--accent);border-color:var(--accent);}
+  .citem input:focus-visible{outline:none;box-shadow:var(--ring);}
+  .citem label, .citem .lbl{font-weight:600;}
+  .citem.done .lbl{color:var(--ok);}
+  .sendbox{border:1px solid var(--accent);background:linear-gradient(var(--accent-soft), var(--accent-soft)) padding-box;
+           border-radius:14px;}
+  .howto{background:var(--panel);border:1px solid var(--line);border-radius:14px;}
+  .howto h3{text-transform:none;letter-spacing:0;font-size:16px;font-weight:650;color:var(--text);}
+  .review{border:1px solid var(--line);}
+  .rrow dt{text-transform:none;letter-spacing:0;font-size:13.5px;font-weight:600;color:var(--text-3);}
+  .rlink{font-weight:600;}
+
+  /* buttons */
+  .nav{background:rgba(255,255,255,.94);-webkit-backdrop-filter:saturate(1.4) blur(10px);
+       backdrop-filter:saturate(1.4) blur(10px);border-top:1px solid var(--line);}
+  .btn{border-radius:var(--radius);font-weight:600;font-size:16px;min-height:52px;box-shadow:none;border:1px solid var(--accent);
+       transition:background .15s, border-color .15s;}
+  .btn.ghost{background:var(--panel);color:var(--text);border-color:var(--line-2);}
+  .btn:focus-visible{outline:none;box-shadow:var(--ring);}
+  .btn.locked{opacity:.45;}
+
+  /* footer */
+  .foot{color:var(--text-3);}
+  .foot h3{font-size:14.5px;}
+
+  /* Hover only where there is a mouse, so taps on phones don't leave highlights behind. */
+  @media (hover:hover){
+    .hbtn:hover{background:var(--panel-2);color:var(--text);}
+    .chip:hover{border-color:var(--accent);background:#FAFDFD;}
+    .card:hover{border-color:var(--line-2);}
+    .starter:hover{background:#D3E9E7;}
+    .btn:hover{background:var(--accent-ink);border-color:var(--accent-ink);}
+    .btn.ghost:hover{background:var(--panel-2);border-color:var(--line-2);color:var(--text);}
+    .btn.locked:hover{background:var(--accent);border-color:var(--accent);}
+  }
+
+  @media (hover:none){
+    .chip:not([aria-pressed="true"]):not([aria-checked="true"]):hover{border-color:var(--line-2);background:var(--panel);}
+    .card:not(.on):hover{border-color:var(--line);}
+    .ex:hover{border-color:var(--line);}
+    .btn.ghost:hover{background:var(--panel);color:var(--text);border-color:var(--line-2);}
+  }
+
+  @media (max-width:600px){
+    .slide{padding:22px 16px 30px;}
+    h2{font-size:25px;}
+    .card-body{padding:2px 14px 16px;}
+    .card-head{padding:14px 14px;}
+    .chip{font-size:15px;}
+  }
+  }
+  @media (prefers-reduced-motion:reduce){ .chip, input, textarea, .btn{transition:none;} }
 </style>
 <!-- Google Analytics - REPLACE WITH YOUR MEASUREMENT ID -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JTMRCB87LV"></script>
