@@ -732,13 +732,6 @@
 
       <div class="chips toolchips" id="toolChips" role="group" aria-labelledby="h1s"></div>
 
-      <div class="field" style="margin-top:20px">
-        <label for="fToolNames">Product names, if you know them <span class="opt">&mdash; optional</span></label>
-        <input type="text" id="fToolNames" autocomplete="off"
-               placeholder="e.g. the sepsis alert in our charting system, an ambient scribe pilot">
-        <p class="hint">Naming the tool helps FDA connect your experience to real devices. Leave out anything
-          about a specific patient.</p>
-      </div>
 
       <details class="ready" id="impactDetails">
         <summary>Optional: add the patient-safety work these tools step into</summary>
@@ -1628,7 +1621,6 @@ const state = {
   impacts:   {},     /* id -> { count: "", note: "" }  (presence = selected)     */
   topics:    {},     /* id -> { note: "" }             (presence = selected)     */
   tools:     {},     /* TOOLS[].id -> true                                        */
-  toolNames: "",
   own:       "",
   name: "", cred: "", years: "", org: "", orgCount: "",
   isNurse:   true,   /* false if non-nurse commenting */
@@ -1750,7 +1742,7 @@ $("ruleLabel").textContent = CONFIG.ruleId;
 
 /* --- progress bar --- */
 (function buildBars(){
-  const names = ["Who you are", "Your patients", "Your words", "Sign it", "Review and send"];
+  const names = ["Who you are", "AI at your work", "FDA's questions", "Sign it", "Review and send"];
   const ol = $("bars");
   for(let i = 0; i < STEPS; i++){
     const li = el("li");
@@ -2364,7 +2356,6 @@ document.addEventListener("input", function(e){
     save(); refreshLetter(); return;
   }
   if(t.id === "freeText"){ state.own = t.value; save(); refreshLetter(); return; }
-  if(t.id === "fToolNames"){ state.toolNames = t.value; save(); refreshLetter(); return; }
   if(t.id === "fname")   { state.name = t.value; save(); refreshLetter(); return; }
   if(t.id === "fcred")   { state.cred = t.value; syncCredChips(); save(); refreshLetter(); return; }
   if(t.id === "fyears")  { state.years = t.value.replace(/[^0-9]/g, ""); t.value = state.years;
@@ -2564,18 +2555,14 @@ function buildLetter(){
   /* --- the AI tools this commenter actually encounters --- */
   const toolPhrases = TOOLS.filter(function(t){ return state.tools[t.id] && t.phrase; })
                            .map(function(t){ return t.phrase; });
-  const names = (state.toolNames || "").trim().replace(/\.$/, "");
   if(toolPhrases.length){
     /* Phrases can contain "or", so two or more are listed after a colon to stay readable. */
     const list = toolPhrases.length === 1 ? toolPhrases[0]
       : "these AI tools: " + toolPhrases.join("; ");
-    out.push(cap(our) + " comments come from direct experience with " + list + "." +
-             (names ? " Specifically: " + names + "." : ""));
+    out.push(cap(our) + " comments come from direct experience with " + list + ".");
   } else if(state.tools.none){
     out.push((isOrg ? "We have" : "I have") + " not yet worked directly with generative AI tools in patient care, " +
              "but nurses will be among the clinicians who see and act on their outputs first.");
-  } else if(names){
-    out.push(cap(our) + " comments draw on experience with " + names + ".");
   }
 
   /* --- the nurse's own words come first --- */
@@ -3113,8 +3100,7 @@ function loadSaved(){
     letterEdited: typeof s.letterEdited === "string" ? s.letterEdited : null,
     checklist: { phi: !!(s.checklist && s.checklist.phi), read: !!(s.checklist && s.checklist.read) },
     copied: false,  /* never restore "copied" — it must be true for this session */
-    tools: {},
-    toolNames: typeof s.toolNames === "string" ? s.toolNames : ""
+    tools: {}
   };
   if(s.tools && typeof s.tools === "object"){
     Object.keys(s.tools).forEach(function(id){
@@ -3149,7 +3135,6 @@ function applyState(s){
   Object.keys(s).forEach(function(k){ state[k] = s[k]; });
   $("freeText").value = state.own;
   $("ownWrap").open = !!state.own.trim();
-  $("fToolNames").value = state.toolNames || "";
   syncToolChips();
   $("impactDetails").open = Object.keys(state.impacts || {}).length > 0;
   $("fname").value    = state.name;
@@ -3189,7 +3174,7 @@ $("resetBtn").addEventListener("click", function(){
   dropSaved();
   /* Reset in place so nothing stale survives. */
   state.mode = null; state.setting = null;
-  state.impacts = {}; state.topics = {}; state.tools = {}; state.toolNames = "";
+  state.impacts = {}; state.topics = {}; state.tools = {};
   state.own = ""; state.name = ""; state.cred = ""; state.years = ""; state.org = ""; state.orgCount = "";
   state.isNurse = true; state.role = "";  /* Reset non-nurse state to prevent data leakage */
   state.letterEdited = null;
