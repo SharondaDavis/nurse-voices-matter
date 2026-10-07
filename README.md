@@ -1,6 +1,8 @@
 # Nurse Voices Matter
 
-A tool for bedside nurses to tell Medicare what their work is worth.
+A tool for bedside nurses to tell federal regulators what they see at the bedside.
+
+**Now open: FDA's request for feedback on generative AI medical devices (docket FDA-2026-N-7874), due October 19, 2026.** The earlier CMS-1848-P campaign closed September 14, 2026; that version is in the git history.
 
 ## The Why
 
@@ -17,9 +19,9 @@ Not identical copy-paste letters. Real voices. From ICUs and ERs and clinics and
 **Nurse Voices Matter** is a single-file web tool that takes about 10 minutes:
 
 1. **Tell us who you are** — your specialty, unit, credentials (all optional)
-2. **Count the work nobody pays for** — 46 nursing contributions across 14 care settings, plus space for your own numbers
-3. **Say it in your words** — an open text box where your own voice leads, with examples you can tap and optional ready-written policy paragraphs
-4. **Choose how to submit** — paste into the web form, print and mail, or share with colleagues
+2. **Count the patients you have protected** — 46 nursing contributions across 14 care settings, framed as the safety net AI tools will be deployed into
+3. **Answer FDA's questions** — search FDA's 26 questions by keyword ("alarm", "chatbot", "scribe") or theme, check the ones you know firsthand, and answer each in your own words. Answers go in the letter under FDA's question number.
+4. **Sign and send** — paste into the web form, print and mail, or share with colleagues
 
 No account. No tracking. No analytics. Everything stays on your device until you paste it yourself into the CMS comment form.
 
@@ -50,9 +52,10 @@ The tool walks you through all four, in about 10 minutes.
 
 ## Where to Submit
 
-- **Online (easiest):** https://www.regulations.gov/commenton/CMS-2026-2377-0002
-- **By mail:** P.O. Box 8016, Baltimore, MD 21244-8016 (Attention: CMS-1848-P)
-- **Deadline:** September 14, 2026, 11:59 PM EDT
+- **Online (easiest):** https://www.regulations.gov/docket/FDA-2026-N-7874 (choose Comment)
+- **By mail:** Dockets Management Staff (HFA-305), Food and Drug Administration, 5630 Fishers Lane, Rm. 1061, Rockville, MD 20852. Include Docket No. FDA-2026-N-7874.
+- **Deadline:** October 19, 2026
+- **FDA's discussion paper:** https://www.fda.gov/medical-devices/digital-health-center-excellence/considerations-regulation-generative-ai-enabled-medical-devices-discussion-paper-and-request
 
 ## Share It
 
@@ -84,6 +87,6 @@ This tool was built to meet nurses where they are: busy, practical, focused on t
 
 **Built by:** Sharonda Davis  
 **For:** Bedside nurses everywhere  
-**Goal:** 100,000 nurse voices by September 14, 2026
+**Goal:** 100,000 nurse voices
 
 Nurse Voices Matter.

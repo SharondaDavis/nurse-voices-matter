@@ -70,8 +70,7 @@
     /* Header wraps on mobile; simplify title */
     .toprow{flex-wrap:wrap;justify-content:flex-start;gap:8px;}
     h1.brand{flex:1;min-width:0;font-size:13px;line-height:1.1;font-weight:800;}
-    h1.brand span{display:none;} /* Hide "CMS-1848-P" on mobile */
-    h1.brand::after{content:"Nurses' Voices Matter";}
+    h1.brand span{display:none;} /* Hide the docket number on mobile */
     .clock{flex:none;font-size:10.5px;padding:4px 9px;white-space:nowrap;}
 
     /* Buttons move to second row */
@@ -225,6 +224,27 @@
   details.ready summary:focus-visible, details.disc summary:focus-visible{outline:3px solid var(--text);outline-offset:3px;}
   .readynote{font-size:14px;color:var(--text-2);margin:4px 0 14px;}
 
+  /* ---------- question search (step 3) ---------- */
+  .qfind{margin:4px 0 14px;}
+  .qfind-label{display:block;font-size:13.5px;font-weight:800;color:var(--text-2);margin-bottom:8px;
+               letter-spacing:.02em;text-transform:uppercase;}
+  .qsearch{position:relative;}
+  .qsearch svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--text-3);pointer-events:none;}
+  .qsearch input{width:100%;font-family:var(--sans);font-size:17px;font-weight:500;color:var(--text);
+    background:var(--panel);border:2px solid var(--line-2);border-radius:13px;padding:14px 15px 14px 46px;min-height:56px;
+    -webkit-appearance:none;appearance:none;}
+  .qsearch input:focus{outline:3px solid var(--text);outline-offset:2px;border-color:var(--text);}
+  .qthemes{margin-top:10px;gap:7px;}
+  .qthemes .chip{min-height:40px;padding:7px 13px;font-size:14px;border-radius:999px;}
+  .qcount{font-size:13.5px;font-weight:600;color:var(--text-3);margin:10px 0 0;font-variant-numeric:tabular-nums;}
+  .qempty{font-size:14.5px;color:var(--text-2);background:var(--panel);border:2px dashed var(--line);
+          border-radius:13px;padding:16px;margin:0;}
+  .qempty .linkbtn{background:none;border:0;padding:0;font:inherit;font-weight:800;color:var(--accent-ink);
+                   text-decoration:underline;cursor:pointer;}
+  .qempty .linkbtn:focus-visible{outline:3px solid var(--text);outline-offset:2px;}
+  .card mark{background:var(--warn-bg);color:inherit;border-radius:3px;padding:0 1px;}
+  .card.on mark{background:rgba(255,255,255,.28);}
+
   /* ---------- review summary ---------- */
   .review{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:4px 16px;margin-bottom:18px;}
   .rrow{display:flex;gap:12px;align-items:baseline;justify-content:space-between;
@@ -373,8 +393,8 @@
     <p>Nothing here connects to the internet — the letter is built entirely on your device —
        but the buttons cannot work with JavaScript off.</p>
     <p>You can still comment without this tool: open
-       <strong>regulations.gov</strong>, search for docket <strong>CMS-2026-2377</strong>,
-       and choose <strong>Comment</strong> on the proposed rule.</p>
+       <strong>regulations.gov</strong>, search for docket <strong>FDA-2026-N-7874</strong>,
+       and choose <strong>Comment</strong>.</p>
   </div>
 </noscript>
 <a class="skip" href="#main">Skip to the current step</a>
@@ -468,7 +488,7 @@
       <p class="say">The turn that saved someone's skin. The med error you caught. The gut feeling that made
         you look twice. <b>Some of your work is in the chart. The best of it never is.</b></p>
       <p class="say">One real number beats a page of opinion &mdash; <b>"our falls dropped by a third in six
-        months"</b> is exactly the kind of fact CMS can act on. If you know a number you own, put it in.</p>
+        months"</b> is exactly the kind of fact that shows FDA what an AI tool would be stepping into. If you know a number you own, put it in.</p>
       <div class="cards" id="impactList"></div>
       <div class="also" id="alsoWrap" hidden>
         <h3>Also selected</h3>
@@ -480,17 +500,33 @@
     <!-- ══════════════ STEP 3 ══════════════ -->
     <section class="slide" id="s2" aria-labelledby="h2s" hidden>
       <p class="step-n">Step 3 of 5</p>
-      <h2 id="h2s">What would you like CMS to know?</h2>
+      <h2 id="h2s">What would you like FDA to know?</h2>
       <div class="do">
         <span class="ic" aria-hidden="true">&#128073;</span>
-        <span class="do-txt"><b>Say it however you would say it out loud.</b> A few sentences is plenty and
-          there is no wrong way to write it. Whatever you type goes into your letter word for word.
-          <br><br>Your own experience carries further than any sample text. Reviewers read a great many
-          letters, and the ones that stay with them describe something only that nurse could have seen.</span>
+        <span class="do-txt"><b>FDA asked 26 questions. You only need to answer the ones you know firsthand.</b>
+          <ol>
+            <li>Search for something you see at work, like <i>alarm</i>, <i>chatbot</i> or <i>documentation</i>.</li>
+            <li>Check a question. It opens up so you can answer in a sentence or two.</li>
+          </ol>
+          Whatever you type goes into your letter word for word, under FDA's question number.</span>
       </div>
 
-      <div class="field">
-        <label for="freeText">In your own words <span class="opt">&mdash; optional, but this is the part that matters most</span></label>
+      <div class="qfind" role="search" aria-label="Search FDA's questions">
+        <label for="topicSearch" class="qfind-label">Find the questions you know firsthand</label>
+        <div class="qsearch">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="search" id="topicSearch" autocomplete="off"
+                 placeholder="Try: alarm, patient portal, triage, scribe" aria-describedby="topicCount">
+        </div>
+        <div class="chips qthemes" id="topicThemes" role="group" aria-label="Filter by theme"></div>
+        <p class="qcount" id="topicCount" aria-live="polite"></p>
+      </div>
+      <div class="cards" id="topics"></div>
+      <p class="qempty" id="topicEmpty" hidden>No questions match that. Try a broader word like
+        <i>patient</i>, <i>alarm</i> or <i>monitor</i>, or <button type="button" class="linkbtn" id="topicClear">show all 26</button>.</p>
+
+      <div class="field" style="margin-top:28px">
+        <label for="freeText">Anything else, in your own words <span class="opt">&mdash; optional</span></label>
         <textarea id="freeText" class="bigbox" rows="8"
           placeholder="Type here, in your own words"
           aria-describedby="phiOwn"></textarea>
@@ -504,14 +540,6 @@
 
       <p class="exlead">Not sure how to start? Here is how some nurses have put it. Use these as inspiration, then write your own &mdash; a sentence of your own is worth more than any of these as written.</p>
       <div class="examples" id="examples"></div>
-
-      <details class="ready">
-        <summary>Or add a ready-written paragraph about Medicare policy</summary>
-        <p class="readynote">Optional. These are written in the formal language CMS is used to reading.
-          Tick any that match what you believe, or skip this entirely. Many people will send these same
-          paragraphs, so anything you write yourself will stand out more.</p>
-        <div class="cards" id="topics"></div>
-      </details>
     </section>
 
     <!-- ══════════════ STEP 4 ══════════════ -->
@@ -610,7 +638,7 @@
         <ol>
           <li>Press <b>Print my letter</b>. It comes out addressed and ready to sign.</li>
           <li>Sign it, seal it, and mail it to the address printed on the letter.</li>
-          <li>Mail early &mdash; CMS must <b>receive</b> it by <span data-deadline></span>, not just see a postmark.</li>
+          <li>Mail early &mdash; FDA must <b>receive</b> it by <span data-deadline></span>, not just see a postmark.</li>
         </ol>
         <div class="lbtns">
           <button type="button" class="btn ghost" id="printLetterBtn">Print my letter</button>
@@ -714,8 +742,8 @@
       <h3>How This Shapes the Tool</h3>
       <ul style="line-height:1.8; margin: 10px 0;">
         <li><strong>Acuity Assessment card</strong> helps you document nursing complexity and clinical judgment</li>
-        <li><strong>"Measurable outcomes" language</strong> shows nursing work drives outcomes that Medicare measures and pays for</li>
-        <li><strong>Framework questions</strong> ask: What do you assess? What do you predict? What outcomes result? These are the evidence CMS needs to hear.</li>
+        <li><strong>"Measurable outcomes" language</strong> shows the nursing safety net that AI tools will be deployed into</li>
+        <li><strong>Framework questions</strong> ask: What do you assess? What do you predict? What outcomes result? These are the evidence regulators need to hear.</li>
       </ul>
 
       <p style="line-height:1.6; margin-top:15px;">
@@ -729,9 +757,9 @@
       <ol style="line-height:1.8;">
         <li><strong>Who you are</strong> — your specialty, setting, credentials (all optional)</li>
         <li><strong>Your contributions</strong> — select nursing work that matches your practice</li>
-        <li><strong>In your words</strong> — write what those contributions mean for your patients</li>
+        <li><strong>FDA's questions</strong> — search FDA's 26 questions and answer the ones you know firsthand</li>
         <li><strong>Sign it</strong> — add your name or stay anonymous</li>
-        <li><strong>Review and send</strong> — copy your letter to the CMS comment form</li>
+        <li><strong>Review and send</strong> — copy your letter to the FDA comment form on regulations.gov</li>
       </ol>
 
       <h3>Questions?</h3>
@@ -752,13 +780,13 @@
   <p class="addr" id="plAddr"></p>
   <p class="addr" id="plDate"></p>
   <div class="body" id="plBody"></div>
-  <p class="filecode">Submitted by mail in reference to file code <span data-rule></span>.
+  <p class="filecode">Submitted by mail in reference to Docket No. <span data-rule></span>.
      A signature above the printed name makes this letter complete.</p>
 </div>
 
 <div class="paper-artifact" id="printWorksheet" aria-hidden="true">
-  <p class="ws-h">My comment to Medicare &mdash; worksheet</p>
-  <p class="ws-sub">File code <span data-rule></span> &middot; comments close <span data-deadline></span>.
+  <p class="ws-h">My comment to FDA on AI in patient care &mdash; worksheet</p>
+  <p class="ws-sub">Docket <span data-rule></span> &middot; comments close <span data-deadline></span>.
      Fill this in on paper. Then either hand it to someone with the online tool,
      or copy it into a signed letter and mail it to:
      <span id="wsAddr"></span></p>
@@ -766,9 +794,9 @@
   <p>Name (optional): <span class="ws-line" style="display:inline-block;width:44%"></span>
      &nbsp;Credentials: <span class="ws-line" style="display:inline-block;width:28%"></span></p>
   <p>Where I nurse: <span class="ws-line" style="display:inline-block;width:60%"></span></p>
-  <p class="ws-sec">Work of mine that Medicare never sees &mdash; check any</p>
+  <p class="ws-sec">Nursing work AI tools will be stepping into &mdash; check any</p>
   <div id="wsImpacts"></div>
-  <p class="ws-sec">In my own words &mdash; what I want CMS to know</p>
+  <p class="ws-sec">In my own words &mdash; what I want FDA to know about AI at the bedside</p>
   <div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div>
   <div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div>
   <p class="ws-small">Please leave out anything that could identify a patient &mdash; no names,
@@ -776,15 +804,15 @@
 </div>
 
 <div class="paper-artifact" id="printFlyer" aria-hidden="true">
-  <p class="fl-big">Medicare is deciding what nursing is worth.<br>Nurses get a say &mdash; until <span data-deadline></span>.</p>
-  <p>CMS is taking public comments on the rule that shapes how care is paid for &mdash;
-     including AI in patient care and whether nursing's work is counted at all.
-     Comments from working nurses carry real weight. It takes about ten minutes.</p>
+  <p class="fl-big">FDA is deciding how AI in patient care gets regulated.<br>Nurses get a say &mdash; until <span data-deadline></span>.</p>
+  <p>FDA is asking for feedback on AI tools like patient chatbots, ambient scribes and early-warning
+     alerts: how they should be tested, watched after launch, and kept safe for patients.
+     Nurses see these tools first. It takes about ten minutes.</p>
   <p class="fl-step"><span class="fl-n">1.</span><span>Go to the address below (any phone or computer works).</span></p>
-  <p class="fl-url">regulations.gov/commenton/<wbr><span data-doc></span></p>
+  <p class="fl-url">regulations.gov/docket/<wbr><span data-doc></span></p>
   <p class="fl-step"><span class="fl-n">2.</span><span>Write what you see at the bedside, in your own words. A few sentences is plenty.</span></p>
   <p class="fl-step"><span class="fl-n">3.</span><span>Press Submit Comment. Done.</span></p>
-  <p>Rather mail it? Post a signed letter mentioning file code <b><span data-rule></span></b> to:<br>
+  <p>Rather mail it? Post a signed letter mentioning Docket No. <b><span data-rule></span></b> to:<br>
      <span id="flAddr"></span> &mdash; arriving before the deadline.</p>
   <p class="fl-dead">Comments close <span data-deadline></span>.</p>
   <p>The goal is <b>100,000 nurse comments</b> &mdash; unique ones, in nurses' own words.
@@ -797,7 +825,7 @@
 <script>
 "use strict";
 /* ═══════════════════════════════════════════════════════════════════════════
-   MEDICARE COMMENT BUILDER FOR NURSES
+   PUBLIC COMMENT BUILDER FOR NURSES (currently: FDA docket FDA-2026-N-7874)
    One static HTML file. No frameworks, no build step, no network calls,
    no analytics, no cookies. Everything runs in the visitor's browser.
 
@@ -808,46 +836,48 @@
       checks cannot do this: regulations.gov blocks scripted requests.
    2. Bump CONFIG.policyVersion. Any saved draft from an older policy version
       is discarded on load, so nobody submits last year's language.
-   3. Review `topics[]`. Each entry has `named: true|false` — true means the
-      ask maps to a provision the rule names directly. If you cannot point at
-      the provision in the rule text, it must be false, which makes the app
-      show an honest "supporting background" note.
-   4. Review `IMPACTS[].program`. These name real CMS measurement programs and
-      are asserted in the letter, so confirm each still exists and still
-      applies before publishing.
+   3. Review `topics[]`. For the FDA docket these are FDA's 26 numbered
+      questions from the discussion paper; the letter labels each answer with
+      its question number. For a new docket, replace them with that docket's
+      questions or provisions. `kw` and `themes` drive the step 3 search.
+   4. `IMPACTS[].program` (CMS measurement programs) is kept for reuse on a
+      future CMS docket but is not shown or put in the FDA letter, which groups
+      contributions by `tag` instead.
    5. Nothing else in this file encodes policy claims. Search for "CONFIG." to
       see every place a rule fact is used.
    ════════════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════ CONFIG — verify all of this before publishing ═══════ */
 const CONFIG = {
-  /* Rule identity */
-  ruleId:      "CMS-1848-P",
-  ruleTitle:   "CY 2027 Medicare Physician Fee Schedule Proposed Rule",
-  docketId:    "CMS-2026-2377",
+  /* Request identity. ruleId is the reference number printed on letters,
+     worksheets and the flyer; for an FDA docket that is the docket number. */
+  agency:      "FDA",
+  agencyLong:  "the Food and Drug Administration",
+  ruleId:      "FDA-2026-N-7874",
+  ruleTitle:   "Considerations for the Regulation of Generative AI-Enabled Medical Devices: Discussion Paper and Request for Feedback",
+  ruleShort:   "FDA's request for feedback on generative AI medical devices",
+  docketId:    "FDA-2026-N-7874",
 
-  /* Where comments go. Verified against the live form 2026-08-05: the proposed
-     rule is document CMS-2026-2377-0002 (-0001 does not accept comments), the
-     form loads with a 5,000-character box, and the period ends Sep 14, 2026
-     11:59 PM EDT. Re-verify whenever the rule or cycle changes. */
-  commentUrl:  "https://www.regulations.gov/commenton/CMS-2026-2377-0002",
-  docketUrl:   "https://www.regulations.gov/docket/CMS-2026-2377",
+  /* Where comments go. FDA's page for the discussion paper (checked 2026-10-07)
+     directs feedback to this docket on regulations.gov. The docket page has a
+     Comment button for the open document, so both links point at the docket. */
+  commentUrl:  "https://www.regulations.gov/docket/FDA-2026-N-7874",
+  docketUrl:   "https://www.regulations.gov/docket/FDA-2026-N-7874",
 
-  /* Comment period close. Eastern Daylight Time (EDT = UTC-4).
-     The deadline is nationwide: Sep 14, 2026, 11:59 PM Eastern.
-     The timezone offset ensures the "Period closed" flag is consistent across all regions. */
-  deadlineISO:   "2026-09-14T23:59:00-04:00",
-  deadlineLabel: "September 14, 2026",
+  /* Feedback period close per FDA's discussion-paper page: October 19, 2026.
+     regulations.gov closes at 11:59 PM Eastern; EDT = UTC-4. */
+  deadlineISO:   "2026-10-19T23:59:00-04:00",
+  deadlineLabel: "October 19, 2026",
 
-  /* Verified from the rule's ADDRESSES section on regulations.gov, 2026-08-05.
-     Comments must be RECEIVED by the deadline — mailed letters need lead time.
-     Re-verify each cycle; the P.O. Box changes with the file code. */
+  /* FDA's standard Dockets Management Staff address (same address in FDA notices
+     published in 2026). Written comments must be RECEIVED by the deadline and
+     must carry the docket number. Re-verify for each new docket. */
   mailAddress: [
-    "Centers for Medicare & Medicaid Services",
-    "Department of Health and Human Services",
-    "Attention: CMS-1848-P",
-    "P.O. Box 8016",
-    "Baltimore, MD 21244-8016"
+    "Dockets Management Staff (HFA-305)",
+    "Food and Drug Administration",
+    "Docket No. FDA-2026-N-7874",
+    "5630 Fishers Lane, Rm. 1061",
+    "Rockville, MD 20852"
   ],
 
   /* Confirmed on the live form 2026-08-05: the comment box shows
@@ -856,7 +886,7 @@ const CONFIG = {
   commentBoxLimit: 5000,
 
   /* Bump when any letter language changes. Older drafts are then discarded. */
-  policyVersion: "2026-08-10.1",
+  policyVersion: "2026-10-07.1",
 
   /* Metrics: Formspree endpoint for tracking letters created. Create a form at
      formspree.io and paste the endpoint URL here. Leave blank to disable. */
@@ -1125,102 +1155,181 @@ const SPEC_IMPACTS = {
   ]
 };
 
+/* FDA's 26 numbered questions from the discussion paper (docket FDA-2026-N-7874,
+   https://www.fda.gov/media/194242/download). `fda` restates FDA's question;
+   `ask` is the plain-language version nurses see first; `kw` and `themes` feed
+   the search. Every entry maps to a numbered question, so `named` is true. */
+const TOPIC_THEMES = ["Patient-facing", "Escalation & alarms", "Wrong answers", "Nurse oversight",
+                      "After launch", "Acts on its own", "Documentation", "Equity"];
+const SECTIONS = { risk:"Risk", pre:"Before approval", post:"After launch", other:"Other" };
+
 const topics = [
-  {
-    id:"codes", tag:"Count nurses in", named:false,
-    title:"Build codes so nursing work can be paid for",
-    ask:"Today there is no billing code for most nursing care — it is bundled into the room-and-board charge, so it cannot be reimbursed no matter how much it saves. You can ask CMS to build nursing codes.",
-    sample:"Nursing care is responsible for outcomes CMS measures and pays for, yet the work itself has no billing codes of its own: in the hospital it is bundled into the facility room-and-board payment, and in ambulatory settings it is folded into other clinicians' billing. Work that cannot be coded cannot be counted, compared, or reimbursed. I ask CMS to correct this misalignment by developing HCPCS-level codes for nurse-delivered services — beginning with the nursing work that drives the outcomes CMS already tracks, such as readmission prevention, infection prevention, and transition-of-care management — so that nursing care becomes visible in the payment system that depends on it.",
-    promptHint:"the nursing service you would code first, and the outcome it drives"
-  },
-  {
-    id:"contribution", tag:"Count nurses in", named:true,
-    title:"Nursing deserves to be part of the picture",
-    ask:"So much of how patients do comes down to nursing care. You can ask CMS to make that visible in the way quality is measured.",
-    sample:"Many value-based payment metrics — including Hospital Value-Based Purchasing — are nurse-sensitive or fully nurse-driven, yet current reporting rarely makes nursing's contribution visible. I ask CMS to require transparency in how methodologies attribute outcome improvement to nursing care, and to reward the nursing workforce for its role in achieving these metrics.",
-    promptHint:"a number your unit improved — falls, infections, readmissions — and what nursing did to move it",
-  },
-  {
-    id:"aisafety", tag:"AI safety", named:true,
-    title:"Let's be sure AI is safe before it's paid for",
-    ask:"New AI tools are arriving in patient care faster than the safety checks are. You can ask CMS to set the standards first — real testing, a clinician in the loop, and a way to report problems.",
-    sample:"I urge CMS not to expand reimbursement for AI-supported CPT codes until a safety baseline for healthcare AI is in place. At present there is no requirement for real-world clinical validation before deployment, no mandated clinician-in-the-loop review, no standardized performance auditing, and no incident-reporting system for AI-related harm comparable to those required for drugs or medical devices. I ask CMS to pause expansion of AI-related CPT reimbursement until baseline safety, validation, and incident-reporting standards exist, developed in coordination with FDA, and to require clinician-in-the-loop safeguards as a condition of payment for any AI-supported service.",
-    promptHint:"a time the computer's suggestion was wrong and a nurse caught it",
-  },
-  {
-    id:"aibias", tag:"Responsible AI", named:false,
-    title:"Check that AI works for every patient",
-    ask:"A tool can look good on average and still miss the people you care for. You can ask CMS to require testing across the patients it will actually be used on.",
-    sample:"I ask CMS to require that AI-supported services demonstrate performance across the full range of patients they will be used on — including differences in age, race and ethnicity, primary language, disability, body size, pregnancy status, and rural or underserved status — and to require that this performance data be reported publicly. A tool that performs unevenly across populations can widen the very disparities CMS is working to close. Nurses are frequently the first to notice when a tool does not fit the patient in front of us.",
-    promptHint:"a score or tool that did not seem to fit the patients you care for",
-  },
-  {
-    id:"aitransparency", tag:"Responsible AI", named:false,
-    title:"Everyone should know when AI is involved",
-    ask:"Patients, and the nurses caring for them, should be able to tell when a recommendation came from software. You can ask CMS to require that.",
-    sample:"I ask CMS to require clear disclosure wherever an AI-supported service is billed: that the clinical record identify where AI contributed to a decision, that clinicians be able to see the basis for an AI recommendation, and that patients be informed when AI has played a material role in their care. Nurses are asked to carry out the plan of care every day, and professional judgment is difficult to exercise about a recommendation whose origin and reasoning are not visible to us.",
-    promptHint:"an alert or score you act on without being able to see how it was calculated",
-  },
-  {
-    id:"aioverride", tag:"Responsible AI", named:false,
-    title:"Protect the nurse who says “that is not right for my patient”",
-    ask:"Clinicians need to be able to disagree with a tool without it counting against them, and someone needs to keep watching the tool over time. You can ask CMS for both.",
-    sample:"I ask CMS to require, as a condition of payment for AI-supported services, that a qualified clinician retain the authority to override an AI recommendation without penalty, and that overrides be logged and reviewed as safety signals rather than treated as deviations. I further ask CMS to require ongoing post-deployment monitoring for performance drift, since a tool that was accurate at the time of approval may not remain accurate as patients, practice patterns, and underlying data change.",
-    promptHint:"a time you disagreed with a tool and were right, or felt discouraged from saying so",
-  },
-  {
-    id:"aidata", tag:"Responsible AI", named:false,
-    title:"Patient information used by AI should stay protected",
-    ask:"These tools run on patient data. You can ask CMS to be clear about how it is used, kept, and shared.",
-    sample:"I ask CMS to require transparency about the patient data used to develop, operate, and improve AI-supported services for which Medicare pays — including what data is retained, how long it is kept, whether it is used to train commercial models, and what disclosures patients receive. Patients share information with us in confidence, and that confidence should not quietly extend to uses they were never told about.",
-    promptHint:"a question you could not answer when a patient asked where their information goes",
-  },
-  {
-    id:"incidentto", tag:"Count nurses in", named:true,
-    title:"Clinic nursing work deserves its own name",
-    ask:"In clinics, the calls, teaching, and follow-up RNs provide are recorded in a way that does not show they were nursing care. You can ask CMS to identify nursing care as nursing care.",
-    sample:"In ambulatory settings, RNs provide much of the recurring care that drives patient outcomes, yet that work is largely invisible in Medicare claims data because it is captured under incident-to billing rather than identified as nursing care. I ask CMS to require distinct identification of RN-delivered ambulatory services, and to ensure quality metrics reflect the nursing work behind them.",
-    promptHint:"how much of your day is calls and teaching that gets billed under the doctor",
-  },
-  {
-    id:"ruc", tag:"A seat at the table", named:true,
-    title:"Nurses could help decide what care is worth",
-    ask:"CMS is asking whether there is a better way to decide what medical services are worth. You can say that nurses belong in that conversation.",
-    sample:"I support CMS's interest in alternatives to the current process for valuing CPT codes. I urge CMS to establish an independent, multidisciplinary body — including nurses and nurse practitioners — to take part in valuing codes, especially those tied to AI-supported care, so that everyone who delivers that care is represented in how it is valued.",
-    promptHint:"care your patients can't get nearby, or pay gaps you've seen between specialties and primary care",
-  },
-  {
-    id:"workforce", tag:"Protect staffing", named:false,
-    title:"Let's keep nurse staffing protected",
-    ask:"If new technology makes care more efficient, you can ask CMS to make sure those gains do not come at the cost of nurse staffing.",
-    sample:"I ask CMS to adopt clinical workforce non-reduction measures so that efficiency gains from AI are not realized through reductions in nursing staff. I further ask CMS to require public reporting of workforce spending, to exclude clinical labor from cost-reduction targets, and to expand hospital performance metrics to include workforce outcomes such as turnover and workload.",
-    promptHint:"your ratios today, how many open positions your unit has, or a cut you watched happen",
-  },
-  {
-    id:"aigains", tag:"Protect staffing", named:false,
-    title:"Savings from AI could come back to the bedside",
-    ask:"New AI billing codes will bring in new money. You can ask CMS to track where it goes and keep a meaningful share in patient care.",
-    sample:"As CMS considers new CPT codes tied to AI-supported medical decision-making, I urge the agency to ensure that the resulting gains are reinvested in patient care. I ask CMS to require reporting on how AI-related reimbursement is spent, and to tie a meaningful share of it to the clinical workforce.",
-    promptHint:"new tech your hospital bought while the unit stayed short-staffed",
-  },
-  {
-    id:"aiscope", tag:"Scope of practice", named:false,
-    title:"Nurses working alongside AI could use some clarity",
-    ask:"When technology helps guide the plan of care, the rules have not caught up with how that care actually happens. You can ask CMS to take a look at that gap.",
-    sample:"AI-related CPT codes attach to physician and qualified health professional decision-making rather than to the nurses implementing the plan of care, and nurse practice acts do not yet address AI-driven orders. As a result, an additional signature may be required even when the plan of care is already clear. I ask CMS to acknowledge this gap and to consider whether expanded nursing scope is warranted where AI performs much of the decision-making.",
-    promptHint:"a protocol or alert you follow every shift that still needs a signature to act on",
-  },
+  { id:"q1", n:1, sec:"risk", named:true, themes:["Nurse oversight","Escalation & alarms"],
+    title:"Is FDA weighing the right risks?",
+    ask:"FDA plans to rate risk by what a tool does and how bad a wrong answer could be. Should it also count time pressure, whether harm can be undone, and the safety checks around it?",
+    fda:"Does the proposed two-axis framework (device activity and severity of consequences) capture the relevant risk dimensions, or should other factors such as reversibility of action, downstream safeguards, time pressure, or traceability of outputs be added?",
+    kw:"framework time pressure reversible irreversible rapid response code safeguards",
+    promptHint:"a moment when you had seconds to act on what a screen told you" },
+  { id:"q2", n:2, sec:"risk", named:true, themes:["Patient-facing","Wrong answers"],
+    title:"When does information become an instruction?",
+    ask:"A tool can be labeled 'information only' and still be read as an order. FDA wants to know what wording makes people act on it.",
+    fda:"How should FDA account for the spectrum between non-directive information and information that directs action, and which output characteristics (wording, specificity, personalization, context) change the risk?",
+    kw:"wording directive recommendation instruction discharge teaching",
+    promptHint:"a time a patient or coworker treated a suggestion as an order" },
+  { id:"q3", n:3, sec:"risk", named:true, themes:["Patient-facing","Equity"],
+    title:"Are AI tools that talk to patients riskier?",
+    ask:"Chatbots and portal tools answer patients directly, with no nurse there to catch a misunderstanding. Should they face stronger rules?",
+    fda:"Do patient-facing clinical information functions present different or greater risks than those for health care professionals, and how should FDA balance safety against patient empowerment, engagement, and access?",
+    kw:"chatbot patient portal messages app symptom checker health literacy teach-back language interpreter",
+    promptHint:"a patient who misread something from an app, portal, or website" },
+  { id:"q4", n:4, sec:"risk", named:true, themes:["Nurse oversight"],
+    title:"Which clinicians count as users?",
+    ask:"FDA's paper compares generalist and specialist physicians as users. Nurses are often the first or only clinician who sees the output, and they are not named.",
+    fda:"How should the distinction between generalist and specialist use inform risk assessment for functions intended for health care professionals?",
+    kw:"nurse scope of practice RN LPN physician user intended user labeling",
+    promptHint:"an AI alert or score that you, not a physician, act on first" },
+  { id:"q5", n:5, sec:"risk", named:true, themes:["Patient-facing","Wrong answers"],
+    title:"Conversations that drift",
+    ask:"A chat can start with general questions and end with a patient being told what to do. How should that be tested?",
+    fda:"For multi-turn conversational devices whose outputs may evolve from information toward directing action, how should risk be assessed across realistic conversation patterns?",
+    kw:"chat conversation multi-turn chatbot drift night after hours",
+    promptHint:"how patients keep asking until they hear the answer they want" },
+  { id:"q6", n:6, sec:"risk", named:true, themes:["Escalation & alarms"],
+    title:"Missed escalations and false alarms",
+    ask:"An AI that fails to escalate delays care. One that escalates too often trains staff to ignore it. How should the two be balanced?",
+    fda:"For care escalation functions, how should manufacturers balance and evaluate the risks of under-escalation and over-escalation?",
+    kw:"alarm fatigue sepsis early warning score rapid response triage deterioration MEWS",
+    promptHint:"an early-warning alert that was missed, or one your unit learned to ignore" },
+  { id:"q7", n:7, sec:"pre", named:true, themes:["Nurse oversight"],
+    title:"Testing before approval",
+    ask:"FDA proposes testing AI against benchmarks, then confirming it in real care. Is that the right approach?",
+    fda:"Is the proposed competency-based approach (benchmarking plus clinical confirmation) useful and appropriate?",
+    kw:"testing benchmark competency evaluation approval",
+    promptHint:"technology that worked in the demo but not on your unit" },
+  { id:"q8", n:8, sec:"pre", named:true, themes:[],
+    title:"Matching testing to risk",
+    ask:"Should riskier tools have to show more evidence before they reach patients?",
+    fda:"How should the two-axis risk framework inform evidence requirements within the competency-based approach?",
+    kw:"evidence requirements proportionate high risk",
+    promptHint:"the kind of tool you think needs the most proof" },
+  { id:"q9", n:9, sec:"pre", named:true, themes:["Wrong answers","Equity"],
+    title:"Does testing check how well it communicates?",
+    ask:"Benchmarks may test knowledge but not whether a tired nurse or a worried patient understands the answer.",
+    fda:"Would the proposed benchmarking structure adequately demonstrate clinical knowledge, analytic capabilities, safety behavior, communication, and generalizability?",
+    kw:"communication understand plain language safety behavior",
+    promptHint:"output you had to translate for a patient or coworker" },
+  { id:"q10", n:10, sec:"pre", named:true, themes:["Wrong answers"],
+    title:"Do test scores predict bedside safety?",
+    ask:"How can a company prove that good test results mean safe behavior with real, messy patient records?",
+    fda:"How should sponsors establish that benchmark performance predicts safe real-world behavior, and what evidence supports the validity of benchmarks?",
+    kw:"real world validity charting incomplete records",
+    promptHint:"what real charting looks like at 3 a.m." },
+  { id:"q11", n:11, sec:"pre", named:true, themes:[],
+    title:"When can real-world studies be skipped?",
+    ask:"FDA asks when a tool could be approved without studying it in actual patient care first.",
+    fda:"When might clinical confirmation not require prospective clinical studies, and how should sponsors choose a confirmation approach proportionate to risk?",
+    kw:"clinical study trial prospective pilot",
+    promptHint:"a tool you would want studied on real patients first" },
+  { id:"q12", n:12, sec:"pre", named:true, themes:["Equity"],
+    title:"Measuring results reliably",
+    ask:"How should open-ended AI answers be measured so results mean something, including for smaller patient groups?",
+    fda:"How should sponsors achieve statistically meaningful performance measurement, and when is it appropriate to combine benchmarking and clinical confirmation evidence?",
+    kw:"statistics sample size subgroup",
+    promptHint:"patients you care for who are often left out of studies" },
+  { id:"q13", n:13, sec:"pre", named:true, themes:["Equity","Wrong answers"],
+    title:"Testing on fake patient data",
+    ask:"Synthetic patients are tidy. Real patients are not. Where is fake data good enough, and where does it hide problems?",
+    fda:"For which clinical domains is synthetic data well suited or inadequate, and what safeguards keep synthetic data from reproducing the performance gaps evaluation is meant to detect?",
+    kw:"synthetic data bias fake patients",
+    promptHint:"something about your patients a fake data set would miss" },
+  { id:"q14", n:14, sec:"pre", named:true, themes:["Nurse oversight"],
+    title:"What counts as good enough?",
+    ask:"Should AI be held to the standard of care, or to what an average, overstretched clinician does?",
+    fda:"For open-ended outputs, how should performance comparators and acceptance criteria be selected, for example the standard of care versus the performance of a median clinician?",
+    kw:"standard of care comparator acceptance criteria staffing",
+    promptHint:"why 'as good as a busy clinician' is not the right bar" },
+  { id:"q15", n:15, sec:"pre", named:true, themes:["Patient-facing","Equity"],
+    title:"Better than nothing?",
+    ask:"Should AI be judged against the care a patient would get without it, such as in places with no nurse nearby?",
+    fda:"Should performance be assessed against the care the patient would likely receive absent the device, rather than against a direct comparator?",
+    kw:"access rural underserved no nurse comparator",
+    promptHint:"patients you know who struggle to reach any clinician" },
+  { id:"q16", n:16, sec:"pre", named:true, themes:["Nurse oversight"],
+    title:"Independent testers",
+    ask:"Should someone other than the company check the testing? Who should that be?",
+    fda:"Should independent third parties evaluate benchmarking and clinical confirmation, and what qualifications and independence criteria should apply?",
+    kw:"third party independent evaluator reviewer",
+    promptHint:"why frontline nurses belong on the review team" },
+  { id:"q17", n:17, sec:"pre", named:true, themes:["Documentation"],
+    title:"AI that listens, sees, or records",
+    ask:"Some tools take in audio, photos, or video, like ambient scribes in patient rooms. Does the same testing work?",
+    fda:"Can the competency-based approach be applied to multimodal and generative world models?",
+    kw:"ambient listening scribe audio recording image wound photo video documentation",
+    promptHint:"an ambient or documentation tool that got your conversation wrong" },
+  { id:"q18", n:18, sec:"post", named:true, themes:["After launch"],
+    title:"Approve now, monitor later?",
+    ask:"FDA asks when it could accept more uncertainty up front in exchange for watching tools closely after release.",
+    fda:"When might it be appropriate to accept greater premarket uncertainty in exchange for increased postmarket monitoring, and what program characteristics would justify reduced premarket evidence?",
+    kw:"postmarket uncertainty monitoring workload",
+    promptHint:"who ends up doing the watching on your unit" },
+  { id:"q19", n:19, sec:"post", named:true, themes:["After launch","Nurse oversight"],
+    title:"Which monitoring matters most?",
+    ask:"Re-testing, clinician review, and watching for decline: which should come first, and how often?",
+    fda:"Which postmarket approaches (re-benchmarking, clinician review, degradation monitoring) should FDA prioritize, and what should determine how often reassessment happens?",
+    kw:"drift degradation decline clinician review reporting",
+    promptHint:"how hard it is today to report a tool that gets something wrong" },
+  { id:"q20", n:20, sec:"post", named:true, themes:["After launch","Acts on its own"],
+    title:"AI watching AI",
+    ask:"Could automated supervisor systems help monitor AI tools? What would keep the supervisor itself honest?",
+    fda:"Can machine-based supervisory agents facilitate postmarket monitoring, and what evaluation considerations apply to the supervisory agent itself?",
+    kw:"supervisory agent automated monitoring",
+    promptHint:"a pattern you noticed that an automated check would miss" },
+  { id:"q21", n:21, sec:"post", named:true, themes:["After launch","Nurse oversight"],
+    title:"Who is responsible for watching?",
+    ask:"What role should clinicians, hospitals, and professional groups play, without letting the company off the hook?",
+    fda:"What roles should clinicians, institutions, professional societies, and standards bodies play in postmarket monitoring without diffusing manufacturer accountability?",
+    kw:"accountability liability responsibility retaliation reporting",
+    promptHint:"what happens to a nurse who reports a problem with a tool" },
+  { id:"q22", n:22, sec:"post", named:true, themes:["After launch"],
+    title:"Updates and re-testing",
+    ask:"When a tool is updated, how much re-testing should that trigger?",
+    fda:"How should re-benchmarking scale with the type and expected impact of a modification, and which changes warrant quality-system management versus FDA premarket authorization?",
+    kw:"update change version modification silent update",
+    promptHint:"a system update that changed how something behaved without warning" },
+  { id:"q23", n:23, sec:"post", named:true, themes:["After launch"],
+    title:"Changes nobody can predict",
+    ask:"Companies file plans for future updates. What happens when future changes cannot be described ahead of time?",
+    fda:"How should Predetermined Change Control Plan concepts adapt when future modifications cannot be fully prespecified?",
+    kw:"PCCP change control plan rollback",
+    promptHint:"what staff should be told before a tool changes" },
+  { id:"q24", n:24, sec:"post", named:true, themes:["After launch"],
+    title:"When the AI underneath changes",
+    ask:"Many tools are built on another company's AI model. How should makers catch changes the other company makes?",
+    fda:"For third-party foundation models, how can manufacturers detect and evaluate developer-initiated changes, and what contractual, technical, or change-control mechanisms ensure model changes do not compromise safety?",
+    kw:"foundation model vendor third party underlying model",
+    promptHint:"whether you know which company's AI runs the tools you use" },
+  { id:"q25", n:25, sec:"other", named:true, themes:[],
+    title:"Sharing safety information",
+    ask:"FDA proposes a voluntary program for AI companies to share safety information about their models. Would it work?",
+    fda:"Would a voluntary Foundation Model Device Master File program be practical, what content should it include, and why would model developers disclose safety-relevant information?",
+    kw:"master file transparency disclosure",
+    promptHint:"what clinicians need to know about a tool's known weak spots" },
+  { id:"q26", n:26, sec:"other", named:true, themes:["Acts on its own","Nurse oversight"],
+    title:"AI that acts on its own",
+    ask:"Some AI can take several steps by itself, like placing orders or sending messages, leaving less room for a person to check.",
+    fda:"What additional considerations apply to agentic GenAI devices, and how should autonomous multi-step action, tool use, and reduced opportunity for human review be reflected in acceptance criteria?",
+    kw:"agentic autonomous orders automation messages scheduling",
+    promptHint:"where you are the last person to check before something reaches the patient" }
 ];
 
 const EXAMPLES = [
-  "I have spent my career keeping people safe from things that never ended up happening. None of that shows up anywhere. I would like it counted.",
-  "Before Medicare pays for AI in patient care, please make sure someone has checked that it is safe. At the bedside we are the ones who catch it when a tool gets something wrong.",
-  "Please ask a bedside nurse before deciding what our work is worth. We are the ones doing it.",
-  "If new technology saves money, please do not let that money come out of nurse staffing. Fewer nurses is not a safer hospital.",
-  "Most of what I do for patients is never written down as nursing. I would like Medicare to be able to see it.",
-  "I want my patients to have a nurse who has time for them. Everything else follows from that.",
-  "When a computer suggests something that does not fit my patient, I need to be able to say so and be listened to.",
-  "Please make sure these tools are tested on patients like mine before Medicare pays for them."
+  "At the bedside we are the ones who catch it when a tool gets something wrong. Please test these tools where nurses actually work, not only in a lab.",
+  "Our early-warning alerts fire so often that people stop looking. A tool that cries wolf is not a safe tool, even if it catches everything.",
+  "Patients message the portal at 2 a.m. and act on whatever comes back. Please hold anything that talks directly to patients to a higher standard.",
+  "When a computer suggests something that does not fit my patient, I need to be able to say so, report it easily, and be listened to.",
+  "Please make sure these tools are tested on patients like mine: older adults, people who do not read English well, people with disabilities.",
+  "Nobody told us when the system changed. Please require that nurses are told when a tool is updated.",
+  "I am often the last person to check an order before it reaches my patient. Please keep a human check before AI acts on its own."
 ];
 
 /* ═══════════════════ SMALL HELPERS ══════════════════════════════════════ */
@@ -1480,7 +1589,10 @@ radioKeys($("settingChips"), setSetting);
   });
 })();
 
-/* --- policy paragraph cards --- */
+/* --- FDA question cards, searchable --- */
+/* Search state is a view setting, not part of the letter, so it is not saved. */
+const topicFilter = { query: "", theme: null };
+
 (function buildTopics(){
   const host = $("topics");
   host.innerHTML = "";
@@ -1498,28 +1610,92 @@ radioKeys($("settingChips"), setSetting);
       '</label>' +
       '<div class="card-body">' +
         '<button type="button" class="peek" data-peek="' + t.id + '" aria-expanded="false" ' +
-                'aria-controls="ask-' + t.id + '">Read the paragraph</button>' +
+                'aria-controls="ask-' + t.id + '">Read FDA\'s question</button>' +
         '<p class="quote" id="ask-' + t.id + '" hidden></p>' +
-        (t.named ? "" : '<p class="flag"></p>') +
-        '<label for="note-' + t.id + '">Anything from your own experience? One sentence is plenty</label>' +
+        '<label for="note-' + t.id + '">Your answer, from your own practice. One or two sentences is plenty</label>' +
         '<textarea id="note-' + t.id + '" data-tnote="' + t.id + '" rows="3" ' +
                   'aria-describedby="phiOwn"></textarea>' +
         '<p class="phi"><span class="ic" aria-hidden="true">&#9888;</span>' +
         '<span>Nothing that could identify a patient, please.</span></p>' +
       '</div>';
-    card.querySelector(".card-title").textContent = t.title;
-    card.querySelector(".card-sub").textContent   = t.ask;
-    card.querySelector(".tag").textContent        = t.tag;
-    card.querySelector(".quote").textContent      = t.sample;
-    if(!t.named){
-      card.querySelector(".flag").textContent =
-        "Good to know: the rule does not name this one directly, so your letter includes it as " +
-        "supporting background rather than a point-by-point reply.";
-    }
-    card.querySelector("#note-" + t.id).placeholder = t.promptHint;
+    card.querySelector(".tag").textContent   = "Question " + t.n + " · " + SECTIONS[t.sec];
+    card.querySelector(".quote").textContent = "FDA question " + t.n + ": " + t.fda;
+    card.querySelector("#note-" + t.id).placeholder = "e.g. " + t.promptHint;
+    t._hay = [t.title, t.ask, t.fda, t.kw, t.themes.join(" "), SECTIONS[t.sec],
+              "q" + t.n, "question " + t.n].join(" ").toLowerCase();
     host.appendChild(card);
   });
+
+  $("topicThemes").innerHTML = "";
+  TOPIC_THEMES.forEach(function(name){
+    const b = el("button", "chip");
+    b.type = "button";
+    b.dataset.theme = name;
+    b.setAttribute("aria-pressed", "false");
+    b.textContent = name;
+    $("topicThemes").appendChild(b);
+  });
+  filterTopics();
 })();
+
+function escHtml(s){
+  return s.replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; });
+}
+function highlight(text, words){
+  let out = escHtml(text);
+  words.forEach(function(w){
+    if(w.length < 2) return;
+    const re = new RegExp("(^|[^a-z0-9])(" + escHtml(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi");
+    out = out.replace(re, "$1<mark>$2</mark>");
+  });
+  return out;
+}
+
+/* Checked questions always stay visible, so a search never hides part of the letter. */
+function filterTopics(){
+  const words = topicFilter.query.toLowerCase().split(/\s+/).filter(Boolean);
+  const theme = topicFilter.theme;
+  /* Match from the start of a word, so "scribe" finds scribes but not "described". */
+  const res = words.map(function(w){ return new RegExp("(^|[^a-z0-9])" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"); });
+  let shown = 0;
+  topics.forEach(function(t){
+    const card = $("card-" + t.id);
+    const picked = !!state.topics[t.id];
+    const match = (!theme || t.themes.indexOf(theme) !== -1) &&
+                  res.every(function(re){ return re.test(t._hay); });
+    card.hidden = !(match || picked);
+    if(match) shown++;
+    card.querySelector(".card-title").innerHTML = highlight(t.title, words);
+    card.querySelector(".card-sub").innerHTML   = highlight(t.ask, words);
+  });
+  const picked = selectedTopicIds().length;
+  const filtering = words.length || theme;
+  $("topicCount").textContent =
+    (filtering ? shown + " of " + topics.length + " questions match" : "All " + topics.length + " FDA questions") +
+    (picked ? " · " + picked + " checked" : "");
+  $("topicEmpty").hidden = shown > 0 || !filtering;
+}
+
+$("topicSearch").addEventListener("input", function(e){
+  topicFilter.query = e.target.value;
+  filterTopics();
+});
+$("topicThemes").addEventListener("click", function(e){
+  const b = e.target.closest("[data-theme]");
+  if(!b) return;
+  topicFilter.theme = topicFilter.theme === b.dataset.theme ? null : b.dataset.theme;
+  Array.prototype.forEach.call($("topicThemes").children, function(c){
+    c.setAttribute("aria-pressed", c.dataset.theme === topicFilter.theme ? "true" : "false");
+  });
+  filterTopics();
+});
+$("topicClear").addEventListener("click", function(){
+  topicFilter.query = ""; topicFilter.theme = null;
+  $("topicSearch").value = "";
+  Array.prototype.forEach.call($("topicThemes").children, function(c){ c.setAttribute("aria-pressed", "false"); });
+  filterTopics();
+  $("topicSearch").focus();
+});
 
 /* ═══════════════════ STEP 2 RENDERING ═══════════════════════════════════ */
 function impactCard(id){
@@ -1717,7 +1893,7 @@ document.addEventListener("click", function(e){
     const p = $("ask-" + peek.dataset.peek);
     p.hidden = !p.hidden;
     peek.setAttribute("aria-expanded", p.hidden ? "false" : "true");
-    peek.textContent = p.hidden ? "Read the paragraph" : "Hide the paragraph";
+    peek.textContent = p.hidden ? "Read FDA's question" : "Hide FDA's question";
     return;
   }
 
@@ -1744,6 +1920,8 @@ document.addEventListener("change", function(e){
     if(t.checked){ if(!state.topics[id]) state.topics[id] = { note: "" }; }
     else { delete state.topics[id]; }
     t.closest(".card").classList.toggle("on", t.checked);
+    if(t.checked){ const box = $("note-" + id); if(box) box.focus({ preventScroll: true }); }
+    filterTopics();
     save(); refreshLetter();
     return;
   }
@@ -1948,18 +2126,18 @@ function buildLetter(){
     /* Non-nurse commenter */
     const role = state.role.trim();
     let who = role ? "a " + role : "someone who cares about healthcare policy";
-    out.push("I am " + who + ". I am submitting this comment on the proposed rule above.");
+    out.push("I am " + who + ". I am submitting this comment in response to the request for feedback above.");
   } else if(isOrg){
     const n = state.orgCount ? parseInt(state.orgCount, 10) : 0;
     let who = "I am writing on behalf of " + (org || "a group of nurses");
     if(n > 0) who += ", speaking for " + n + (n === 1 ? " nurse" : " nurses");
     if(set) who += " " + set.phrase;   /* reads correctly for 1 nurse or 400 */
-    out.push(who + ". We are submitting this comment on the proposed rule above.");
+    out.push(who + ". We are submitting this comment in response to the request for feedback above.");
   } else {
     let who = cred ? article(cred) + " " + cred : "a nurse";
     if(years) who += " with " + years + (years === "1" ? " year" : " years") + " of experience";
     out.push("I am " + who + (set ? " " + set.phrase : "") +
-             ". I am submitting this comment on the proposed rule above.");
+             ". I am submitting this comment in response to the request for feedback above.");
   }
 
   /* --- the nurse's own words come first --- */
@@ -1986,26 +2164,22 @@ function buildLetter(){
       let phrase = c ? c.phrase + " " + i.deed : "patients " + i.deed;
       const note = (st.note || "").trim();
       if(note) phrase += " (" + sentence(note).replace(/\.$/, "") + ")";
-      if(!byProgram[i.program]){ byProgram[i.program] = []; order.push(i.program); }
-      byProgram[i.program].push(phrase);
+      /* Grouped by the kind of nursing work (tag) rather than by CMS payment program. */
+      if(!byProgram[i.tag]){ byProgram[i.tag] = []; order.push(i.tag); }
+      byProgram[i.tag].push(phrase);
     });
-    let para = "Here is some of what " + our + " direct care has meant, in terms Medicare already " +
-               "measures.";
+    /* FDA framing: this is the safety net generative AI devices will be deployed into. */
+    let para = "This is the work generative AI tools will enter. Here is some of what " + our +
+               " direct care has meant for patients, grouped by the kind of nursing work involved.";
     order.forEach(function(prog){
-      para += " Under " + programPhrase(prog) + ": " + byProgram[prog].join("; ") + ".";
+      para += " " + prog + ": " + byProgram[prog].join("; ") + ".";
     });
     if(customOther) para += " " + sentence(customOther);
     para += " This is harm prevented before it happened: nursing assessment, judgment and intuition " +
-            "applied reliably, to every patient. Medicare measures and pays for these outcomes, yet the " +
-            "nursing work behind them is bundled into room-and-board or other clinicians' billing — " +
-            "invisible in claims data, ineligible for reimbursement, and absent from the quality metrics " +
-            "these programs use. " +
-            /* If the build-codes paragraph is also in the letter, it carries the ask —
-               saying "fix this misalignment" twice reads like a form letter. */
-            (state.topics.codes
-              ? We + " ask CMS to change that."
-              : We + " ask CMS to fix this misalignment and to build codes that let nursing work be " +
-                     "seen, counted, and reimbursed.");
+            "applied to every patient, often in the minutes when an AI output would be read and acted on. " +
+            We + " ask FDA to evaluate generative AI devices in these real nursing workflows, to name nurses " +
+            "as intended users where they are the ones who see and act on the output, and to make sure " +
+            "these tools strengthen the nursing safety net rather than wear it down.";
     out.push(para);
   }
 
@@ -2020,11 +2194,14 @@ function buildLetter(){
          .replace(/\bI object\b/g, "We object")
       : s;
   };
+  /* Answers to FDA's numbered questions, in question order, labeled so FDA
+     can file each one. Only the nurse's own words go in; no pre-written samples. */
   tps.forEach(function(id){
     const note = ((state.topics[id] || {}).note || "").trim();
     if(note) {
-      /* Only include topic if nurse wrote their own words; no pre-written samples */
-      out.push(note);
+      const t = topics.filter(function(x){ return x.id === id; })[0];
+      out.push("Regarding Question " + t.n + " (" + t.title.replace(/\?$/, "") + "): " +
+               note.replace(/\n{3,}/g, "\n\n"));
     }
   });
 
@@ -2035,7 +2212,10 @@ function buildLetter(){
 
 /* The letter box is regenerated only while the visitor has not edited it. */
 function validateActionButtons(){
-  const hasOriginalInput = state.own.trim().length >= 20;
+  /* Own words can come from the free-text box or from answers to FDA's questions. */
+  const ownChars = state.own.trim().length +
+    Object.keys(state.topics).reduce(function(n, k){ return n + ((state.topics[k].note || "").trim().length); }, 0);
+  const hasOriginalInput = ownChars >= 20;
   const attestationChecked = $("ckAttestation").checked;
   const canProceed = hasOriginalInput && attestationChecked;
 
@@ -2049,7 +2229,7 @@ function validateActionButtons(){
   } else {
     reqNote.style.display = "block";
     const missing = [];
-    if(!hasOriginalInput) missing.push("Add at least 20 characters of your own words in Step 3");
+    if(!hasOriginalInput) missing.push("Answer at least one FDA question, or add a few sentences of your own, in Step 3");
     if(!attestationChecked) missing.push("Check the authenticity confirmation");
     reqNote.textContent = "Before you can submit: " + missing.join(" and ");
   }
@@ -2093,10 +2273,18 @@ function paintReview(){
       val: impIds.length
              ? impIds.length + (impIds.length === 1 ? " contribution" : " contributions") + " selected"
              : null },
-    { step: 2, term: "In your own words",
+    { step: 2, term: "FDA questions answered",
+      val: (function(){
+        const answered = tps.filter(function(id){ return ((state.topics[id] || {}).note || "").trim(); });
+        if(!tps.length) return null;
+        const nums = answered.map(function(id){ return "Q" + id.slice(1); }).join(", ");
+        return answered.length
+          ? answered.length + " answered (" + nums + ")" +
+            (tps.length > answered.length ? " · " + (tps.length - answered.length) + " checked but blank, left out" : "")
+          : tps.length + " checked, none answered yet";
+      })() },
+    { step: 2, term: "Anything else, in your own words",
       val: state.own.trim() ? state.own.trim().split(/\s+/).length + " words written" : null },
-    { step: 2, term: "Ready-written paragraphs",
-      val: tps.length ? tps.length + (tps.length === 1 ? " added" : " added") : null },
     { step: 3, term: "Signed",
       val: state.name.trim()
              ? state.name.trim() + (state.cred.trim() ? ", " + state.cred.trim() : "")
@@ -2269,8 +2457,8 @@ $("copyBtn").addEventListener("click", copyLetter);
 $("ckAttestation").addEventListener("change", validateActionButtons);
 
 $("shareBtn").addEventListener("click", function(){
-  const msg = "CMS is asking for comments on the 2027 Medicare Physician Fee Schedule. " +
-    "It takes 10 minutes to describe your nursing work and why it matters for your patients. " +
+  const msg = "FDA is asking for feedback on how AI medical devices, like patient chatbots and early-warning alerts, should be regulated. " +
+    "It takes 10 minutes to say what you see at the bedside. " +
     "No account needed. Comments close " + CONFIG.deadlineLabel + ": " + CONFIG.commentUrl;
   const done = function(){ toast("Copied. Text it to ten nurses."); announce("Share message copied."); };
   if(navigator.clipboard && window.isSecureContext){
@@ -2402,7 +2590,7 @@ if(periodClosed) $("goBtn").textContent = "Open the docket page";
 $("fallbackNote").innerHTML =
   "If that page does not open the right form, go to " +
   '<a href="' + CONFIG.docketUrl + '" target="_blank" rel="noopener noreferrer">docket ' +
-  CONFIG.docketId + "</a> and choose Comment on the proposed rule. " +
+  CONFIG.docketId + "</a> and choose Comment. " +
   "Comments are due by " + CONFIG.deadlineLabel + "; regulations.gov is the authority on the exact time.";
 
 $("privacyText").textContent =
@@ -2410,7 +2598,7 @@ $("privacyText").textContent =
   "until you paste it into the comment page yourself. " +
   "If you opt in to 'Help us measure reach,' we send your specialty and a timestamp (no name, no content) " +
   "to help us count how many nurses are using this tool. " +
-  "Once you submit a comment to CMS it becomes part of a public record that anyone can read, " +
+  "Once you submit a comment to " + CONFIG.agency + " it becomes part of a public record that anyone can read, " +
   "so please leave out anything that could identify a patient.";
 
 $("saveText").textContent =
@@ -2526,6 +2714,7 @@ function applyState(s){
     cb.closest(".card").classList.toggle("on", on);
     $("note-" + t.id).value = (state.topics[t.id] || {}).note || "";
   });
+  filterTopics();
   renderImpacts();
   if(state.letterEdited !== null) $("letter").value = state.letterEdited;
 }
