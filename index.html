@@ -570,6 +570,38 @@
   .foot h3{font-size:14.5px;}
 
   /* Hover only where there is a mouse, so taps on phones don't leave highlights behind. */
+
+  /* ---------- step 3: tap-to-answer question cards ---------- */
+  .qcard .card-head{align-items:center;}
+  .qcard .card-head input{position:absolute;opacity:0;width:1px;height:1px;margin:0;pointer-events:none;}
+  .qcard .card-head{position:relative;}
+  .qcard:focus-within{border-color:var(--accent);box-shadow:var(--ring);}
+  .qcard .act{flex:none;align-self:center;font-size:14px;font-weight:600;border-radius:999px;padding:8px 14px;
+              background:var(--accent);color:#fff;white-space:nowrap;}
+  .qcard .act .a-on{display:none;}
+  .qcard.on .act{background:var(--accent-soft);color:var(--accent-ink);}
+  .qcard.on .act .a-on{display:inline;}
+  .qcard.on .act .a-off{display:none;}
+  .qcard .card-body{padding:0 18px 18px;}
+  .qcard .tag{margin-top:8px;}
+  .qdone{margin:12px 0 0;font-size:15px;font-weight:600;color:var(--ok);background:var(--ok-bg);
+         border-radius:var(--radius);padding:11px 14px;}
+  .moreq{display:flex;width:100%;align-items:center;justify-content:center;gap:8px;margin:16px 0 0;
+         font-family:var(--sans);font-size:15px;font-weight:600;color:var(--accent-ink);background:var(--panel);
+         border:1px dashed var(--line-2);border-radius:var(--radius);min-height:50px;cursor:pointer;}
+  .moreq::after{content:"";width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;
+                transform:rotate(45deg) translate(-2px,-2px);}
+  .moreq[aria-expanded="true"]::after{transform:rotate(-135deg) translate(-2px,-2px);}
+  .moreq:focus-visible{outline:none;box-shadow:var(--ring);}
+  #allPanel{margin-top:14px;}
+  #allPanel .qfind{margin-top:0;}
+  #ownWrap{margin-top:26px;}
+  @media (max-width:600px){
+    .qcard .card-head{gap:10px;}
+    .qcard .act{padding:7px 12px;font-size:13.5px;}
+    .qcard .card-body{padding:0 14px 16px;}
+  }
+
   @media (hover:hover){
     .hbtn:hover{background:var(--panel-2);color:var(--text);}
     .chip:hover{border-color:var(--accent);background:#FAFDFD;}
@@ -725,39 +757,49 @@
     <!-- ══════════════ STEP 3 ══════════════ -->
     <section class="slide" id="s2" aria-labelledby="h2s" hidden>
       <p class="step-n">Step 3 of 5</p>
-      <h2 id="h2s">What would you like FDA to know?</h2>
-      <p class="lede">FDA asked 26 questions. Answer only the ones you know firsthand. Check a question to
-        answer it in a sentence or two. Your words go into the letter under FDA's question number.</p>
+      <h2 id="h2s">Answer one or two of FDA's questions</h2>
+      <p class="lede" id="topicLede">These fit the tools you picked. <b>Tap a question</b>, then write a sentence or two
+        about what you've seen at work.</p>
 
-      <div class="qfind" role="search" aria-label="Search FDA's questions">
-        <label for="topicSearch" class="sr">Search FDA's questions</label>
-        <div class="qsearch">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-          <input type="search" id="topicSearch" autocomplete="off"
-                 placeholder="Search: alarm, chatbot, scribe…" aria-describedby="topicCount">
+      <div class="cards" id="topicsSug"></div>
+      <p class="qdone" id="topicDone" hidden></p>
+
+      <button type="button" class="moreq" id="showAll" aria-expanded="false" aria-controls="allPanel">
+        <span id="showAllText">See all 26 questions</span>
+      </button>
+
+      <div id="allPanel" hidden>
+        <div class="qfind" role="search" aria-label="Search FDA's questions">
+          <label for="topicSearch" class="sr">Search FDA's questions</label>
+          <div class="qsearch">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="search" id="topicSearch" autocomplete="off"
+                   placeholder="Search: alarm, chatbot, scribe…" aria-describedby="topicCount">
+          </div>
+          <div class="chips qthemes" id="topicThemes" role="group" aria-label="Filter by theme"></div>
+          <p class="qcount" id="topicCount" aria-live="polite"></p>
         </div>
-        <div class="chips qthemes" id="topicThemes" role="group" aria-label="Filter by theme"></div>
-        <p class="qcount" id="topicCount" aria-live="polite"></p>
-      </div>
-      <div class="cards" id="topics"></div>
-      <p class="qempty" id="topicEmpty" hidden>No questions match that. Try a broader word like
-        <i>patient</i>, <i>alarm</i> or <i>monitor</i>, or <button type="button" class="linkbtn" id="topicClear">show all 26</button>.</p>
-
-      <div class="field" style="margin-top:28px">
-        <label for="freeText">Anything else, in your own words <span class="opt">&mdash; optional</span></label>
-        <textarea id="freeText" class="bigbox" rows="8"
-          placeholder="Type here, in your own words"
-          aria-describedby="phiOwn"></textarea>
-        <p class="phi" id="phiOwn">
-          <span class="ic" aria-hidden="true">&#9888;</span>
-          <span>Please leave out anything that could identify a patient &mdash; no names, dates of birth,
-          medical record numbers, dates of care, or details so specific that someone could work out who
-          you mean. Describe what happened, not who it happened to. Your comment becomes a public record.</span>
-        </p>
+        <div class="cards" id="topics"></div>
+        <p class="qempty" id="topicEmpty" hidden>No questions match that. Try a broader word like
+          <i>patient</i>, <i>alarm</i> or <i>monitor</i>, or <button type="button" class="linkbtn" id="topicClear">clear the search</button>.</p>
       </div>
 
-      <p class="exlead">Not sure how to start? Here is how some nurses have put it. Use these as inspiration, then write your own &mdash; a sentence of your own is worth more than any of these as written.</p>
-      <div class="examples" id="examples"></div>
+      <details class="ready" id="ownWrap">
+        <summary>Something else you want FDA to know? Write it here</summary>
+        <div class="field" style="margin-top:12px">
+          <label for="freeText">In your own words <span class="opt">&mdash; optional</span></label>
+          <textarea id="freeText" class="bigbox" rows="6"
+            placeholder="Type here, in your own words"
+            aria-describedby="phiOwn"></textarea>
+          <p class="phi" id="phiOwn">
+            <span class="ic" aria-hidden="true">&#9888;</span>
+            <span>Leave out anything that could identify a patient: no names, dates, record numbers, or details
+            someone could use to work out who you mean. Your comment becomes public.</span>
+          </p>
+        </div>
+        <p class="exlead">For inspiration, here is how some nurses have put it. Your own sentence counts for more than any of these.</p>
+        <div class="examples" id="examples"></div>
+      </details>
     </section>
 
     <!-- ══════════════ STEP 4 ══════════════ -->
@@ -1848,6 +1890,7 @@ function toggleTool(id){
     else delete state.tools.none;
   }
   syncToolChips();
+  topicFilter.top = null;
   filterTopics();
 }
 
@@ -1874,18 +1917,20 @@ function suggestedNums(){
   for(let i = 0; i < 6; i++){
     lists.forEach(function(l){ if(l[i] && out.indexOf(l[i]) === -1) out.push(l[i]); });
   }
-  return out.slice(0, 6);
+  /* Nobody starts from an empty list: without tools, offer broad starting points. */
+  if(!out.length) return [6, 3, 26, 4];
+  return out.slice(0, 4);
 }
 
 /* --- FDA question cards, searchable --- */
 /* Search state is a view setting, not part of the letter, so it is not saved. */
-const topicFilter = { query: "", theme: null };
+const topicFilter = { query: "", theme: null, top: null };  /* top: ids pinned to the top list */
 
 (function buildTopics(){
   const host = $("topics");
   host.innerHTML = "";
   topics.forEach(function(t){
-    const card = el("div", "card");
+    const card = el("div", "card qcard");
     card.id = "card-" + t.id;
     card.innerHTML =
       '<label class="card-head" for="chk-' + t.id + '">' +
@@ -1896,6 +1941,7 @@ const topicFilter = { query: "", theme: null };
           '<span class="card-sub"></span>' +
           '<span class="tag"></span>' +
         '</span>' +
+        '<span class="act" aria-hidden="true"><span class="a-off">Answer</span><span class="a-on">&#10003; Answering</span></span>' +
       '</label>' +
       '<div class="card-body">' +
         '<button type="button" class="peek" data-peek="' + t.id + '" aria-expanded="false" ' +
@@ -1946,14 +1992,9 @@ function highlight(text, words){
   return out;
 }
 
-/* Checked questions always stay visible, so a search never hides part of the letter.
-   Questions that match the nurse's AI tools (step 2) are listed first. */
-function groupHead(id, text){
-  let h = $(id);
-  if(!h){ h = el("p", "qgroup"); h.id = id; }
-  h.textContent = text;
-  return h;
-}
+/* Step 3 layout: suggested questions (plus any already chosen) sit at the top in
+   #topicsSug. Every other question lives in the "See all" panel (#topics), where
+   search and theme filters apply. A card is only ever in one of the two lists. */
 function filterTopics(){
   const words = topicFilter.query.toLowerCase().split(/\s+/).filter(Boolean);
   const theme = topicFilter.theme;
@@ -1961,39 +2002,74 @@ function filterTopics(){
   const res = words.map(function(w){ return new RegExp("(^|[^a-z0-9])" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"); });
   const sug = suggestedNums();
   const filtering = !!(words.length || theme);
+  /* Which cards sit at the top is decided when the step opens (or tools change),
+     not on every tick, so a card never jumps away while someone is typing in it. */
+  if(!topicFilter.top){
+    topicFilter.top = sug.map(function(n){ return "q" + n; });
+    topics.forEach(function(t){
+      if(state.topics[t.id] && topicFilter.top.indexOf(t.id) === -1) topicFilter.top.push(t.id);
+    });
+  }
+  const top = [], rest = [];
+  topicFilter.top.forEach(function(id){ top.push(topics.filter(function(t){ return t.id === id; })[0]); });
+  topics.forEach(function(t){ if(top.indexOf(t) === -1) rest.push(t); });
+
   let shown = 0;
-  topics.forEach(function(t){
+  top.forEach(function(t){
     const card = $("card-" + t.id);
-    const picked = !!state.topics[t.id];
+    card.hidden = false;
+    card.querySelector(".sug").hidden = true;
+    card.querySelector(".card-title").textContent = t.title;
+    card.querySelector(".card-sub").textContent = t.ask;
+  });
+  placeInOrder($("topicsSug"), top);
+  rest.forEach(function(t){
+    const card = $("card-" + t.id);
     const match = (!theme || t.themes.indexOf(theme) !== -1) &&
                   res.every(function(re){ return re.test(t._hay); });
-    card.hidden = !(match || picked);
+    card.hidden = !match;
     if(match) shown++;
-    /* Group headings say "suggested" when browsing; the badge covers search results. */
-    card.querySelector(".sug").hidden = sug.indexOf(t.n) === -1 || !filtering;
+    card.querySelector(".sug").hidden = true;
     card.querySelector(".card-title").innerHTML = highlight(t.title, words);
     card.querySelector(".card-sub").innerHTML   = highlight(t.ask, words);
   });
+  placeInOrder($("topics"), rest);
 
-  /* Re-order: suggested first (in relevance order), then the rest by question number. */
-  const host = $("topics");
-  const bySug = sug.map(function(n){ return topics.filter(function(t){ return t.n === n; })[0]; });
-  const rest  = topics.filter(function(t){ return sug.indexOf(t.n) === -1; });
-  const showHeads = sug.length > 0 && !filtering;
-  const h1 = groupHead("grpSug", "Suggested for the tools you see at work");
-  const h2 = groupHead("grpRest", "All other FDA questions");
-  h1.hidden = h2.hidden = !showHeads;
-  host.appendChild(h1);
-  bySug.forEach(function(t){ host.appendChild($("card-" + t.id)); });
-  host.appendChild(h2);
-  rest.forEach(function(t){ host.appendChild($("card-" + t.id)); });
-
-  const picked = selectedTopicIds().length;
-  $("topicCount").textContent =
-    (filtering ? shown + " of " + topics.length + " questions match" : "All " + topics.length + " FDA questions") +
-    (picked ? " · " + picked + " checked" : "");
+  const anyTools = Object.keys(state.tools).some(function(k){ return k !== "none"; });
+  $("topicLede").innerHTML = (anyTools ? "These fit the tools you picked. " : "These are good places to start. ") +
+    "<b>Tap a question</b>, then write a sentence or two about what you've seen at work.";
+  $("topicCount").textContent = filtering
+    ? shown + (shown === 1 ? " question matches" : " questions match")
+    : rest.length + " more questions";
   $("topicEmpty").hidden = shown > 0 || !filtering;
+  paintTopicDone();
 }
+
+/* Move cards only when their position actually changes: moving a node that holds
+   focus would pull the cursor out of the answer box. */
+function placeInOrder(host, list){
+  list.forEach(function(t, i){
+    const card = $("card-" + t.id);
+    if(host.children[i] !== card) host.insertBefore(card, host.children[i] || null);
+  });
+}
+
+function paintTopicDone(){
+  const n = selectedTopicIds().filter(function(id){ return cleanNote((state.topics[id] || {}).note); }).length;
+  const d = $("topicDone");
+  d.hidden = n === 0;
+  d.textContent = n === 0 ? "" : n === 1
+    ? "\u2713 1 question answered. That's enough to continue, or answer another."
+    : "\u2713 " + n + " questions answered. Press Next when you're ready.";
+}
+
+$("showAll").addEventListener("click", function(){
+  const open = $("allPanel").hidden;
+  $("allPanel").hidden = !open;
+  this.setAttribute("aria-expanded", open ? "true" : "false");
+  $("showAllText").textContent = open ? "Hide the other questions" : "See all 26 questions";
+  if(open) $("topicSearch").focus({ preventScroll: true });
+});
 
 $("topicSearch").addEventListener("input", function(e){
   topicFilter.query = e.target.value;
@@ -2193,6 +2269,7 @@ document.addEventListener("click", function(e){
     box.value = lead + starter.dataset.text;
     if(!state.topics[id]) state.topics[id] = { note: "" };
     state.topics[id].note = box.value;
+    paintTopicDone();
     box.focus();
     try { box.setSelectionRange(box.value.length, box.value.length); } catch(err){ /* cosmetic */ }
     save(); refreshLetter();
@@ -2283,6 +2360,7 @@ document.addEventListener("input", function(e){
   if(t.dataset && t.dataset.tnote){
     if(!state.topics[t.dataset.tnote]) state.topics[t.dataset.tnote] = { note: "" };
     state.topics[t.dataset.tnote].note = t.value;
+    paintTopicDone();
     save(); refreshLetter(); return;
   }
   if(t.id === "freeText"){ state.own = t.value; save(); refreshLetter(); return; }
@@ -2348,6 +2426,8 @@ function goTo(n, focusHeading){
 
   /* Non-nurses skip Step 2 (contributions); redirect Step 2 to Step 3 (own words) */
   if(!state.isNurse && n === 1) n = 2;
+
+  if(n === 2){ topicFilter.top = null; filterTopics(); }   /* re-collect answered questions at the top */
 
   const back = n < step;
   for(let i = 0; i < STEPS; i++){
@@ -3068,6 +3148,7 @@ function dropSaved(){
 function applyState(s){
   Object.keys(s).forEach(function(k){ state[k] = s[k]; });
   $("freeText").value = state.own;
+  $("ownWrap").open = !!state.own.trim();
   $("fToolNames").value = state.toolNames || "";
   syncToolChips();
   $("impactDetails").open = Object.keys(state.impacts || {}).length > 0;
@@ -3094,6 +3175,7 @@ function applyState(s){
     cb.closest(".card").classList.toggle("on", on);
     $("note-" + t.id).value = (state.topics[t.id] || {}).note || "";
   });
+  topicFilter.top = null;
   filterTopics();
   renderImpacts();
   if(state.letterEdited !== null) $("letter").value = state.letterEdited;
