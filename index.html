@@ -49,6 +49,12 @@
   .clock{font-size:11.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--hot);
          background:var(--hot-bg);border:1.5px solid var(--hot-line);border-radius:999px;
          padding:5px 11px;white-space:nowrap;}
+  .hbtns{display:flex;gap:6px;margin-left:auto;}
+  .hbtn{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--accent-ink);text-decoration:none;
+        padding:7px 11px;border-radius:8px;background:transparent;border:1px solid var(--line);cursor:pointer;
+        white-space:nowrap;min-height:36px;display:inline-flex;align-items:center;}
+  .hbtn:hover{background:var(--panel);border-color:var(--line-2);}
+  .hbtn:focus-visible{outline:3px solid var(--text);outline-offset:2px;}
   .clock.closed{background:var(--panel-2);border-color:var(--line-2);color:var(--text-2);}
   ol.bars{display:flex;gap:5px;list-style:none;margin:0;padding:0;}
   ol.bars li{align-items:center;}
@@ -68,13 +74,14 @@
     html, body, main{max-width:100%;overflow-x:hidden;}
 
     /* Header wraps on mobile; simplify title */
-    .toprow{flex-wrap:wrap;justify-content:flex-start;gap:8px;}
+    .toprow{gap:8px;}
     h1.brand{flex:1;min-width:0;font-size:13px;line-height:1.1;font-weight:800;}
     h1.brand span{display:none;} /* Hide the docket number on mobile */
     .clock{flex:none;font-size:10.5px;padding:4px 9px;white-space:nowrap;}
 
     /* Buttons move to second row */
-    .toprow a, .toprow button{flex:0 1 auto;order:10;font-size:12px;padding:6px 10px;min-height:40px;}
+    .hbtns{gap:4px;}
+    .hbtn{font-size:12px;padding:6px 8px;min-height:36px;}
 
     /* Step content padding tighter on mobile */
     .slide{padding:18px 14px 24px;}
@@ -116,10 +123,14 @@
   .step-n{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
           color:var(--accent-ink);margin:0 0 8px;}
   h2{font-size:27px;line-height:1.14;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;}
+  h2{scroll-margin-top:120px;}
   h2:focus-visible{outline:2px solid var(--accent-ink);outline-offset:4px;border-radius:4px;}
   h3{font-size:17px;font-weight:800;margin:26px 0 10px;}
   .say{font-size:15.5px;color:var(--text-2);margin:0 0 18px;max-width:52ch;}
   .say b{color:var(--text);}
+  .lede{font-size:16px;color:var(--text-2);margin:0 0 18px;max-width:58ch;line-height:1.55;}
+  .lede b{color:var(--text);}
+  .toolchips .chip{font-size:15.5px;min-height:50px;padding:10px 15px;}
 
   .do{display:flex;gap:11px;align-items:flex-start;background:var(--panel);
       border:2px solid var(--accent-ink);border-left-width:7px;border-radius:12px;
@@ -154,31 +165,34 @@
   /* ---------- cards ---------- */
   .cards{display:flex;flex-direction:column;gap:10px;}
   .card{border:2px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden;}
-  .card.on{border-color:var(--accent-ink);background:var(--accent);color:var(--on-accent);}
+  .card{transition:border-color .15s, box-shadow .15s;}
+  .card:hover{border-color:var(--line-2);}
+  .card.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent), 0 6px 18px -10px rgba(14,74,150,.45);}
   .card-head{display:flex;align-items:flex-start;gap:13px;padding:15px 16px;cursor:pointer;min-height:60px;}
   .card-head input{appearance:none;-webkit-appearance:none;flex:none;width:26px;height:26px;margin:0;
     border:2.5px solid var(--line-2);border-radius:8px;background:var(--panel);cursor:pointer;
     display:grid;place-items:center;}
-  .card.on .card-head input{background:#fff;border-color:#fff;}
-  .card.on .card-head input::after{content:"";width:11px;height:6px;border:2.5px solid var(--accent-ink);
+  .card.on .card-head input{background:var(--accent);border-color:var(--accent);}
+  .card.on .card-head input::after{content:"";width:11px;height:6px;border:2.5px solid #fff;
     border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px);}
   .card-head input:focus-visible{outline:3px solid var(--text);outline-offset:3px;}
   .card-txt{display:block;flex:1;min-width:0;}
   .card-title{display:block;font-size:16.5px;font-weight:800;line-height:1.25;margin-bottom:3px;}
   .card-sub{display:block;font-size:14px;line-height:1.42;color:var(--text-2);}
-  .card.on .card-sub{color:rgba(255,255,255,.88);}
+
   .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
        padding:4px 9px;border-radius:999px;background:var(--panel-2);color:var(--text-2);margin-top:9px;}
-  .card.on .tag{background:#fff;color:var(--accent-ink);}
-  .card-body{display:none;padding:2px 16px 16px;}
+  .card.on .tag{background:var(--panel-2);color:var(--accent-ink);}
+  .card-body{display:none;padding:4px 16px 16px 55px;}
+  @media (max-width:600px){ .card-body{padding:4px 13px 14px;} }
   .card.on .card-body{display:block;}
-  .card-body label{display:block;font-size:13.5px;font-weight:800;margin-bottom:7px;color:rgba(255,255,255,.95);}
-  .peek{background:#fff;border:1.5px solid #fff;border-radius:9px;padding:9px 13px;margin-bottom:11px;
+  .card-body label{display:block;font-size:14px;font-weight:800;margin:4px 0 4px;color:var(--text);}
+  .peek{background:none;border:0;border-radius:6px;padding:6px 0;margin-bottom:8px;text-decoration:underline;text-underline-offset:3px;
         font-family:var(--sans);font-size:13.5px;font-weight:800;color:var(--accent-ink);cursor:pointer;min-height:44px;}
-  .quote{font-family:var(--serif);font-size:15px;line-height:1.6;color:#1B2733;
-         background:#fff;border-radius:11px;padding:13px 15px;margin:0 0 13px;}
-  .flag{font-size:13px;line-height:1.45;font-weight:600;color:#fff;
-        background:rgba(255,255,255,.18);border-left:4px solid #fff;border-radius:0 9px 9px 0;
+  .quote{font-family:var(--serif);font-size:15px;line-height:1.6;color:var(--paper-ink);
+         background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:13px 15px;margin:0 0 13px;}
+  .flag{font-size:13px;line-height:1.45;font-weight:600;color:var(--warn);
+        background:var(--warn-bg);border-radius:9px;
         padding:9px 12px;margin:0 0 13px;}
   .also{margin-top:16px;padding-top:14px;border-top:2px dashed var(--line-2);}
   .also h3{margin:0 0 4px;font-size:15px;}
@@ -235,6 +249,12 @@
     -webkit-appearance:none;appearance:none;}
   .qsearch input:focus{outline:3px solid var(--text);outline-offset:2px;border-color:var(--text);}
   .qthemes{margin-top:10px;gap:7px;}
+  @media (max-width:600px){
+    /* One swipeable row of filters keeps the questions on screen. */
+    .qthemes{flex-wrap:nowrap;overflow-x:auto;margin-inline:-14px;padding:2px 14px 6px;scrollbar-width:none;}
+    .qthemes::-webkit-scrollbar{display:none;}
+    .qthemes .chip{flex:none;}
+  }
   .qthemes .chip{min-height:40px;padding:7px 13px;font-size:14px;border-radius:999px;}
   .qcount{font-size:13.5px;font-weight:600;color:var(--text-3);margin:10px 0 0;font-variant-numeric:tabular-nums;}
   .qempty{font-size:14.5px;color:var(--text-2);background:var(--panel);border:2px dashed var(--line);
@@ -243,7 +263,20 @@
                    text-decoration:underline;cursor:pointer;}
   .qempty .linkbtn:focus-visible{outline:3px solid var(--text);outline-offset:2px;}
   .card mark{background:var(--warn-bg);color:inherit;border-radius:3px;padding:0 1px;}
-  .card.on mark{background:rgba(255,255,255,.28);}
+  .sug{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:var(--ok);
+       background:var(--ok-bg);border-radius:999px;padding:3px 9px;margin:0 0 6px;}
+  .sug::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .sug[hidden]{display:none;}
+  .qgroup{font-size:14px;font-weight:800;color:var(--text);margin:14px 2px 0;}
+  .qgroup:first-child{margin-top:4px;}
+  .qgroup[hidden]{display:none;}
+  .coach{font-size:13.5px;color:var(--text-2);margin:0 0 8px;line-height:1.45;}
+  .coach b{color:var(--text);}
+  .starters{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 9px;}
+  .starter{font-family:var(--sans);font-size:13.5px;font-weight:700;color:var(--accent-ink);background:var(--void);
+           border:1.5px dashed var(--line-2);border-radius:999px;padding:7px 12px;min-height:38px;cursor:pointer;}
+  .starter:hover{border-style:solid;border-color:var(--accent-ink);}
+  .starter:focus-visible{outline:3px solid var(--text);outline-offset:2px;}
 
   /* ---------- review summary ---------- */
   .review{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:4px 16px;margin-bottom:18px;}
@@ -285,6 +318,26 @@
   .citem .sub{display:block;font-size:13.5px;font-weight:500;color:var(--text-2);margin-top:2px;}
   .citem.done .lbl{color:var(--ok);}
 
+  h3.sec{font-size:17px;font-weight:800;margin:26px 0 8px;color:var(--text);}
+  h3.sec.after{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);}
+  .check{margin-top:0;}
+  .reqnote{margin:10px 0 0;font-size:14.5px;font-weight:700;color:var(--hot);background:var(--hot-bg);
+           border:1.5px solid var(--hot-line);border-radius:10px;padding:10px 13px;}
+  .reqnote.pulse{animation:pulse .6s ease-out;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(168,41,28,.45);}100%{box-shadow:0 0 0 12px rgba(168,41,28,0);}}
+  @media (prefers-reduced-motion:reduce){ .reqnote.pulse{animation:none;} }
+  .sendbox{margin-top:20px;background:var(--panel);border:2px solid var(--accent);border-radius:14px;padding:16px 18px;}
+  .sendbox h3{font-size:16px;font-weight:800;margin:0 0 8px;color:var(--text);}
+  .sendbox ol{margin:0;padding-left:20px;font-size:15px;line-height:1.6;color:var(--text);}
+  .sendbox li{margin-bottom:4px;}
+  .sendbox a{color:var(--accent-ink);font-weight:700;}
+  #reviewWrap{margin-top:22px;}
+  #reviewWrap .review{margin-top:8px;}
+  details.story summary{cursor:pointer;font-size:14px;font-weight:800;color:var(--accent-ink);list-style:none;
+    min-height:44px;display:flex;align-items:center;gap:8px;}
+  details.story summary::before{content:"\25B8";}
+  details.story[open] summary::before{content:"\25BE";}
+  .btn.locked{opacity:.55;box-shadow:none;}
   .howto{background:var(--panel-2);border:2px solid var(--line);border-radius:14px;padding:15px 16px;margin-top:20px;}
   .howto h3{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
             color:var(--accent-ink);margin:0 0 9px;}
@@ -306,7 +359,7 @@
              box-shadow:none;flex:none;min-width:84px;}
   .btn.ghost:hover{color:var(--text);border-color:var(--text-2);}
   .btn:focus-visible{outline:3px solid var(--text);outline-offset:3px;}
-  .card.on .card-head input:focus-visible, .card.on .peek:focus-visible{outline:3px solid #fff;outline-offset:3px;}
+  .peek:focus-visible{outline:3px solid var(--text);outline-offset:3px;}
   .btn[hidden]{display:none;}
   .btn[disabled]{opacity:.5;cursor:not-allowed;box-shadow:none;}
   #goBtn{flex:1 0 100%;}
@@ -320,7 +373,7 @@
          background:var(--text);color:#fff;font-size:14.5px;font-weight:700;padding:13px 19px;border-radius:999px;
          opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;z-index:60;max-width:90vw;text-align:center;}
   .toast.show{opacity:1;transform:translate(-50%,0);}
-  @media (prefers-reduced-motion:reduce){ .toast{transition:none;} }
+  @media (prefers-reduced-motion:reduce){ .toast, .card{transition:none;} }
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
       clip-path:inset(50%);white-space:nowrap;border:0;padding:0;margin:-1px;}
 
@@ -404,18 +457,10 @@
     <div class="toprow">
       <h1 class="brand"><span id="ruleLabel">&nbsp;</span>Nurses' Voices Matter</h1>
       <span class="clock" id="clock">&nbsp;</span>
-      <button type="button" id="aboutBtn"
-         style="font-size:13px;font-weight:700;color:var(--accent-ink);text-decoration:none;padding:8px 12px;border-radius:6px;background:var(--void);border:1px solid var(--line);cursor:pointer;white-space:nowrap;transition:all .2s;font-family:inherit;"
-         onmouseover="this.style.background='var(--panel)'"
-         onmouseout="this.style.background='var(--void)'">
-        About
-      </button>
-      <a href="mailto:sharonda@nursebloc.io?subject=Feedback on Nurses' Voices Matter Tool"
-         style="font-size:13px;font-weight:700;color:var(--accent-ink);text-decoration:none;padding:8px 12px;border-radius:6px;background:var(--void);border:1px solid var(--line);cursor:pointer;white-space:nowrap;transition:all .2s;"
-         onmouseover="this.style.background='var(--panel)'"
-         onmouseout="this.style.background='var(--void)'">
-        Feedback
-      </a>
+      <div class="hbtns">
+        <button type="button" id="aboutBtn" class="hbtn">About</button>
+        <a class="hbtn" href="mailto:sharonda@nursebloc.io?subject=Feedback on Nurses' Voices Matter Tool">Feedback</a>
+      </div>
     </div>
     <nav aria-label="Progress">
       <ol class="bars" id="bars"></ol>
@@ -474,49 +519,48 @@
     <!-- ══════════════ STEP 2 ══════════════ -->
     <section class="slide" id="s1" aria-labelledby="h1s" hidden>
       <p class="step-n">Step 2 of 5</p>
-      <h2 id="h1s">Count the patients you have protected</h2>
-      <div class="do">
-        <span class="ic" aria-hidden="true">&#128073;</span>
-        <span class="do-txt"><b>This whole step is optional.</b> If you would rather go straight to writing
-          in your own words, press Next.
-          <ol>
-            <li>Check any box that describes work you do. Check as many as you like.</li>
-            <li>Each box you check opens up. Inside, choose roughly how many patients &mdash; a rough guess is fine.</li>
-          </ol>
-        </span>
+      <h2 id="h1s">Which AI tools do you see at work?</h2>
+      <p class="lede">Check any you have used, seen on your unit, or been asked about. We use this to show you
+        the FDA questions that fit your experience. None yet? Your view still counts. Choose
+        <b>None yet / not sure</b>.</p>
+
+      <div class="chips toolchips" id="toolChips" role="group" aria-labelledby="h1s"></div>
+
+      <div class="field" style="margin-top:20px">
+        <label for="fToolNames">Product names, if you know them <span class="opt">&mdash; optional</span></label>
+        <input type="text" id="fToolNames" autocomplete="off"
+               placeholder="e.g. the sepsis alert in our charting system, an ambient scribe pilot">
+        <p class="hint">Naming the tool helps FDA connect your experience to real devices. Leave out anything
+          about a specific patient.</p>
       </div>
-      <p class="say">The turn that saved someone's skin. The med error you caught. The gut feeling that made
-        you look twice. <b>Some of your work is in the chart. The best of it never is.</b></p>
-      <p class="say">One real number beats a page of opinion &mdash; <b>"our falls dropped by a third in six
-        months"</b> is exactly the kind of fact that shows FDA what an AI tool would be stepping into. If you know a number you own, put it in.</p>
+
+      <details class="ready" id="impactDetails">
+        <summary>Optional: add the patient-safety work these tools step into</summary>
+        <p class="readynote">AI tools land in the middle of work nurses already do. Check any that describe your
+          work and roughly how many patients it has protected. Your letter uses this to show FDA what is at stake
+          if a tool gets it wrong.</p>
       <div class="cards" id="impactList"></div>
       <div class="also" id="alsoWrap" hidden>
         <h3>Also selected</h3>
         <p>You checked these while a different setting was selected. They stay in your letter unless you uncheck them.</p>
         <div class="cards" id="alsoList"></div>
       </div>
+      </details>
     </section>
 
     <!-- ══════════════ STEP 3 ══════════════ -->
     <section class="slide" id="s2" aria-labelledby="h2s" hidden>
       <p class="step-n">Step 3 of 5</p>
       <h2 id="h2s">What would you like FDA to know?</h2>
-      <div class="do">
-        <span class="ic" aria-hidden="true">&#128073;</span>
-        <span class="do-txt"><b>FDA asked 26 questions. You only need to answer the ones you know firsthand.</b>
-          <ol>
-            <li>Search for something you see at work, like <i>alarm</i>, <i>chatbot</i> or <i>documentation</i>.</li>
-            <li>Check a question. It opens up so you can answer in a sentence or two.</li>
-          </ol>
-          Whatever you type goes into your letter word for word, under FDA's question number.</span>
-      </div>
+      <p class="lede">FDA asked 26 questions. Answer only the ones you know firsthand. Check a question to
+        answer it in a sentence or two. Your words go into the letter under FDA's question number.</p>
 
       <div class="qfind" role="search" aria-label="Search FDA's questions">
-        <label for="topicSearch" class="qfind-label">Find the questions you know firsthand</label>
+        <label for="topicSearch" class="sr">Search FDA's questions</label>
         <div class="qsearch">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
           <input type="search" id="topicSearch" autocomplete="off"
-                 placeholder="Try: alarm, patient portal, triage, scribe" aria-describedby="topicCount">
+                 placeholder="Search: alarm, chatbot, scribe…" aria-describedby="topicCount">
         </div>
         <div class="chips qthemes" id="topicThemes" role="group" aria-label="Filter by theme"></div>
         <p class="qcount" id="topicCount" aria-live="polite"></p>
@@ -586,35 +630,11 @@
     <section class="slide" id="s4" aria-labelledby="h4s" hidden>
       <p class="step-n">Step 5 of 5</p>
       <h2 id="h4s">Review and send</h2>
+      <p class="lede">Read your letter, tick the three checks, then copy it and paste it into FDA's comment form.
+        It takes about two minutes.</p>
 
-      <h3>What you have chosen</h3>
-      <dl class="review" id="review"></dl>
-
-      <div style="background:var(--panel);border-radius:12px;padding:20px;margin-bottom:24px;border:2px solid var(--accent-ink);">
-        <h3 style="margin-top:0;color:var(--accent-ink);">Before you can copy</h3>
-        <div class="check" id="checklist">
-          <div class="citem" id="ck-own">
-            <span class="auto" aria-hidden="true">&#9675;</span>
-            <span class="lbl">Something in your own words<span class="sub" id="ck-own-sub">Not yet &mdash; step 3 is where to add it.</span></span>
-          </div>
-          <div class="citem">
-            <input type="checkbox" id="ck-phi">
-            <label for="ck-phi">No patient-identifying details<span class="sub">No names, dates of birth, record numbers, or details that could single someone out.</span></label>
-          </div>
-          <div class="citem">
-            <input type="checkbox" id="ck-read">
-            <label for="ck-read">I have read the whole letter<span class="sub">It says what I mean, in words I am comfortable putting my name to.</span></label>
-          </div>
-          <div class="citem">
-            <input type="checkbox" id="ckAttestation">
-            <label for="ckAttestation">This is my authentic voice<span class="sub">I confirm this reflects my own experience, judgment, and policy views.</span></label>
-          </div>
-        </div>
-        <p id="requirementNote" style="display:none;color:var(--accent-ink);font-weight:600;margin:12px 0 0 0;"></p>
-      </div>
-
-      <h3>Your letter</h3>
-      <p class="say">You can edit this directly — it is a normal text box. Change any wording that does not sound like you.</p>
+      <h3 class="sec">Your letter</h3>
+      <p class="hint" style="margin:0 0 10px">You can edit it right here. Change any wording that doesn't sound like you.</p>
       <div class="meters">
         <span class="meter dim" id="uniq">&nbsp;</span>
         <span class="meter dim" id="wordCount">&nbsp;</span>
@@ -625,19 +645,65 @@
       </div>
       <p class="phi" id="phiLetter">
         <span class="ic" aria-hidden="true">&#9888;</span>
-        <span>Last check before this becomes public: read it once for anything that could identify a patient or a colleague.</span>
+        <span>This becomes public. Read it once for anything that could identify a patient or a colleague.</span>
       </p>
       <div class="lbtns">
         <button type="button" class="btn ghost" id="regenBtn" hidden>Rebuild from my choices</button>
         <button type="button" class="btn ghost" id="dlBtn">Download as a text file</button>
       </div>
 
-      <h3>Prefer paper?</h3>
+      <h3 class="sec">Before you send</h3>
+      <div class="check" id="checklist">
+        <div class="citem" id="ck-own">
+          <span class="auto" aria-hidden="true">&#9675;</span>
+          <span class="lbl">Something in your own words<span class="sub" id="ck-own-sub">Not yet &mdash; step 3 is where to add it.</span></span>
+        </div>
+        <div class="citem">
+          <input type="checkbox" id="ck-phi">
+          <label for="ck-phi">No patient-identifying details<span class="sub">No names, dates of birth, record numbers, or details that could single someone out.</span></label>
+        </div>
+        <div class="citem">
+          <input type="checkbox" id="ck-read">
+          <label for="ck-read">I have read the whole letter<span class="sub">It says what I mean, in words I am comfortable putting my name to.</span></label>
+        </div>
+        <div class="citem">
+          <input type="checkbox" id="ckAttestation">
+          <label for="ckAttestation">This is my authentic voice<span class="sub">It reflects my own experience, judgment, and views.</span></label>
+        </div>
+      </div>
+      <p id="requirementNote" class="reqnote" role="status" hidden></p>
+
+      <div class="sendbox">
+        <h3>How to send it</h3>
+        <ol>
+          <li>Press <b>Copy letter</b> at the bottom of the screen.</li>
+          <li>Press <b>Open the comment page</b>. Regulations.gov opens in a new tab. Choose <b>Comment</b>.</li>
+          <li>Paste your letter into the comment box, fill in the form, and submit.</li>
+        </ol>
+        <p class="fine" id="fallbackNote"></p>
+      </div>
+
+      <details class="ready" id="reviewWrap">
+        <summary>What you chose (edit any step)</summary>
+        <dl class="review" id="review"></dl>
+      </details>
+
+      <h3 class="sec after">After you submit</h3>
       <div class="howto">
-        <h3>Print and mail it &mdash; just as official</h3>
+        <h3>Ask ten nurses to do the same</h3>
+        <p id="letterCounter" style="display:none;font-size:16px;font-weight:700;color:var(--accent-ink);margin:0 0 11px;"></p>
+        <p class="fine" style="margin-top:0">One comment is a voice. Comments from nurses in their own words are
+          what FDA can't get anywhere else. Text the link to ten nurses you know, or put the flyer up by the time clock.</p>
+        <div class="lbtns">
+          <button type="button" class="btn ghost" id="shareBtn">Copy a message to send to nurses</button>
+        </div>
+      </div>
+
+      <div class="howto">
+        <h3>Prefer paper?</h3>
         <ol>
           <li>Press <b>Print my letter</b>. It comes out addressed and ready to sign.</li>
-          <li>Sign it, seal it, and mail it to the address printed on the letter.</li>
+          <li>Sign it and mail it to the address printed on the letter.</li>
           <li>Mail early &mdash; FDA must <b>receive</b> it by <span data-deadline></span>, not just see a postmark.</li>
         </ol>
         <div class="lbtns">
@@ -645,43 +711,17 @@
           <button type="button" class="btn ghost" id="printWorksheetBtn">Print a blank worksheet</button>
           <button type="button" class="btn ghost" id="printFlyerBtn">Print a break-room flyer</button>
         </div>
-        <p class="fine">The worksheet is for writing by hand on a break &mdash; yours or a colleague's.
-          Anything written on it can be typed in here later, or mailed as-is inside a signed letter.
-          The flyer is for the board by the time clock.</p>
+        <p class="fine">The worksheet is for writing by hand on a break. The flyer is for the board by the time clock.</p>
       </div>
 
-      <div class="howto">
-        <h3>Then multiply it</h3>
-        <p id="letterCounter" style="display:none;font-size:16px;font-weight:700;color:var(--accent-ink);margin:0 0 11px;"></p>
-        <p class="fine" style="margin-top:0">One comment is a voice. The goal is <b>100,000 nurse
-          comments</b> before the period closes &mdash; and that happens ten nurses at a time.
-          After you submit, send this to <b>ten nurses you know</b>: text the link, forward this file,
-          or put the flyer up by the time clock.</p>
-        <div class="lbtns">
-          <button type="button" class="btn ghost" id="shareBtn">Copy a message to send to nurses</button>
-        </div>
-      </div>
-
-      <div class="howto" style="background:var(--accent-ink);color:white;border-radius:12px;padding:20px;margin:24px 0;text-align:center;">
-        <h3 style="margin-top:0;">Ready to submit?</h3>
-        <p style="margin:0 0 16px;font-size:15px;">Once you've checked all the boxes above, the Copy button below will be ready.</p>
-        <ol style="text-align:left;display:inline-block;">
-          <li><b>Copy your letter</b> using the button below.</li>
-          <li><b>Open the comment page</b> on regulations.gov (new tab).</li>
-          <li><b>Paste</b> into the comment box and submit.</li>
-        </ol>
-        <p class="fine" id="fallbackNote" style="color:rgba(255,255,255,0.9);"></p>
-      </div>
-
-      <div class="howto">
-        <h3>Help us measure reach (optional)</h3>
-        <div style="margin:0 0 15px;">
+      <details class="howto story">
+        <summary>Help us count how many nurses took part (optional)</summary>
+        <div style="margin:12px 0 15px;">
           <input type="checkbox" id="ckMetrics">
           <label for="ckMetrics" style="display:inline;font-weight:600;cursor:pointer;">Yes, send my specialty and timestamp so we can count how many nurses used this tool</label>
-          <p class="fine" style="margin:6px 0 0 30px;">This is completely optional. Your name and letter content are never sent.</p>
+          <p class="fine" style="margin:6px 0 0 30px;">Your name and letter are never sent.</p>
         </div>
-        <p class="fine" style="margin-top:0">After you submit, would you also share your story? It helps us understand
-          what's working and how many nurses are joining this movement.</p>
+        <p class="fine" style="margin-top:0">You can also share how it went. It helps us improve the tool for other nurses.</p>
         <div class="field">
           <label for="fbSpecialty">Your specialty or setting <span class="opt">&mdash; optional</span></label>
           <input type="text" id="fbSpecialty" placeholder="ICU, ER, clinic, home health, etc.">
@@ -694,11 +734,11 @@
           <label for="fbFeedback">Any feedback or tips? <span class="opt">&mdash; optional</span></label>
           <textarea id="fbFeedback" rows="2" placeholder="What helped? What would you change? Any tips for other nurses?"></textarea>
         </div>
-        <p class="fine">We'll send this to sharonda@nursebloc.io. Your email will open so you can review before sending.</p>
+        <p class="fine">This goes to sharonda@nursebloc.io. Your email opens so you can review it before sending.</p>
         <div class="lbtns">
           <button type="button" class="btn ghost" id="sendFeedbackBtn">Share my story</button>
         </div>
-      </div>
+      </details>
     </section>
   </main>
 
@@ -756,7 +796,7 @@
       </p>
       <ol style="line-height:1.8;">
         <li><strong>Who you are</strong> — your specialty, setting, credentials (all optional)</li>
-        <li><strong>Your contributions</strong> — select nursing work that matches your practice</li>
+        <li><strong>AI at your work</strong> — pick the AI tools you see, so the app can suggest the FDA questions that fit</li>
         <li><strong>FDA's questions</strong> — search FDA's 26 questions and answer the ones you know firsthand</li>
         <li><strong>Sign it</strong> — add your name or stay anonymous</li>
         <li><strong>Review and send</strong> — copy your letter to the FDA comment form on regulations.gov</li>
@@ -911,6 +951,19 @@ const settings = [
   {id:'retired',  label:'Retired',                phrase:'as a retired nurse',                                sig:'Retired nursing'},
   {id:'academia', label:'Nursing education',     phrase:'working in nursing education',                      sig:'Nursing education'},
   {id:'other',    label:'Other',                  phrase:'working in direct patient care',                    sig:'Direct patient care'}
+];
+
+/* Step 2: AI tools nurses run into. `qs` lists the FDA questions most relevant
+   to each tool, most relevant first; step 3 suggests these. */
+const TOOLS = [
+  {id:"scribe",  label:"Ambient scribe or AI notes",        phrase:"ambient AI scribes",            qs:[17,10,9,22,24]},
+  {id:"ews",     label:"Early-warning or sepsis alerts",     phrase:"early-warning alerts such as sepsis alerts",                   qs:[6,1,19,10,14]},
+  {id:"portal",  label:"Patient chatbots or portal replies", phrase:"patient chatbots or AI-drafted portal replies",    qs:[3,5,2,15,9]},
+  {id:"triage",  label:"AI triage or symptom checkers",      phrase:"AI triage tools",                   qs:[6,3,5,1,15]},
+  {id:"cds",     label:"Suggested orders or care plans",     phrase:"AI-suggested orders or care plans",               qs:[2,4,14,26,1]},
+  {id:"teach",   label:"AI-written patient education",       phrase:"AI-written patient education", qs:[2,3,9,13,12]},
+  {id:"agent",   label:"AI that sends messages or acts on its own", phrase:"AI that sends messages or acts on its own", qs:[26,20,21,1,22]},
+  {id:"none",    label:"None yet / not sure",                phrase:null,                                                      qs:[4,21,16,7]}
 ];
 
 const counts = [
@@ -1358,6 +1411,8 @@ const state = {
   setting:   null,   /* settings[].id      | null */
   impacts:   {},     /* id -> { count: "", note: "" }  (presence = selected)     */
   topics:    {},     /* id -> { note: "" }             (presence = selected)     */
+  tools:     {},     /* TOOLS[].id -> true                                        */
+  toolNames: "",
   own:       "",
   name: "", cred: "", years: "", org: "", orgCount: "",
   isNurse:   true,   /* false if non-nurse commenting */
@@ -1589,6 +1644,65 @@ radioKeys($("settingChips"), setSetting);
   });
 })();
 
+/* --- step 2: AI tool chips --- */
+(function buildTools(){
+  const host = $("toolChips");
+  host.innerHTML = "";
+  TOOLS.forEach(function(t){
+    const b = el("button", "chip");
+    b.type = "button";
+    b.dataset.tool = t.id;
+    b.setAttribute("aria-pressed", "false");
+    b.innerHTML = '<span class="tick" aria-hidden="true">&#10003;</span><span></span>';
+    b.lastChild.textContent = t.label;
+    host.appendChild(b);
+  });
+})();
+
+function syncToolChips(){
+  Array.prototype.forEach.call(document.querySelectorAll("[data-tool]"), function(b){
+    b.setAttribute("aria-pressed", state.tools[b.dataset.tool] ? "true" : "false");
+  });
+}
+
+function toggleTool(id){
+  if(state.tools[id]) delete state.tools[id];
+  else {
+    state.tools[id] = true;
+    /* "None yet" and real tools are mutually exclusive. */
+    if(id === "none") Object.keys(state.tools).forEach(function(k){ if(k !== "none") delete state.tools[k]; });
+    else delete state.tools.none;
+  }
+  syncToolChips();
+  filterTopics();
+}
+
+/* FDA question numbers suggested by the nurse's tools, most relevant first. */
+/* Sentence starters the nurse did not finish never reach the letter. */
+const STARTERS = ["In my work, I have seen", "FDA should require"];
+function cleanNote(note){
+  let t = (note || "").trim();
+  let changed = true;
+  while(changed){
+    changed = false;
+    STARTERS.forEach(function(st){
+      const re = new RegExp("(^|[.!?]\\s*)" + st + "[.…\\s]*$", "i");
+      if(re.test(t)){ t = t.replace(re, "$1").trim(); changed = true; }
+    });
+  }
+  return t;
+}
+
+function suggestedNums(){
+  const out = [];
+  const lists = TOOLS.filter(function(t){ return state.tools[t.id]; }).map(function(t){ return t.qs; });
+  /* Interleave so each chosen tool contributes its top question before anyone's second. */
+  for(let i = 0; i < 6; i++){
+    lists.forEach(function(l){ if(l[i] && out.indexOf(l[i]) === -1) out.push(l[i]); });
+  }
+  return out.slice(0, 6);
+}
+
 /* --- FDA question cards, searchable --- */
 /* Search state is a view setting, not part of the letter, so it is not saved. */
 const topicFilter = { query: "", theme: null };
@@ -1603,6 +1717,7 @@ const topicFilter = { query: "", theme: null };
       '<label class="card-head" for="chk-' + t.id + '">' +
         '<input type="checkbox" id="chk-' + t.id + '" data-topic="' + t.id + '">' +
         '<span class="card-txt">' +
+          '<span class="sug" hidden>Suggested for you</span>' +
           '<span class="card-title"></span>' +
           '<span class="card-sub"></span>' +
           '<span class="tag"></span>' +
@@ -1612,7 +1727,13 @@ const topicFilter = { query: "", theme: null };
         '<button type="button" class="peek" data-peek="' + t.id + '" aria-expanded="false" ' +
                 'aria-controls="ask-' + t.id + '">Read FDA\'s question</button>' +
         '<p class="quote" id="ask-' + t.id + '" hidden></p>' +
-        '<label for="note-' + t.id + '">Your answer, from your own practice. One or two sentences is plenty</label>' +
+        '<label for="note-' + t.id + '">Your answer, from your own practice</label>' +
+        '<p class="coach">The most useful answers say <b>what you saw</b> and <b>what FDA should require</b>. ' +
+          'Tap a starter, then finish the sentence.</p>' +
+        '<div class="starters">' +
+          '<button type="button" class="starter" data-starter="' + t.id + '" data-text="In my work, I have seen ">In my work, I have seen&hellip;</button>' +
+          '<button type="button" class="starter" data-starter="' + t.id + '" data-text="FDA should require ">FDA should require&hellip;</button>' +
+        '</div>' +
         '<textarea id="note-' + t.id + '" data-tnote="' + t.id + '" rows="3" ' +
                   'aria-describedby="phiOwn"></textarea>' +
         '<p class="phi"><span class="ic" aria-hidden="true">&#9888;</span>' +
@@ -1651,12 +1772,21 @@ function highlight(text, words){
   return out;
 }
 
-/* Checked questions always stay visible, so a search never hides part of the letter. */
+/* Checked questions always stay visible, so a search never hides part of the letter.
+   Questions that match the nurse's AI tools (step 2) are listed first. */
+function groupHead(id, text){
+  let h = $(id);
+  if(!h){ h = el("p", "qgroup"); h.id = id; }
+  h.textContent = text;
+  return h;
+}
 function filterTopics(){
   const words = topicFilter.query.toLowerCase().split(/\s+/).filter(Boolean);
   const theme = topicFilter.theme;
   /* Match from the start of a word, so "scribe" finds scribes but not "described". */
   const res = words.map(function(w){ return new RegExp("(^|[^a-z0-9])" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"); });
+  const sug = suggestedNums();
+  const filtering = !!(words.length || theme);
   let shown = 0;
   topics.forEach(function(t){
     const card = $("card-" + t.id);
@@ -1665,11 +1795,26 @@ function filterTopics(){
                   res.every(function(re){ return re.test(t._hay); });
     card.hidden = !(match || picked);
     if(match) shown++;
+    /* Group headings say "suggested" when browsing; the badge covers search results. */
+    card.querySelector(".sug").hidden = sug.indexOf(t.n) === -1 || !filtering;
     card.querySelector(".card-title").innerHTML = highlight(t.title, words);
     card.querySelector(".card-sub").innerHTML   = highlight(t.ask, words);
   });
+
+  /* Re-order: suggested first (in relevance order), then the rest by question number. */
+  const host = $("topics");
+  const bySug = sug.map(function(n){ return topics.filter(function(t){ return t.n === n; })[0]; });
+  const rest  = topics.filter(function(t){ return sug.indexOf(t.n) === -1; });
+  const showHeads = sug.length > 0 && !filtering;
+  const h1 = groupHead("grpSug", "Suggested for the tools you see at work");
+  const h2 = groupHead("grpRest", "All other FDA questions");
+  h1.hidden = h2.hidden = !showHeads;
+  host.appendChild(h1);
+  bySug.forEach(function(t){ host.appendChild($("card-" + t.id)); });
+  host.appendChild(h2);
+  rest.forEach(function(t){ host.appendChild($("card-" + t.id)); });
+
   const picked = selectedTopicIds().length;
-  const filtering = words.length || theme;
   $("topicCount").textContent =
     (filtering ? shown + " of " + topics.length + " questions match" : "All " + topics.length + " FDA questions") +
     (picked ? " · " + picked + " checked" : "");
@@ -1865,6 +2010,24 @@ document.addEventListener("click", function(e){
     return;
   }
 
+  const starter = e.target.closest("[data-starter]");
+  if(starter){
+    const id = starter.dataset.starter;
+    const box = $("note-" + id);
+    const cur = box.value.replace(/\s+$/, "");
+    const lead = cur ? (/[.!?]$/.test(cur) ? cur + " " : cur + ". ") : "";
+    box.value = lead + starter.dataset.text;
+    if(!state.topics[id]) state.topics[id] = { note: "" };
+    state.topics[id].note = box.value;
+    box.focus();
+    try { box.setSelectionRange(box.value.length, box.value.length); } catch(err){ /* cosmetic */ }
+    save(); refreshLetter();
+    return;
+  }
+
+  const tool = e.target.closest("[data-tool]");
+  if(tool){ toggleTool(tool.dataset.tool); save(); refreshLetter(); return; }
+
   const cred = e.target.closest("[data-cred]");
   if(cred){
     const v = cred.dataset.cred;
@@ -1949,6 +2112,7 @@ document.addEventListener("input", function(e){
     save(); refreshLetter(); return;
   }
   if(t.id === "freeText"){ state.own = t.value; save(); refreshLetter(); return; }
+  if(t.id === "fToolNames"){ state.toolNames = t.value; save(); refreshLetter(); return; }
   if(t.id === "fname")   { state.name = t.value; save(); refreshLetter(); return; }
   if(t.id === "fcred")   { state.cred = t.value; syncCredChips(); save(); refreshLetter(); return; }
   if(t.id === "fyears")  { state.years = t.value.replace(/[^0-9]/g, ""); t.value = state.years;
@@ -2038,13 +2202,16 @@ function goTo(n, focusHeading){
   $("goBtn").hidden   = !last;
   $("backBtn").style.visibility = n === 0 ? "hidden" : "visible";
   $("nextBtn").textContent =
-    ["Next: your patients", "Next: your words", "Next: sign it", "Next: review and send", ""][n];
+    ["Next: AI at your work", "Next: FDA's questions", "Next: sign it", "Next: review and send", ""][n];
 
   if(last) refreshLetter();
+  /* On phones the body can be the scrolling element (overflow-x:hidden), so reset both. */
   window.scrollTo(0, 0);
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
   if(focusHeading){
     const h = cur.querySelector("h2");
-    if(h){ h.setAttribute("tabindex", "-1"); h.focus(); }
+    if(h){ h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
     announce("Step " + (n + 1) + " of " + STEPS);
   }
 }
@@ -2116,7 +2283,7 @@ function buildLetter(){
   const tps    = selectedTopicIds();
   const own    = state.own.trim();
 
-  if(!impIds.length && !tps.length && !own) return "";
+  if(!impIds.length && !tps.length && !own && !Object.keys(state.tools).length) return "";
 
   const out = [];
   out.push("Re: " + CONFIG.ruleId + " — " + CONFIG.ruleTitle);
@@ -2138,6 +2305,23 @@ function buildLetter(){
     if(years) who += " with " + years + (years === "1" ? " year" : " years") + " of experience";
     out.push("I am " + who + (set ? " " + set.phrase : "") +
              ". I am submitting this comment in response to the request for feedback above.");
+  }
+
+  /* --- the AI tools this commenter actually encounters --- */
+  const toolPhrases = TOOLS.filter(function(t){ return state.tools[t.id] && t.phrase; })
+                           .map(function(t){ return t.phrase; });
+  const names = (state.toolNames || "").trim().replace(/\.$/, "");
+  if(toolPhrases.length){
+    /* Phrases can contain "or", so two or more are listed after a colon to stay readable. */
+    const list = toolPhrases.length === 1 ? toolPhrases[0]
+      : "these AI tools: " + toolPhrases.join("; ");
+    out.push(cap(our) + " comments come from direct experience with " + list + "." +
+             (names ? " Specifically: " + names + "." : ""));
+  } else if(state.tools.none){
+    out.push((isOrg ? "We have" : "I have") + " not yet worked directly with generative AI tools in patient care, " +
+             "but nurses will be among the clinicians who see and act on their outputs first.");
+  } else if(names){
+    out.push(cap(our) + " comments draw on experience with " + names + ".");
   }
 
   /* --- the nurse's own words come first --- */
@@ -2197,7 +2381,7 @@ function buildLetter(){
   /* Answers to FDA's numbered questions, in question order, labeled so FDA
      can file each one. Only the nurse's own words go in; no pre-written samples. */
   tps.forEach(function(id){
-    const note = ((state.topics[id] || {}).note || "").trim();
+    const note = cleanNote((state.topics[id] || {}).note);
     if(note) {
       const t = topics.filter(function(x){ return x.id === id; })[0];
       out.push("Regarding Question " + t.n + " (" + t.title.replace(/\?$/, "") + "): " +
@@ -2214,26 +2398,25 @@ function buildLetter(){
 function validateActionButtons(){
   /* Own words can come from the free-text box or from answers to FDA's questions. */
   const ownChars = state.own.trim().length +
-    Object.keys(state.topics).reduce(function(n, k){ return n + ((state.topics[k].note || "").trim().length); }, 0);
+    Object.keys(state.topics).reduce(function(n, k){ return n + cleanNote(state.topics[k].note).length; }, 0);
   const hasOriginalInput = ownChars >= 20;
   const attestationChecked = $("ckAttestation").checked;
   const canProceed = hasOriginalInput && attestationChecked;
 
-  $("copyBtn").disabled = !canProceed;
-  $("goBtn").disabled = !canProceed;
+  /* The Copy button stays pressable: a disabled button gives no reason, so a press
+     on a locked button explains exactly what is missing instead. */
+  sendLocked = !canProceed;
+  $("copyBtn").classList.toggle("locked", sendLocked);
+  $("copyBtn").setAttribute("aria-disabled", sendLocked ? "true" : "false");
 
   const reqNote = $("requirementNote");
-  if(canProceed){
-    reqNote.style.display = "none";
-    reqNote.textContent = "";
-  } else {
-    reqNote.style.display = "block";
-    const missing = [];
-    if(!hasOriginalInput) missing.push("Answer at least one FDA question, or add a few sentences of your own, in Step 3");
-    if(!attestationChecked) missing.push("Check the authenticity confirmation");
-    reqNote.textContent = "Before you can submit: " + missing.join(" and ");
-  }
+  const missing = [];
+  if(!hasOriginalInput) missing.push("answer at least one FDA question in step 3 (or add a few sentences of your own)");
+  if(!attestationChecked) missing.push("tick \u201cThis is my authentic voice\u201d above");
+  reqNote.hidden = canProceed;
+  reqNote.textContent = canProceed ? "" : "To unlock Copy letter: " + missing.join(", and ") + ".";
 }
+let sendLocked = true;
 
 function refreshLetter(){
   const generated = buildLetter();
@@ -2269,13 +2452,18 @@ function paintReview(){
              ? "My unit or organization" + (state.org.trim() ? " — " + state.org.trim() : "")
              : (state.mode === "me" ? "Just me" : null) },
     { step: 0, term: "Where you nurse", val: set ? set.label : null },
-    { step: 1, term: "Patients you have protected",
+    { step: 1, term: "AI tools you see at work",
+      val: (function(){
+        const l = TOOLS.filter(function(t){ return state.tools[t.id]; }).map(function(t){ return t.label; });
+        return l.length ? l.join(", ") : null;
+      })() },
+    { step: 1, term: "Patient-safety work",
       val: impIds.length
              ? impIds.length + (impIds.length === 1 ? " contribution" : " contributions") + " selected"
              : null },
     { step: 2, term: "FDA questions answered",
       val: (function(){
-        const answered = tps.filter(function(id){ return ((state.topics[id] || {}).note || "").trim(); });
+        const answered = tps.filter(function(id){ return cleanNote((state.topics[id] || {}).note); });
         if(!tps.length) return null;
         const nums = answered.map(function(id){ return "Q" + id.slice(1); }).join(", ");
         return answered.length
@@ -2313,7 +2501,7 @@ function paintReview(){
 function hasOwnWords(){
   return state.own.trim().length >= 20 ||
          Object.keys(state.impacts).some(function(k){ return (state.impacts[k].note || "").trim().length > 3; }) ||
-         Object.keys(state.topics).some(function(k){ return (state.topics[k].note || "").trim().length > 3; }) ||
+         Object.keys(state.topics).some(function(k){ return cleanNote(state.topics[k].note).length > 3; }) ||
          state.letterEdited !== null;
 }
 
@@ -2392,7 +2580,15 @@ function selectLetter(){
 
 function copyLetter(){
   const text = letterText();
-  if(!text.trim()) return;
+  if(sendLocked || !text.trim()){
+    const note = $("requirementNote");
+    note.hidden = false;
+    note.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+    note.classList.remove("pulse"); void note.offsetWidth; note.classList.add("pulse");
+    toast("One more thing before copying — see the note above");
+    announce(note.textContent);
+    return;
+  }
 
   const done = function(){
     state.copied = true;
@@ -2662,8 +2858,15 @@ function loadSaved(){
     role:     typeof s.role === "string" ? s.role : "",
     letterEdited: typeof s.letterEdited === "string" ? s.letterEdited : null,
     checklist: { phi: !!(s.checklist && s.checklist.phi), read: !!(s.checklist && s.checklist.read) },
-    copied: false   /* never restore "copied" — it must be true for this session */
+    copied: false,  /* never restore "copied" — it must be true for this session */
+    tools: {},
+    toolNames: typeof s.toolNames === "string" ? s.toolNames : ""
   };
+  if(s.tools && typeof s.tools === "object"){
+    Object.keys(s.tools).forEach(function(id){
+      if(TOOLS.some(function(t){ return t.id === id; }) && s.tools[id]) clean.tools[id] = true;
+    });
+  }
   if(s.impacts && typeof s.impacts === "object"){
     Object.keys(s.impacts).forEach(function(id){
       if(!IMPACTS[id]) return;   /* content changed since the draft was saved */
@@ -2691,6 +2894,9 @@ function dropSaved(){
 function applyState(s){
   Object.keys(s).forEach(function(k){ state[k] = s[k]; });
   $("freeText").value = state.own;
+  $("fToolNames").value = state.toolNames || "";
+  syncToolChips();
+  $("impactDetails").open = Object.keys(state.impacts || {}).length > 0;
   $("fname").value    = state.name;
   $("fcred").value    = state.cred;
   $("fyears").value   = state.years;
@@ -2727,7 +2933,7 @@ $("resetBtn").addEventListener("click", function(){
   dropSaved();
   /* Reset in place so nothing stale survives. */
   state.mode = null; state.setting = null;
-  state.impacts = {}; state.topics = {};
+  state.impacts = {}; state.topics = {}; state.tools = {}; state.toolNames = "";
   state.own = ""; state.name = ""; state.cred = ""; state.years = ""; state.org = ""; state.orgCount = "";
   state.isNurse = true; state.role = "";  /* Reset non-nurse state to prevent data leakage */
   state.letterEdited = null;

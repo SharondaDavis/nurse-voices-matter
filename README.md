@@ -19,8 +19,8 @@ Not identical copy-paste letters. Real voices. From ICUs and ERs and clinics and
 **Nurse Voices Matter** is a single-file web tool that takes about 10 minutes:
 
 1. **Tell us who you are** — your specialty, unit, credentials (all optional)
-2. **Count the patients you have protected** — 46 nursing contributions across 14 care settings, framed as the safety net AI tools will be deployed into
-3. **Answer FDA's questions** — search FDA's 26 questions by keyword ("alarm", "chatbot", "scribe") or theme, check the ones you know firsthand, and answer each in your own words. Answers go in the letter under FDA's question number.
+2. **AI at your work** — pick the AI tools you actually see (scribes, sepsis alerts, patient chatbots…). Optionally add the patient-safety work those tools step into, from 46 nursing contributions across 14 settings.
+3. **Answer FDA's questions** — the questions that match your tools come first. Search the rest by keyword ("alarm", "chatbot", "scribe") or theme. Sentence starters ("In my work, I have seen…", "FDA should require…") help each answer say what FDA can use. Answers go in the letter under FDA's question number.
 4. **Sign and send** — paste into the web form, print and mail, or share with colleagues
 
 No account. No tracking. No analytics. Everything stays on your device until you paste it yourself into the CMS comment form.
