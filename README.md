@@ -25,7 +25,7 @@ No account. Your letter stays on your device until you paste it yourself into th
 
 ## Three Ways to Use
 
-- **Online:** Open `Nurse Voices Matter.html` in any browser
+- **Online:** https://nursesvoicesmatter.com
 - **Print a flyer:** Break-room flyer with a QR code that opens the app
 - **Worksheet:** Print a blank form to fill by hand, then type it in later
 
