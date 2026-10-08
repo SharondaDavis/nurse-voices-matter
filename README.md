@@ -70,6 +70,7 @@ Identical letters get bundled as one comment. Yours counts because it's yours â€
 ## Technical
 
 - **No dependencies:** Single HTML file, runs anywhere
+- **Typeface:** Geist (SIL Open Font License), embedded in the page so it loads offline
 - **Offline:** Works without internet (zero network calls except the regulations.gov links you click)
 - **Private:** Everything stays in your browser; nothing is sent anywhere
 - **Saves automatically:** Your draft is saved locally as you type
