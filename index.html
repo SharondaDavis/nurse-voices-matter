@@ -681,6 +681,15 @@
   @media (prefers-reduced-motion:reduce){ .confirm.pulse{animation:none;box-shadow:inset 0 0 0 1.5px var(--accent);} }
   .confirm .sub{display:block;font-size:14px;color:var(--text-3);margin-top:3px;line-height:1.45;}
 
+  .orglink{margin:-14px 0 26px;}
+  .linkbtn2{background:none;border:0;padding:6px 0;font-family:var(--sans);font-size:14.5px;font-weight:500;
+            color:var(--i1);cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+  .linkbtn2:focus-visible{outline:none;box-shadow:var(--ring);border-radius:4px;}
+  .attest{margin:24px 0 0;font-size:14.5px;line-height:1.5;color:var(--text-2);background:var(--fill);
+          border-radius:14px;padding:14px 16px;}
+  .attest b{color:var(--text);font-weight:600;}
+  #copyBtn{white-space:normal;line-height:1.25;text-align:center;}
+
   /* buttons: pill primary, round back */
   .nav{background:linear-gradient(rgba(255,255,255,0), #fff 30%);border-top:0;padding-top:22px;gap:10px;}
   .btn{border-radius:999px;font-family:var(--sans);font-weight:600;font-size:16px;letter-spacing:-.01em;min-height:54px;
@@ -808,13 +817,13 @@
     <section class="slide" id="s0" aria-labelledby="h0">
       <p class="step-n">Step 1 of 4</p>
       <h2 id="h0">Tell us who you are</h2>
-      <p class="lede">It takes about 5 minutes. Start with two quick taps.</p>
+      <p class="lede">It takes about 5 minutes. Start with one tap.</p>
 
       <div class="alert" id="alert0" role="alert">
         <span class="ic" aria-hidden="true">&#9888;</span><span id="alert0txt"></span>
       </div>
 
-      <fieldset>
+      <fieldset id="modeField" hidden>
         <legend id="lgMode">Who is this letter from?</legend>
         <div class="chips" role="radiogroup" aria-labelledby="lgMode" id="modeChips"></div>
         <details class="disc" id="orgHelp" hidden>
@@ -830,6 +839,8 @@
         <legend id="lgSet">Where do you work?</legend>
         <div class="chips" role="radiogroup" aria-labelledby="lgSet" id="settingChips"></div>
       </fieldset>
+
+      <p class="orglink" id="orgLinkWrap"><button type="button" class="linkbtn2" id="orgLink">Writing for a unit or organization?</button></p>
 
       <fieldset class="notnurse">
         <label class="toggle">
@@ -971,18 +982,15 @@
         <button type="button" class="btn ghost" id="dlBtn">Download as a text file</button>
       </div>
 
-      <label class="confirm" for="ckAttestation">
-        <input type="checkbox" id="ckAttestation">
-        <span><b>I wrote this, and it doesn't identify any patient.</b>
-          <span class="sub">It reflects my own experience and views. No names, dates, record numbers or details that could single someone out.</span></span>
-      </label>
+      <p class="attest">The button below confirms that <b>you wrote this</b> and that it <b>doesn't identify any
+        patient</b>: no names, dates, record numbers or details that could single someone out.</p>
       <p id="requirementNote" class="reqnote" role="status" hidden></p>
 
       <div class="sendbox">
         <h3>How to send it</h3>
         <ol class="sendsteps">
-          <li>Press <b>Copy letter</b>, then <b>Open the comment page</b>. On regulations.gov, tap the blue
-            <b>Comment</b> button.</li>
+          <li>Press <b>Copy &amp; open the FDA form</b>. Your letter is copied and regulations.gov opens.
+            Tap the blue <b>Comment</b> button there.</li>
           <li><b>Comment:</b> paste your letter. The box holds 5,000 characters.</li>
           <li><b>What is your comment about?</b> Choose <b id="catChoice">Health Professional - A0007</b>.
             <span id="catWhy"></span></li>
@@ -1060,7 +1068,7 @@
     </button>
     <button type="button" class="btn" id="nextBtn">Next</button>
     <button type="button" class="btn" id="copyBtn" hidden>Copy letter</button>
-    <a class="btn ghost" id="goBtn" hidden href="#" target="_blank" rel="noopener noreferrer">Open the comment page</a>
+    <a class="btn ghost" id="goBtn" hidden href="#" target="_blank" rel="noopener noreferrer">Open the FDA form again</a>
   </div>
 
   <footer class="foot">
@@ -1725,7 +1733,7 @@ function programPhrase(p){ return /Program$/.test(p) && !/^the /i.test(p) ? "the
 /* One object holds everything. Every render reads from here, so switching
    settings can never leave a stale selection hidden in the DOM. */
 const state = {
-  mode:      null,   /* "me" | "org" | null — no default, step 1 requires a choice */
+  mode:      "me",   /* "me" | "org" — most nurses write for themselves; groups opt in via a link */
   setting:   null,   /* settings[].id      | null */
   impacts:   {},     /* id -> { count: "", note: "" }  (presence = selected)     */
   topics:    {},     /* id -> { note: "" }             (presence = selected)     */
@@ -2367,7 +2375,14 @@ function setSetting(v){
     }
   }
   announce("Questions set for " + settingById(v).label + ". Nothing has been chosen for you.");
+  /* One tap is the whole step for most nurses: move on after a beat so the
+     selection is visible first. Groups and non-nurses still use Next. */
+  if(step === 0 && state.mode === "me" && state.isNurse && !reduceAutoAdvance){
+    clearTimeout(setSetting._t);
+    setSetting._t = setTimeout(function(){ if(step === 0) goTo(1, true); }, 380);
+  }
 }
+let reduceAutoAdvance = false;
 
 function settingById(id){
   for(let i = 0; i < settings.length; i++) if(settings[i].id === id) return settings[i];
@@ -2474,7 +2489,17 @@ document.addEventListener("change", function(e){
     if(t.checked){ if(!state.topics[id]) state.topics[id] = { note: "" }; }
     else { delete state.topics[id]; }
     t.closest(".card").classList.toggle("on", t.checked);
-    if(t.checked){ const box = $("note-" + id); if(box) box.focus({ preventScroll: true }); }
+    if(t.checked){
+      const box = $("note-" + id);
+      if(box){
+        if(!box.value.trim()){
+          box.value = "In my work, I have seen ";
+          state.topics[id].note = box.value;
+        }
+        box.focus({ preventScroll: true });
+        try { box.setSelectionRange(box.value.length, box.value.length); } catch(err){ /* cosmetic */ }
+      }
+    }
     filterTopics();
     save(); refreshLetter();
     return;
@@ -2590,7 +2615,7 @@ function goTo(n, focusHeading){
   const last = n === STEPS - 1;
   $("nextBtn").hidden = last;
   $("copyBtn").hidden = !last;
-  $("goBtn").hidden   = !last;
+  $("goBtn").hidden   = !last || !state.copied;   /* fallback link, only after the first copy */
   $("backBtn").hidden = n === 0;
   $("nextBtn").textContent =
     ["Next: AI at your work", "Next: FDA's questions", "Next: sign and send", ""][n];
@@ -2787,8 +2812,7 @@ function validateActionButtons(){
   const ownChars = state.own.trim().length +
     Object.keys(state.topics).reduce(function(n, k){ return n + cleanNote(state.topics[k].note).length; }, 0);
   const hasOriginalInput = ownChars >= 20;
-  const attestationChecked = $("ckAttestation").checked;
-  const canProceed = hasOriginalInput && attestationChecked;
+  const canProceed = hasOriginalInput;   /* pressing the button is the confirmation */
 
   /* The Copy button stays pressable: a disabled button gives no reason, so a press
      on a locked button explains exactly what is missing instead. */
@@ -2798,17 +2822,17 @@ function validateActionButtons(){
   cb.setAttribute("aria-disabled", sendLocked ? "true" : "false");
   /* The button itself says what is still needed, so no pop-up is required. */
   if(sendLocked){
-    cb.textContent = !hasOriginalInput ? "Answer a question to copy" : "Tick the box above to copy";
-  } else if(/to copy$/.test(cb.textContent)){
-    cb.textContent = state.copied ? "\u2713 Copied — copy again" : "Copy letter";
+    cb.textContent = "Answer a question first";
+  } else if(!state.copied){
+    cb.textContent = "I wrote this \u00b7 Copy & open the FDA form";
   }
 
   const reqNote = $("requirementNote");
   const missing = [];
-  if(!hasOriginalInput) missing.push("answer at least one FDA question in step 3");
-  if(!attestationChecked) missing.push("tick the box above to confirm you wrote it");
-  reqNote.hidden = canProceed || hasOriginalInput;   /* the button label covers the tick-box case */
-  reqNote.textContent = canProceed ? "" : "To unlock Copy letter: " + missing.join(", and ") + ".";
+  if(!hasOriginalInput) missing.push("answer at least one question in step 3");
+  reqNote.hidden = canProceed;
+  reqNote.innerHTML = canProceed ? "" : "Your letter needs a sentence of your own. " +
+    '<button type="button" class="linkbtn2" data-go="2">Go back and answer a question</button>';
 }
 let sendLocked = true;
 
@@ -2821,7 +2845,7 @@ function paintSendGuide(){
     why = "You're writing on behalf of a unit or organization. Choose Individual instead if you don't have permission to speak for it.";
   } else if(named){
     pick = "An Individual";
-    why = "That matches the name on your letter.";
+    why = "You'll type your name again there. To skip that, choose Anonymous: the name in your letter still shows.";
   } else {
     pick = "Anonymous";
     why = "Your letter isn't signed with a name. If you'd like an email confirmation, choose An Individual instead; anonymous comments can't get one.";
@@ -2976,13 +3000,11 @@ function selectLetter(){
 function copyLetter(){
   const text = letterText();
   if(sendLocked || !text.trim()){
-    /* Take them to the thing that is missing and highlight it. */
-    const confirm = document.querySelector("label.confirm");
-    const target = $("ckAttestation").checked ? $("requirementNote") : confirm;
+    const target = $("requirementNote");
+    target.hidden = false;
     target.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
     target.classList.remove("pulse"); void target.offsetWidth; target.classList.add("pulse");
-    if(target === confirm) $("ckAttestation").focus({ preventScroll: true });
-    announce($("requirementNote").textContent);
+    announce("Your letter needs a sentence of your own. Go back to step 3 and answer a question.");
     return;
   }
 
@@ -2998,11 +3020,11 @@ function copyLetter(){
       word_count: letterText().trim().split(/\s+/).length
     });
 
-    $("copyBtn").textContent = "✓ Copied — copy again";
+    $("copyBtn").textContent = "\u2713 Copied \u00b7 copy again";
+    $("goBtn").hidden = false;
     paintChecklist();
-    toast("Copied. Now paste it into the comment page.");
-    announce("Letter copied to the clipboard.");
-    $("goBtn").focus();
+    toast("Copied. Paste it into the FDA comment box.");
+    announce("Letter copied. The FDA comment form opened in a new tab.");
     save();
   };
   const failed = function(err){
@@ -3017,12 +3039,19 @@ function copyLetter(){
     if(window.console && console.warn) console.warn("clipboard", err);
   };
 
+  /* Copy synchronously first (still inside the tap), then open the form in the
+     same tap so pop-up blockers allow it. Fall back to the async clipboard. */
+  const openForm = function(){
+    const url = periodClosed ? CONFIG.docketUrl : CONFIG.commentUrl;
+    const w = window.open(url, "_blank", "noopener");
+    if(!w) $("goBtn").hidden = false;   /* blocked: the visible link still works */
+  };
+  if(legacyCopy(text)){ done(); openForm(); return; }
   if(navigator.clipboard && window.isSecureContext){
-    navigator.clipboard.writeText(text).then(done).catch(function(err){
-      if(!legacyCopy(text)) failed(err); else done();
-    });
+    navigator.clipboard.writeText(text).then(function(){ done(); }).catch(failed);
+    openForm();
   } else {
-    if(legacyCopy(text)) done(); else failed(new Error("no clipboard API"));
+    failed(new Error("no clipboard available"));
   }
 }
 
@@ -3046,7 +3075,13 @@ function legacyCopy(text){
 
 $("copyBtn").addEventListener("click", copyLetter);
 
-$("ckAttestation").addEventListener("change", validateActionButtons);
+$("orgLink").addEventListener("click", function(){
+  $("modeField").hidden = false;
+  $("orgLinkWrap").hidden = true;
+  const first = $("modeChips").querySelector('[role="radio"]');
+  if(first) first.focus();
+});
+
 
 $("shareBtn").addEventListener("click", function(){
   const msg = "FDA is asking for feedback on how AI medical devices, like patient chatbots and early-warning alerts, should be regulated. " +
@@ -3242,7 +3277,7 @@ function loadSaved(){
 
   const s = parsed.state;
   const clean = {
-    mode:    (s.mode === "me" || s.mode === "org") ? s.mode : null,
+    mode:    s.mode === "org" ? "org" : "me",
     setting: settingById(s.setting) ? s.setting : null,
     impacts: {}, topics: {},
     own:      typeof s.own === "string" ? s.own : "",
@@ -3303,6 +3338,8 @@ function applyState(s){
   $("roleField").hidden = state.isNurse;
   $("settingChips").parentNode.hidden = !state.isNurse;
   syncRadioGroup($("modeChips"), state.mode);
+  $("modeField").hidden = state.mode !== "org";
+  $("orgLinkWrap").hidden = state.mode === "org";
   syncRadioGroup($("settingChips"), state.setting);
   syncCredChips();
   $("orgHelp").hidden = state.mode !== "org";
@@ -3329,7 +3366,7 @@ $("resetBtn").addEventListener("click", function(){
   if(!ok) return;
   dropSaved();
   /* Reset in place so nothing stale survives. */
-  state.mode = null; state.setting = null;
+  state.mode = "me"; state.setting = null;
   state.impacts = {}; state.topics = {}; state.tools = {};
   state.own = ""; state.name = ""; state.cred = ""; state.years = ""; state.org = ""; state.orgCount = "";
   state.isNurse = true; state.role = "";  /* Reset non-nurse state to prevent data leakage */
