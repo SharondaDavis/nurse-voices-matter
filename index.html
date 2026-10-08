@@ -577,6 +577,17 @@
   .qcard .card-head{position:relative;align-items:center;}
   .qcard .card-head input{position:absolute;opacity:0;width:1px;height:1px;margin:0;pointer-events:none;}
   .qcard:focus-within{border-color:var(--accent);}
+  .qcard .card-sub:empty{display:none;}
+  .qcard .card-title{font-size:17px;line-height:1.35;}
+  .fakein{display:flex;align-items:center;margin-top:12px;min-height:46px;padding:0 14px;border-radius:12px;
+          background:var(--fill);color:#8C9A9F;font-size:15px;font-weight:400;
+          box-shadow:inset 0 0 0 1px transparent;transition:box-shadow .15s, background .15s;}
+  .fakein::before{content:"";width:16px;height:16px;margin-right:10px;flex:none;background:currentColor;
+          -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20h9'/%3E%3Cpath d='M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z'/%3E%3C/svg%3E") center/contain no-repeat;
+                  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20h9'/%3E%3Cpath d='M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z'/%3E%3C/svg%3E") center/contain no-repeat;}
+  .qcard.on .fakein{display:none;}
+  .qcard .tag{margin-top:10px;}
+  h2:focus, h2:focus-visible{outline:none;}
   .qcard .act{flex:none;align-self:center;font-size:14px;font-weight:550;border-radius:999px;padding:8px 15px;
               background:var(--accent-soft);color:var(--i1);white-space:nowrap;transition:background .15s, color .15s;}
   .qcard .act .a-on{display:none;}
@@ -701,7 +712,7 @@
     .chip[aria-checked="true"]:hover, .chip[aria-pressed="true"]:hover{background:var(--accent-soft);}
     .card:hover{border-color:var(--line-2);}
     .card.on:hover{border-color:var(--accent);}
-    .qcard:not(.on):hover .act{background:var(--accent);color:#fff;}
+    .qcard:not(.on):hover .fakein{box-shadow:inset 0 0 0 1.5px var(--accent);background:#fff;}
     .starter:hover{box-shadow:inset 0 0 0 1px var(--text-3);}
     .moreq:hover{background:var(--fill-2);}
     .btn:hover{background:var(--i1);}
@@ -852,7 +863,7 @@
     <!-- ══════════════ STEP 3 ══════════════ -->
     <section class="slide" id="s2" aria-labelledby="h2s" hidden>
       <p class="step-n">Step 3 of 4</p>
-      <h2 id="h2s">Answer one or two of FDA's questions</h2>
+      <h2 id="h2s">What have you seen at work?</h2>
       <p class="lede" id="topicLede">These fit the tools you picked. <b>Tap a question</b>, then write a sentence or two
         about what you've seen at work.</p>
 
@@ -2002,6 +2013,38 @@ function suggestedNums(){
   return out.slice(0, 4);
 }
 
+/* What each FDA question asks a nurse, in her own terms. Shown as the card title;
+   FDA's wording stays one tap away ("Read FDA's question"). */
+const NURSE_PROMPTS = {
+  1:"Have you had to act on an AI alert in a rush, or seen harm that couldn't be undone?",
+  2:"Have patients or staff treated an AI suggestion like an order?",
+  3:"Have patients been confused or misled by a chatbot or portal reply?",
+  4:"Are you often the first person to see and act on an AI alert or score?",
+  5:"Have patients kept asking a chatbot until it told them what they wanted to hear?",
+  6:"Have alerts missed a sick patient, or gone off so often that people ignore them?",
+  7:"Has an AI tool worked in the demo but not on your unit?",
+  8:"Which AI tools do you think need the most proof before they're used?",
+  9:"Is AI output hard for you or your patients to understand?",
+  10:"Has an AI tool struggled with real, messy charts?",
+  11:"Should AI tools be tried on real patients before they're used everywhere?",
+  12:"Are some of your patients left out when tools are tested?",
+  13:"What about your patients would fake test data miss?",
+  14:"Should AI meet the standard of care, or just match a busy, short-staffed clinician?",
+  15:"Do your patients struggle to reach a nurse or clinician at all?",
+  16:"Should frontline nurses help test AI tools before they launch?",
+  17:"Has an ambient scribe or recording tool gotten something wrong?",
+  18:"Who ends up watching AI tools after they go live on your unit?",
+  19:"How easy is it to report an AI tool when it gets something wrong?",
+  20:"Have you noticed problems with a tool that an automated check would miss?",
+  21:"What happens to a nurse who reports a problem with a tool?",
+  22:"Has a system update changed how a tool behaved, without warning?",
+  23:"What should staff be told before an AI tool changes?",
+  24:"Do you know which company's AI runs the tools you use?",
+  25:"What do you need to know about a tool's weak spots?",
+  26:"Is AI placing orders or sending messages with no one checking first?"
+};
+topics.forEach(function(t){ t.nurse = NURSE_PROMPTS[t.n] || t.title; });
+
 /* --- FDA question cards, searchable --- */
 /* Search state is a view setting, not part of the letter, so it is not saved. */
 const topicFilter = { query: "", theme: null, top: null };  /* top: ids pinned to the top list */
@@ -2019,15 +2062,15 @@ const topicFilter = { query: "", theme: null, top: null };  /* top: ids pinned t
           '<span class="sug" hidden>Suggested for you</span>' +
           '<span class="card-title"></span>' +
           '<span class="card-sub"></span>' +
+          '<span class="fakein" aria-hidden="true">Tap to write your answer</span>' +
           '<span class="tag"></span>' +
         '</span>' +
-        '<span class="act" aria-hidden="true"><span class="a-off">Answer</span><span class="a-on">&#10003; Answering</span></span>' +
       '</label>' +
       '<div class="card-body">' +
         '<button type="button" class="peek" data-peek="' + t.id + '" aria-expanded="false" ' +
                 'aria-controls="ask-' + t.id + '">Read FDA\'s question</button>' +
         '<p class="quote" id="ask-' + t.id + '" hidden></p>' +
-        '<label for="note-' + t.id + '">Your answer, from your own practice</label>' +
+        '<label for="note-' + t.id + '">Your answer</label>' +
         '<p class="coach">The most useful answers say <b>what you saw</b> and <b>what FDA should require</b>. ' +
           'Tap a starter, then finish the sentence.</p>' +
         '<div class="starters">' +
@@ -2039,10 +2082,10 @@ const topicFilter = { query: "", theme: null, top: null };  /* top: ids pinned t
         '<p class="phi"><span class="ic" aria-hidden="true">&#9888;</span>' +
         '<span>Nothing that could identify a patient, please.</span></p>' +
       '</div>';
-    card.querySelector(".tag").textContent   = "Question " + t.n + " · " + SECTIONS[t.sec];
+    card.querySelector(".tag").textContent   = "Answers FDA question " + t.n;
     card.querySelector(".quote").textContent = "FDA question " + t.n + ": " + t.fda;
     card.querySelector("#note-" + t.id).placeholder = "e.g. " + t.promptHint;
-    t._hay = [t.title, t.ask, t.fda, t.kw, t.themes.join(" "), SECTIONS[t.sec],
+    t._hay = [t.nurse, t.title, t.ask, t.fda, t.kw, t.themes.join(" "), SECTIONS[t.sec],
               "q" + t.n, "question " + t.n].join(" ").toLowerCase();
     host.appendChild(card);
   });
@@ -2099,8 +2142,8 @@ function filterTopics(){
     const card = $("card-" + t.id);
     card.hidden = false;
     card.querySelector(".sug").hidden = true;
-    card.querySelector(".card-title").textContent = t.title;
-    card.querySelector(".card-sub").textContent = t.ask;
+    card.querySelector(".card-title").textContent = t.nurse;
+    card.querySelector(".card-sub").textContent = "";
   });
   placeInOrder($("topicsSug"), top);
   rest.forEach(function(t){
@@ -2110,14 +2153,14 @@ function filterTopics(){
     card.hidden = !match;
     if(match) shown++;
     card.querySelector(".sug").hidden = true;
-    card.querySelector(".card-title").innerHTML = highlight(t.title, words);
-    card.querySelector(".card-sub").innerHTML   = highlight(t.ask, words);
+    card.querySelector(".card-title").innerHTML = highlight(t.nurse, words);
+    card.querySelector(".card-sub").textContent = "";
   });
   placeInOrder($("topics"), rest);
 
   const anyTools = Object.keys(state.tools).some(function(k){ return k !== "none"; });
-  $("topicLede").innerHTML = (anyTools ? "These fit the tools you picked. " : "These are good places to start. ") +
-    "<b>Tap a question</b>, then write a sentence or two about what you've seen at work.";
+  $("topicLede").innerHTML = (anyTools ? "Based on the tools you picked. " : "") +
+    "Tap any question you have a story for and write a sentence or two. <b>One answer is enough.</b>";
   $("topicCount").textContent = filtering
     ? shown + (shown === 1 ? " question matches" : " questions match")
     : rest.length + " more questions";
