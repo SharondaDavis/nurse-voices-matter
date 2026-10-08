@@ -658,6 +658,10 @@
   .confirm input:focus-visible{outline:none;box-shadow:var(--ring);}
   .confirm:has(input:checked){background:var(--accent-soft);box-shadow:inset 0 0 0 1.5px var(--accent);}
   .confirm b{font-weight:600;font-size:15.5px;color:var(--text);}
+  .confirm.pulse{animation:cpulse .9s ease-out;}
+  @keyframes cpulse{0%{box-shadow:0 0 0 0 rgba(15,118,110,.45), inset 0 0 0 1.5px var(--accent);}
+                    100%{box-shadow:0 0 0 14px rgba(15,118,110,0), inset 0 0 0 1.5px var(--accent);}}
+  @media (prefers-reduced-motion:reduce){ .confirm.pulse{animation:none;box-shadow:inset 0 0 0 1.5px var(--accent);} }
   .confirm .sub{display:block;font-size:14px;color:var(--text-3);margin-top:3px;line-height:1.45;}
 
   /* buttons: pill primary, round back */
@@ -686,7 +690,10 @@
   .foot .linkbtn{color:var(--hot);text-decoration:none;}
 
   /* toast */
-  .toast{background:var(--text);font-weight:500;border-radius:999px;box-shadow:var(--shadow-md);}
+  .toast{top:calc(env(safe-area-inset-top) + 86px);bottom:auto;transform:translate(-50%,-10px);
+         background:var(--text);font-weight:500;font-size:14px;border-radius:999px;padding:10px 16px;
+         box-shadow:var(--shadow-md);max-width:min(92vw,420px);}
+  .toast.show{transform:translate(-50%,0);}
 
   @media (hover:hover){
     .iconbtn:hover{background:var(--fill);color:var(--text);}
@@ -2726,14 +2733,21 @@ function validateActionButtons(){
   /* The Copy button stays pressable: a disabled button gives no reason, so a press
      on a locked button explains exactly what is missing instead. */
   sendLocked = !canProceed;
-  $("copyBtn").classList.toggle("locked", sendLocked);
-  $("copyBtn").setAttribute("aria-disabled", sendLocked ? "true" : "false");
+  const cb = $("copyBtn");
+  cb.classList.toggle("locked", sendLocked);
+  cb.setAttribute("aria-disabled", sendLocked ? "true" : "false");
+  /* The button itself says what is still needed, so no pop-up is required. */
+  if(sendLocked){
+    cb.textContent = !hasOriginalInput ? "Answer a question to copy" : "Tick the box above to copy";
+  } else if(/to copy$/.test(cb.textContent)){
+    cb.textContent = state.copied ? "\u2713 Copied — copy again" : "Copy letter";
+  }
 
   const reqNote = $("requirementNote");
   const missing = [];
   if(!hasOriginalInput) missing.push("answer at least one FDA question in step 3");
   if(!attestationChecked) missing.push("tick the box above to confirm you wrote it");
-  reqNote.hidden = canProceed;
+  reqNote.hidden = canProceed || hasOriginalInput;   /* the button label covers the tick-box case */
   reqNote.textContent = canProceed ? "" : "To unlock Copy letter: " + missing.join(", and ") + ".";
 }
 let sendLocked = true;
@@ -2889,12 +2903,13 @@ function selectLetter(){
 function copyLetter(){
   const text = letterText();
   if(sendLocked || !text.trim()){
-    const note = $("requirementNote");
-    note.hidden = false;
-    note.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
-    note.classList.remove("pulse"); void note.offsetWidth; note.classList.add("pulse");
-    toast("One more thing before copying — see the note above");
-    announce(note.textContent);
+    /* Take them to the thing that is missing and highlight it. */
+    const confirm = document.querySelector("label.confirm");
+    const target = $("ckAttestation").checked ? $("requirementNote") : confirm;
+    target.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+    target.classList.remove("pulse"); void target.offsetWidth; target.classList.add("pulse");
+    if(target === confirm) $("ckAttestation").focus({ preventScroll: true });
+    announce($("requirementNote").textContent);
     return;
   }
 
