@@ -562,8 +562,8 @@
   .card-body label{font-weight:600;font-size:14.5px;margin:6px 0 4px;}
   .card textarea{min-height:100px;}
   .peek{color:var(--accent-ink);font-weight:500;font-size:14px;text-decoration:none;padding:4px 0;}
-  .peek::after{content:" \203A";}
-  .quote{background:var(--fill);border:0;border-radius:12px;font-size:14.5px;}
+  .quote{background:var(--fill);border:0;border-radius:12px;font-size:14.5px;font-family:var(--sans);color:var(--text-2);}
+  .quote a{display:inline-block;margin-top:6px;color:var(--i1);font-weight:500;}
   .coach{color:var(--text-3);font-size:14px;}
   .coach b{color:var(--text-2);font-weight:600;}
   .starters{gap:6px;}
@@ -1058,7 +1058,7 @@
 
   <footer class="foot">
     <p class="foot-lead"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-      Your draft stays on this device. Nothing is sent until you paste it yourself.</p>
+      Your letter stays on this device until you paste it. We count visits, never your name or words.</p>
     <details class="foot-more">
       <summary>Privacy and saving details</summary>
       <p id="privacyText"></p>
@@ -1175,7 +1175,8 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    PUBLIC COMMENT BUILDER FOR NURSES (currently: FDA docket FDA-2026-N-7874)
    One static HTML file. No frameworks, no build step, no network calls,
-   no analytics, no cookies. Everything runs in the visitor's browser.
+   no cookies of our own. Everything runs in the visitor's browser. Google Analytics
+   (in <head>) counts visits and copy events; it never receives typed text or names.
 
    ── HOW TO UPDATE FOR THE NEXT RULE CYCLE ────────────────────────────────
    1. CONFIG below is the only place with rule-specific facts. Update every
@@ -1211,6 +1212,8 @@ const CONFIG = {
      Comment button for the open document, so both links point at the docket. */
   commentUrl:  "https://www.regulations.gov/docket/FDA-2026-N-7874",
   docketUrl:   "https://www.regulations.gov/docket/FDA-2026-N-7874",
+  /* The discussion paper; its Appendix B lists the 26 questions in full. */
+  paperUrl:    "https://www.fda.gov/media/194242/download",
 
   /* Feedback period close per FDA's discussion-paper page: October 19, 2026.
      regulations.gov closes at 11:59 PM Eastern; EDT = UTC-4. */
@@ -2014,7 +2017,7 @@ function suggestedNums(){
 }
 
 /* What each FDA question asks a nurse, in her own terms. Shown as the card title;
-   FDA's wording stays one tap away ("Read FDA's question"). */
+   A short summary of FDA's question, with a link to the full text, is one tap away. */
 const NURSE_PROMPTS = {
   1:"Have you had to act on an AI alert in a rush, or seen harm that couldn't be undone?",
   2:"Have patients or staff treated an AI suggestion like an order?",
@@ -2068,7 +2071,7 @@ const topicFilter = { query: "", theme: null, top: null };  /* top: ids pinned t
       '</label>' +
       '<div class="card-body">' +
         '<button type="button" class="peek" data-peek="' + t.id + '" aria-expanded="false" ' +
-                'aria-controls="ask-' + t.id + '">Read FDA\'s question</button>' +
+                'aria-controls="ask-' + t.id + '">What FDA is asking</button>' +
         '<p class="quote" id="ask-' + t.id + '" hidden></p>' +
         '<label for="note-' + t.id + '">Your answer</label>' +
         '<p class="coach">The most useful answers say <b>what you saw</b> and <b>what FDA should require</b>. ' +
@@ -2083,7 +2086,12 @@ const topicFilter = { query: "", theme: null, top: null };  /* top: ids pinned t
         '<span>Nothing that could identify a patient, please.</span></p>' +
       '</div>';
     card.querySelector(".tag").textContent   = "Answers FDA question " + t.n;
-    card.querySelector(".quote").textContent = "FDA question " + t.n + ": " + t.fda;
+    const q = card.querySelector(".quote");
+    q.textContent = "In short, FDA question " + t.n + " asks: " + t.fda + " ";
+    const src = el("a");
+    src.href = CONFIG.paperUrl; src.target = "_blank"; src.rel = "noopener noreferrer";
+    src.textContent = "Full wording (FDA paper, Appendix B)";
+    q.appendChild(src);
     card.querySelector("#note-" + t.id).placeholder = "e.g. " + t.promptHint;
     t._hay = [t.nurse, t.title, t.ask, t.fda, t.kw, t.themes.join(" "), SECTIONS[t.sec],
               "q" + t.n, "question " + t.n].join(" ").toLowerCase();
@@ -2430,7 +2438,7 @@ document.addEventListener("click", function(e){
     const p = $("ask-" + peek.dataset.peek);
     p.hidden = !p.hidden;
     peek.setAttribute("aria-expanded", p.hidden ? "false" : "true");
-    peek.textContent = p.hidden ? "Read FDA's question" : "Hide FDA's question";
+    peek.textContent = p.hidden ? "What FDA is asking" : "Hide what FDA is asking";
     return;
   }
 
@@ -3156,8 +3164,9 @@ $("fallbackNote").innerHTML =
   "Comments are due by " + CONFIG.deadlineLabel + "; regulations.gov is the authority on the exact time.";
 
 $("privacyText").textContent =
-  "This page sends nothing over the internet by default. Everything you type stays in this browser " +
-  "until you paste it into the comment page yourself. " +
+  "Everything you type stays in this browser until you paste it into the comment page yourself. " +
+  "We use Google Analytics to count visits and how many letters are copied, with your setting and a few " +
+  "counts (such as word count). It never receives your name, your letter, or anything you type. " +
   "If you opt in to 'Help us measure reach,' we send your specialty and a timestamp (no name, no content) " +
   "to help us count how many nurses are using this tool. " +
   "Once you submit a comment to " + CONFIG.agency + " it becomes part of a public record that anyone can read, " +

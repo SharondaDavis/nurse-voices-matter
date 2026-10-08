@@ -6,13 +6,11 @@ A tool for bedside nurses to tell federal regulators what they see at the bedsid
 
 ## The Why
 
-Medicare policy decides how patient care is paid for — including whether nursing work is visible, countable, and reimbursable. Right now, most nursing care is bundled into room-and-board or folded into other clinicians' billing. It's invisible in claims data. It's ineligible for reimbursement. Yet nurses are held accountable for the outcomes CMS measures and pays for.
+AI tools are already at the bedside: sepsis alerts, ambient scribes, patient chatbots, suggested orders. FDA is now deciding how generative AI medical devices should be tested before approval and watched after launch. Nurses are often the first clinicians to see an AI output and act on it, and the last check before it reaches a patient. FDA's discussion paper asks 26 questions, and it doesn't name nurses as users.
 
-This is the misalignment. And CMS is listening. They've opened a comment period on the 2027 Medicare Physician Fee Schedule (CMS-1848-P), and they want to hear from nurses.
+**The goal: unique nurse comments, in nurses' own words, by October 19, 2026.**
 
-**The goal: 100,000 unique nurse comments by September 14, 2026.**
-
-Not identical copy-paste letters. Real voices. From ICUs and ERs and clinics and home health and everywhere nursing happens. The kind of comment that says: "I am a nurse. Here is what I do. Here is how it matters. Here is what needs to change."
+Not identical copy-paste letters. Real voices. From ICUs and ERs and clinics and home health and everywhere nursing happens. The kind of comment that says: "I am a nurse. Here is what I've seen these tools do. Here is what FDA should require."
 
 ## How It Works
 
@@ -23,7 +21,7 @@ Not identical copy-paste letters. Real voices. From ICUs and ERs and clinics and
 3. **Answer FDA's questions** — the questions that match your tools come first. Search the rest by keyword ("alarm", "chatbot", "scribe") or theme. Sentence starters ("In my work, I have seen…", "FDA should require…") help each answer say what FDA can use. Answers go in the letter under FDA's question number.
 4. **Sign and send** — add credentials (optional), read the letter, tick one confirmation, then paste into the web form. Print and share options are below.
 
-No account. No tracking. No analytics. Everything stays on your device until you paste it yourself into the CMS comment form.
+No account. Your letter stays on your device until you paste it yourself into the FDA comment form. Google Analytics counts visits and copied letters; it never receives names or letter text.
 
 ## Three Ways to Use
 
@@ -43,10 +41,10 @@ No account. No tracking. No analytics. Everything stays on your device until you
 
 Your comment should cover four things:
 
-1. **Who you are** — unit, specialty, credentials
-2. **Work you do that Medicare doesn't see** — plus a number (falls prevented, readmissions avoided, infections caught)
-3. **Why it matters** — nursing care drives outcomes CMS measures and pays for, yet it's bundled and invisible
-4. **What needs to change** — build nursing codes so the work can be seen, counted, and reimbursed
+1. **Who you are** — setting and credentials
+2. **The AI tools you actually see** — alerts, scribes, chatbots, suggested orders
+3. **What you've seen them do** — one real example, in your words, under FDA's question number
+4. **What FDA should require** — testing in real nursing workflows, nurses named as users, a human check before AI acts
 
 The tool walks you through all four, in about 5 minutes.
 
@@ -71,8 +69,8 @@ Identical letters get bundled as one comment. Yours counts because it's yours �
 
 - **No dependencies:** Single HTML file, runs anywhere
 - **Typeface:** Geist (SIL Open Font License), embedded in the page so it loads offline
-- **Offline:** Works without internet (zero network calls except the regulations.gov links you click)
-- **Private:** Everything stays in your browser; nothing is sent anywhere
+- **Offline:** Works without internet once loaded (analytics simply doesn't run)
+- **Private:** Everything you type stays in your browser. Google Analytics records visits and copy events (setting and counts only, never names or text). An optional, opt-in form sends specialty and a timestamp.
 - **Saves automatically:** Your draft is saved locally as you type
 - **Accessible:** WCAG 2.2 AA; works with keyboard only, screen readers, narrow screens, 200% zoom
 
