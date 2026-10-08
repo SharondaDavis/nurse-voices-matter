@@ -639,6 +639,24 @@
   .rrow dt{text-transform:none;letter-spacing:0;font-size:13.5px;font-weight:500;color:var(--text-3);}
   .rlink{font-weight:500;text-decoration:none;}
 
+  /* sign-and-send: credentials full width, years + name side by side on wider screens */
+  h3.sec.first{margin-top:4px;margin-bottom:4px;}
+  h3.sec .opt{font-size:14px;font-weight:400;color:var(--text-3);margin-left:6px;letter-spacing:0;}
+  .signgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;}
+  .signgrid > .field:first-child, .signgrid > .org-only{grid-column:1 / -1;}
+  @media (max-width:600px){ .signgrid{grid-template-columns:1fr;} }
+  .confirm{display:flex;gap:14px;align-items:flex-start;margin-top:26px;padding:18px;border-radius:16px;
+           background:var(--fill);cursor:pointer;transition:background .15s, box-shadow .15s;}
+  .confirm input{appearance:none;-webkit-appearance:none;flex:none;width:24px;height:24px;margin:1px 0 0;border-radius:7px;
+           background:#fff;box-shadow:inset 0 0 0 1.5px var(--line-2);display:grid;place-items:center;cursor:pointer;}
+  .confirm input:checked{background:var(--accent);box-shadow:none;}
+  .confirm input:checked::after{content:"";width:11px;height:6px;border:2.5px solid #fff;border-top:0;border-right:0;
+           transform:rotate(-45deg) translate(1px,-1px);}
+  .confirm input:focus-visible{outline:none;box-shadow:var(--ring);}
+  .confirm:has(input:checked){background:var(--accent-soft);box-shadow:inset 0 0 0 1.5px var(--accent);}
+  .confirm b{font-weight:600;font-size:15.5px;color:var(--text);}
+  .confirm .sub{display:block;font-size:14px;color:var(--text-3);margin-top:3px;line-height:1.45;}
+
   /* buttons: pill primary, round back */
   .nav{background:linear-gradient(rgba(255,255,255,0), #fff 30%);border-top:0;padding-top:22px;gap:10px;}
   .btn{border-radius:999px;font-family:var(--sans);font-weight:600;font-size:16px;letter-spacing:-.01em;min-height:54px;
@@ -761,9 +779,9 @@
 
     <!-- ══════════════ STEP 1 ══════════════ -->
     <section class="slide" id="s0" aria-labelledby="h0">
-      <p class="step-n">Step 1 of 5</p>
+      <p class="step-n">Step 1 of 4</p>
       <h2 id="h0">Tell us who you are</h2>
-      <p class="lede">Two quick taps. Your answers shape the questions you'll see next.</p>
+      <p class="lede">It takes about 5 minutes. Start with two quick taps.</p>
 
       <div class="alert" id="alert0" role="alert">
         <span class="ic" aria-hidden="true">&#9888;</span><span id="alert0txt"></span>
@@ -800,7 +818,7 @@
 
     <!-- ══════════════ STEP 2 ══════════════ -->
     <section class="slide" id="s1" aria-labelledby="h1s" hidden>
-      <p class="step-n">Step 2 of 5</p>
+      <p class="step-n">Step 2 of 4</p>
       <h2 id="h1s">Which AI tools do you see at work?</h2>
       <p class="lede">Pick any you've used or seen on your unit. We'll match you with the FDA questions that fit.</p>
 
@@ -823,7 +841,7 @@
 
     <!-- ══════════════ STEP 3 ══════════════ -->
     <section class="slide" id="s2" aria-labelledby="h2s" hidden>
-      <p class="step-n">Step 3 of 5</p>
+      <p class="step-n">Step 3 of 4</p>
       <h2 id="h2s">Answer one or two of FDA's questions</h2>
       <p class="lede" id="topicLede">These fit the tools you picked. <b>Tap a question</b>, then write a sentence or two
         about what you've seen at work.</p>
@@ -869,13 +887,15 @@
       </details>
     </section>
 
-    <!-- ══════════════ STEP 4 ══════════════ -->
+    <!-- ══════════════ STEP 4: SIGN AND SEND ══════════════ -->
     <section class="slide" id="s3" aria-labelledby="h3s" hidden>
-      <p class="step-n">Step 4 of 5</p>
-      <h2 id="h3s">Sign your letter</h2>
-      <p class="lede">Everything here is optional. Without a name, your letter is signed by an anonymous nurse
-        and still counts.</p>
+      <p class="step-n">Step 4 of 4</p>
+      <h2 id="h3s">Sign and send</h2>
+      <p class="lede">Add your credentials, read your letter once, then copy it into FDA's comment form.</p>
 
+      <h3 class="sec first">Sign it <span class="opt">optional</span></h3>
+      <p class="hint" style="margin:0 0 14px">Without a name, your letter is signed by an anonymous nurse and still counts.</p>
+      <div class="signgrid">
       <div class="field">
         <label for="fcred">Credentials <span class="opt">tap one or type your own</span></label>
         <div class="chips" id="credChips" role="group" aria-label="Common credentials"></div>
@@ -903,13 +923,7 @@
         <input type="text" id="fcount" inputmode="numeric" placeholder="32">
         <p class="hint">Only give a number you could stand behind if someone asked.</p>
       </div>
-    </section>
-
-    <!-- ══════════════ STEP 5 ══════════════ -->
-    <section class="slide" id="s4" aria-labelledby="h4s" hidden>
-      <p class="step-n">Step 5 of 5</p>
-      <h2 id="h4s">Review and send</h2>
-      <p class="lede">Read it over, tick the checks, then copy and paste it into FDA's comment form.</p>
+      </div>
 
       <h3 class="sec">Your letter</h3>
       <p class="hint" style="margin:0 0 10px">You can edit it right here. Change any wording that doesn't sound like you.</p>
@@ -930,25 +944,11 @@
         <button type="button" class="btn ghost" id="dlBtn">Download as a text file</button>
       </div>
 
-      <h3 class="sec">Before you send</h3>
-      <div class="check" id="checklist">
-        <div class="citem" id="ck-own">
-          <span class="auto" aria-hidden="true">&#9675;</span>
-          <span class="lbl">Something in your own words<span class="sub" id="ck-own-sub">Not yet &mdash; step 3 is where to add it.</span></span>
-        </div>
-        <div class="citem">
-          <input type="checkbox" id="ck-phi">
-          <label for="ck-phi">No patient-identifying details<span class="sub">No names, dates of birth, record numbers, or details that could single someone out.</span></label>
-        </div>
-        <div class="citem">
-          <input type="checkbox" id="ck-read">
-          <label for="ck-read">I have read the whole letter<span class="sub">It says what I mean, in words I am comfortable putting my name to.</span></label>
-        </div>
-        <div class="citem">
-          <input type="checkbox" id="ckAttestation">
-          <label for="ckAttestation">This is my authentic voice<span class="sub">It reflects my own experience, judgment, and views.</span></label>
-        </div>
-      </div>
+      <label class="confirm" for="ckAttestation">
+        <input type="checkbox" id="ckAttestation">
+        <span><b>I wrote this, and it doesn't identify any patient.</b>
+          <span class="sub">It reflects my own experience and views. No names, dates, record numbers or details that could single someone out.</span></span>
+      </label>
       <p id="requirementNote" class="reqnote" role="status" hidden></p>
 
       <div class="sendbox">
@@ -1074,14 +1074,13 @@
 
       <h3>How to Use This Tool</h3>
       <p style="line-height:1.6;">
-        The tool walks you through five steps:
+        The tool walks you through four steps, in about 5 minutes:
       </p>
       <ol style="line-height:1.8;">
         <li><strong>Who you are</strong> — your specialty, setting, credentials (all optional)</li>
         <li><strong>AI at your work</strong> — pick the AI tools you see, so the app can suggest the FDA questions that fit</li>
         <li><strong>FDA's questions</strong> — search FDA's 26 questions and answer the ones you know firsthand</li>
-        <li><strong>Sign it</strong> — add your name or stay anonymous</li>
-        <li><strong>Review and send</strong> — copy your letter to the FDA comment form on regulations.gov</li>
+        <li><strong>Sign and send</strong> — add your credentials or stay anonymous, then copy your letter into the FDA comment form on regulations.gov</li>
       </ol>
 
       <h3>Questions?</h3>
@@ -1704,7 +1703,7 @@ const state = {
   counted: false        /* true once this draft has been counted in metrics */
 };
 
-const STEPS = 5;
+const STEPS = 4;
 let step = 0;
 let storageWorks = true;
 
@@ -1815,7 +1814,7 @@ $("ruleLabel").textContent = CONFIG.ruleId;
 
 /* --- progress bar --- */
 (function buildBars(){
-  const names = ["Who you are", "AI at your work", "FDA's questions", "Sign it", "Review and send"];
+  const names = ["Who you are", "AI at your work", "FDA's questions", "Sign and send"];
   const ol = $("bars");
   for(let i = 0; i < STEPS; i++){
     const li = el("li");
@@ -2404,8 +2403,6 @@ document.addEventListener("change", function(e){
     save(); refreshLetter();
     return;
   }
-  if(t.id === "ck-phi")  { state.checklist.phi  = t.checked; save(); paintChecklist(); }
-  if(t.id === "ck-read") { state.checklist.read = t.checked; save(); paintChecklist(); }
   if(t.id === "notNurseCheck"){
     state.isNurse = !t.checked;
     $("roleField").hidden = !t.checked;
@@ -2520,7 +2517,7 @@ function goTo(n, focusHeading){
   $("goBtn").hidden   = !last;
   $("backBtn").hidden = n === 0;
   $("nextBtn").textContent =
-    ["Next: AI at your work", "Next: FDA's questions", "Next: sign it", "Next: review and send", ""][n];
+    ["Next: AI at your work", "Next: FDA's questions", "Next: sign and send", ""][n];
 
   if(last) refreshLetter();
   /* On phones the body can be the scrolling element (overflow-x:hidden), so reset both. */
@@ -2725,8 +2722,8 @@ function validateActionButtons(){
 
   const reqNote = $("requirementNote");
   const missing = [];
-  if(!hasOriginalInput) missing.push("answer at least one FDA question in step 3 (or add a few sentences of your own)");
-  if(!attestationChecked) missing.push("tick \u201cThis is my authentic voice\u201d above");
+  if(!hasOriginalInput) missing.push("answer at least one FDA question in step 3");
+  if(!attestationChecked) missing.push("tick the box above to confirm you wrote it");
   reqNote.hidden = canProceed;
   reqNote.textContent = canProceed ? "" : "To unlock Copy letter: " + missing.join(", and ") + ".";
 }
@@ -2846,37 +2843,6 @@ function paintMeters(){
 }
 
 function paintChecklist(){
-  /* Only paint checklist if on Step 5 where these elements exist */
-  if(!$("ck-own")) return;
-
-  const ownDone = hasOwnWords();
-  const ownRow  = $("ck-own");
-  ownRow.classList.toggle("done", ownDone);
-  ownRow.querySelector(".auto").textContent = ownDone ? "✓" : "○";
-  $("ck-own-sub").textContent = ownDone
-    ? "Your letter includes words you wrote."
-    : "Not yet — step 3 is where to add it. Optional, but it carries the most weight.";
-
-  const copyRow = $("ck-copy");
-  if(copyRow){
-    copyRow.classList.toggle("done", state.copied);
-    copyRow.querySelector(".auto").textContent = state.copied ? "✓" : "○";
-    $("ck-copy-sub").textContent = state.copied
-      ? "Copied. Paste it into the comment page."
-      : "Not yet — use the Copy button below.";
-  }
-
-  const phiElt = $("ck-phi");
-  const readElt = $("ck-read");
-  if(phiElt) {
-    phiElt.checked = state.checklist.phi;
-    phiElt.closest(".citem").classList.toggle("done", state.checklist.phi);
-  }
-  if(readElt) {
-    readElt.checked = state.checklist.read;
-    readElt.closest(".citem").classList.toggle("done", state.checklist.read);
-  }
-
   const dlBtn = $("dlBtn");
   if(dlBtn) {
     const empty = !letterText().trim();
@@ -2968,7 +2934,7 @@ $("ckAttestation").addEventListener("change", validateActionButtons);
 
 $("shareBtn").addEventListener("click", function(){
   const msg = "FDA is asking for feedback on how AI medical devices, like patient chatbots and early-warning alerts, should be regulated. " +
-    "It takes 10 minutes to say what you see at the bedside. " +
+    "It takes about 5 minutes to say what you see at the bedside. " +
     "No account needed. Comments close " + CONFIG.deadlineLabel + ": " + CONFIG.commentUrl;
   const done = function(){ toast("Copied. Text it to ten nurses."); announce("Share message copied."); };
   if(navigator.clipboard && window.isSecureContext){

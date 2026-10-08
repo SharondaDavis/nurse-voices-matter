@@ -16,12 +16,12 @@ Not identical copy-paste letters. Real voices. From ICUs and ERs and clinics and
 
 ## How It Works
 
-**Nurse Voices Matter** is a single-file web tool that takes about 10 minutes:
+**Nurse Voices Matter** is a single-file web tool that takes about 5 minutes:
 
-1. **Tell us who you are** — your specialty, unit, credentials (all optional)
+1. **Tell us who you are** — two taps: who the letter is from, and where you work
 2. **AI at your work** — pick the AI tools you actually see (scribes, sepsis alerts, patient chatbots…). Optionally add the patient-safety work those tools step into, from 46 nursing contributions across 14 settings.
 3. **Answer FDA's questions** — the questions that match your tools come first. Search the rest by keyword ("alarm", "chatbot", "scribe") or theme. Sentence starters ("In my work, I have seen…", "FDA should require…") help each answer say what FDA can use. Answers go in the letter under FDA's question number.
-4. **Sign and send** — paste into the web form, print and mail, or share with colleagues
+4. **Sign and send** — add credentials (optional), read the letter, tick one confirmation, then paste into the web form. Print and share options are below.
 
 No account. No tracking. No analytics. Everything stays on your device until you paste it yourself into the CMS comment form.
 
@@ -48,7 +48,7 @@ Your comment should cover four things:
 3. **Why it matters** — nursing care drives outcomes CMS measures and pays for, yet it's bundled and invisible
 4. **What needs to change** — build nursing codes so the work can be seen, counted, and reimbursed
 
-The tool walks you through all four, in about 10 minutes.
+The tool walks you through all four, in about 5 minutes.
 
 ## Where to Submit
 
