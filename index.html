@@ -978,7 +978,8 @@
           <li>Press <b>Copy letter</b>, then <b>Open the comment page</b>. On regulations.gov, tap the blue
             <b>Comment</b> button.</li>
           <li><b>Comment:</b> paste your letter. The box holds 5,000 characters.</li>
-          <li><b>What is your comment about?</b> Pick the category closest to you as a nurse.</li>
+          <li><b>What is your comment about?</b> Choose <b id="catChoice">Health Professional - A0007</b>.
+            <span id="catWhy"></span></li>
           <li><b>Attach files:</b> skip it.</li>
           <li><b>Email address:</b> optional. Add it and tick the box to get your tracking number by email.</li>
           <li><b>Tell us about yourself:</b> choose <b id="idChoice">An Individual</b>.
@@ -2819,6 +2820,19 @@ function paintSendGuide(){
   }
   $("idChoice").textContent = pick;
   $("idWhy").textContent = why;
+
+  /* Category list confirmed from the live FDA-2026-N-7874 form, 2026-10-07. */
+  let cat = "Health Professional - A0007", catWhy = "It's the category for nurses and other clinicians.";
+  if(!state.isNurse){
+    cat = "Individual Consumer"; catWhy = "It fits commenters who aren't health professionals.";
+  } else if(state.mode === "org"){
+    cat = "Health Care Association - D0022";
+    catWhy = "Use this for a nursing association or group. For a hospital unit, Other Organizations - E0003 fits better.";
+  } else if(state.setting === "academia"){
+    catWhy = "Academia - E0007 also fits if you're commenting mainly as an educator.";
+  }
+  $("catChoice").textContent = cat;
+  $("catWhy").textContent = catWhy;
 }
 
 function refreshLetter(){
