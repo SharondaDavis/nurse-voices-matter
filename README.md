@@ -26,7 +26,7 @@ No account. Your letter stays on your device until you paste it yourself into th
 ## Three Ways to Use
 
 - **Online:** Open `Nurse Voices Matter.html` in any browser
-- **Print and mail:** Generates a signed letter ready for the P.O. Box
+- **Print a flyer:** Break-room flyer with a QR code that opens the app
 - **Worksheet:** Print a blank form to fill by hand, then type it in later
 
 ## Who It's Built For
@@ -51,7 +51,7 @@ The tool walks you through all four, in about 5 minutes.
 ## Where to Submit
 
 - **Online (easiest):** https://www.regulations.gov/docket/FDA-2026-N-7874 (choose Comment)
-- **By mail:** Dockets Management Staff (HFA-305), Food and Drug Administration, 5630 Fishers Lane, Rm. 1061, Rockville, MD 20852. Include Docket No. FDA-2026-N-7874.
+- **By mail:** not offered in the app. FDA's page for this request lists online submission only; confirm the docket's own instructions before mailing anything.
 - **Deadline:** October 19, 2026
 - **FDA's discussion paper:** https://www.fda.gov/medical-devices/digital-health-center-excellence/considerations-regulation-generative-ai-enabled-medical-devices-discussion-paper-and-request
 
