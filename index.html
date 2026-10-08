@@ -997,8 +997,7 @@
       <div class="sendbox">
         <h3>How to send it</h3>
         <ol class="sendsteps">
-          <li>Press <b>Copy &amp; open the FDA form</b>. Your letter is copied and regulations.gov opens.
-            Tap the blue <b>Comment</b> button there.</li>
+          <li>Press <b>Copy &amp; open the FDA form</b>. Your letter is copied and FDA's comment form opens.</li>
           <li><b>Comment:</b> paste your letter. The box holds 5,000 characters.</li>
           <li><b>What is your comment about?</b> Choose <b id="catChoice">Health Professional - A0007</b>.
             <span id="catWhy"></span></li>
@@ -1225,10 +1224,10 @@ const CONFIG = {
   ruleShort:   "FDA's request for feedback on generative AI medical devices",
   docketId:    "FDA-2026-N-7874",
 
-  /* Where comments go. FDA's page for the discussion paper (checked 2026-10-07)
-     directs feedback to this docket on regulations.gov. The docket page has a
-     Comment button for the open document, so both links point at the docket. */
-  commentUrl:  "https://www.regulations.gov/docket/FDA-2026-N-7874",
+  /* Where comments go. commentUrl opens the comment form itself for document
+     FDA-2026-N-7874-0001 (confirmed by a person on the live site, 2026-10-08).
+     docketUrl is the fallback once the period closes. */
+  commentUrl:  "https://www.regulations.gov/commenton/FDA-2026-N-7874-0001",
   docketUrl:   "https://www.regulations.gov/docket/FDA-2026-N-7874",
   /* The discussion paper; its Appendix B lists the 26 questions in full. */
   paperUrl:    "https://www.fda.gov/media/194242/download",
@@ -3126,7 +3125,7 @@ $("orgLink").addEventListener("click", function(){
 $("shareBtn").addEventListener("click", function(){
   const msg = "FDA is asking for feedback on how AI medical devices, like patient chatbots and early-warning alerts, should be regulated. " +
     "It takes about 5 minutes to say what you see at the bedside. " +
-    "No account needed. Comments close " + CONFIG.deadlineLabel + ": " + CONFIG.commentUrl;
+    "No account needed. Comments close " + CONFIG.deadlineLabel + ": " + CONFIG.appUrl;
   const done = function(){ toast("Copied. Text it to ten nurses."); announce("Share message copied."); };
   if(navigator.clipboard && window.isSecureContext){
     navigator.clipboard.writeText(msg).then(done).catch(function(){

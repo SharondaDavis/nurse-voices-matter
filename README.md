@@ -50,7 +50,7 @@ The tool walks you through all four, in about 5 minutes.
 
 ## Where to Submit
 
-- **Online (easiest):** https://www.regulations.gov/docket/FDA-2026-N-7874 (choose Comment)
+- **Online (easiest):** https://www.regulations.gov/commenton/FDA-2026-N-7874-0001
 - **By mail:** not offered in the app. FDA's page for this request lists online submission only; confirm the docket's own instructions before mailing anything.
 - **Deadline:** October 19, 2026
 - **FDA's discussion paper:** https://www.fda.gov/medical-devices/digital-health-center-excellence/considerations-regulation-generative-ai-enabled-medical-devices-discussion-paper-and-request
