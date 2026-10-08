@@ -513,6 +513,12 @@
   @media (min-width:640px){ .toolchips{grid-template-columns:1fr 1fr;} }
   .toolchips .chip{width:100%;justify-content:flex-start;text-align:left;min-height:58px;padding:14px 16px;gap:12px;
         font-size:15.5px;border-radius:var(--radius);}
+  .toolchips .chip{align-items:flex-start;}
+  .tooltxt{display:flex;flex-direction:column;gap:2px;min-width:0;}
+  .tl{font-weight:600;font-size:15.5px;color:var(--text);line-height:1.3;}
+  .td{font-weight:400;font-size:13.5px;color:var(--text-2);line-height:1.4;}
+  .toolchips .chip[aria-pressed="true"] .tl{color:var(--i1);}
+  .toolchips .chip .tick{margin-top:1px;}
   .toolchips .chip .tick{display:grid;width:20px;height:20px;border-radius:6px;background:#fff;
         box-shadow:inset 0 0 0 1.5px var(--line-2);color:transparent;}
   .toolchips .chip[aria-pressed="true"] .tick{background:var(--accent);box-shadow:none;color:#fff;border-radius:6px;}
@@ -841,13 +847,13 @@
     <section class="slide" id="s1" aria-labelledby="h1s" hidden>
       <p class="step-n">Step 2 of 4</p>
       <h2 id="h1s">Which AI tools do you see at work?</h2>
-      <p class="lede">Pick any you've used or seen on your unit. We'll match you with the FDA questions that fit.</p>
+      <p class="lede">Check any you've used or seen on your unit. You don't need to know the product name.</p>
 
       <div class="chips toolchips" id="toolChips" role="group" aria-labelledby="h1s"></div>
 
 
       <details class="ready" id="impactDetails">
-        <summary>Optional: add the patient-safety work these tools step into</summary>
+        <summary>Optional: add patient-safety work you do (sepsis, falls, med errors&hellip;)</summary>
         <p class="readynote">AI tools land in the middle of work nurses already do. Check any that describe your
           work and roughly how many patients it has protected. Your letter uses this to show FDA what is at stake
           if a tool gets it wrong.</p>
@@ -1268,14 +1274,14 @@ const settings = [
 /* Step 2: AI tools nurses run into. `qs` lists the FDA questions most relevant
    to each tool, most relevant first; step 3 suggests these. */
 const TOOLS = [
-  {id:"scribe",  label:"Ambient scribe or AI notes",        phrase:"ambient AI scribes",            qs:[17,10,9,22,24]},
-  {id:"ews",     label:"Early-warning or sepsis alerts",     phrase:"early-warning alerts such as sepsis alerts",                   qs:[6,1,19,10,14]},
-  {id:"portal",  label:"Patient chatbots or portal replies", phrase:"patient chatbots or AI-drafted portal replies",    qs:[3,5,2,15,9]},
-  {id:"triage",  label:"AI triage or symptom checkers",      phrase:"AI triage tools",                   qs:[6,3,5,1,15]},
-  {id:"cds",     label:"Suggested orders or care plans",     phrase:"AI-suggested orders or care plans",               qs:[2,4,14,26,1]},
-  {id:"teach",   label:"AI-written patient education",       phrase:"AI-written patient education", qs:[2,3,9,13,12]},
-  {id:"agent",   label:"AI that sends messages or acts on its own", phrase:"AI that sends messages or acts on its own", qs:[26,20,21,1,22]},
-  {id:"none",    label:"None yet / not sure",                phrase:null,                                                      qs:[4,21,16,7]}
+  {id:"scribe",  label:"AI that writes notes", desc:"Listens in the room or drafts your charting for you",        phrase:"ambient AI scribes",            qs:[17,10,9,22,24]},
+  {id:"ews",     label:"Sepsis or \u201cgetting worse\u201d alerts", desc:"Pop-ups or scores that warn a patient may be declining",     phrase:"early-warning alerts such as sepsis alerts",                   qs:[6,1,19,10,14]},
+  {id:"portal",  label:"Chatbots that talk to patients", desc:"Answers patient questions or messages in the portal or an app", phrase:"patient chatbots or AI-drafted portal replies",    qs:[3,5,2,15,9]},
+  {id:"triage",  label:"AI that decides how urgent it is", desc:"Triage by phone, app or at intake, or symptom checkers",      phrase:"AI triage tools",                   qs:[6,3,5,1,15]},
+  {id:"cds",     label:"Suggested orders or care plans", desc:"Recommends meds, orders or plans for someone to approve",     phrase:"AI-suggested orders or care plans",               qs:[2,4,14,26,1]},
+  {id:"teach",   label:"AI-written patient instructions", desc:"Writes discharge papers or education handouts",       phrase:"AI-written patient education", qs:[2,3,9,13,12]},
+  {id:"agent",   label:"AI that acts on its own", desc:"Sends messages, schedules or places orders with no one checking first", phrase:"AI that sends messages or acts on its own", qs:[26,20,21,1,22]},
+  {id:"none",    label:"None yet, or not sure", desc:"Your view still counts",                phrase:null,                                                      qs:[4,21,16,7]}
 ];
 
 const counts = [
@@ -1964,8 +1970,10 @@ radioKeys($("settingChips"), setSetting);
     b.type = "button";
     b.dataset.tool = t.id;
     b.setAttribute("aria-pressed", "false");
-    b.innerHTML = '<span class="tick" aria-hidden="true">&#10003;</span><span></span>';
-    b.lastChild.textContent = t.label;
+    b.innerHTML = '<span class="tick" aria-hidden="true">&#10003;</span>' +
+                  '<span class="tooltxt"><span class="tl"></span><span class="td"></span></span>';
+    b.querySelector(".tl").textContent = t.label;
+    b.querySelector(".td").textContent = t.desc;
     host.appendChild(b);
   });
 })();
