@@ -633,6 +633,9 @@
   .citem .sub{color:var(--text-3);}
   .sendbox{border:0;background:var(--accent-soft);border-radius:16px;padding:18px 20px;}
   .sendbox h3{font-size:16px;font-weight:600;}
+  .sendsteps{counter-reset:none;padding-left:22px !important;}
+  .sendsteps li{margin-bottom:9px !important;line-height:1.5;}
+  .sendsteps li::marker{color:var(--i1);font-weight:600;}
   .howto{background:var(--fill);border:0;border-radius:16px;padding:18px 20px;}
   .howto h3{text-transform:none;letter-spacing:-.01em;font-size:16px;font-weight:600;color:var(--text);}
   .review{border:1px solid var(--line);border-radius:16px;}
@@ -953,10 +956,16 @@
 
       <div class="sendbox">
         <h3>How to send it</h3>
-        <ol>
-          <li>Press <b>Copy letter</b> at the bottom of the screen.</li>
-          <li>Press <b>Open the comment page</b>. Regulations.gov opens in a new tab. Choose <b>Comment</b>.</li>
-          <li>Paste your letter into the comment box, fill in the form, and submit.</li>
+        <ol class="sendsteps">
+          <li>Press <b>Copy letter</b>, then <b>Open the comment page</b>. On regulations.gov, tap the blue
+            <b>Comment</b> button.</li>
+          <li><b>Comment:</b> paste your letter. The box holds 5,000 characters.</li>
+          <li><b>What is your comment about?</b> Pick the category closest to you as a nurse.</li>
+          <li><b>Attach files:</b> skip it.</li>
+          <li><b>Email address:</b> optional. Add it and tick the box to get your tracking number by email.</li>
+          <li><b>Tell us about yourself:</b> choose <b id="idChoice">An Individual</b>.
+            <span id="idWhy">That matches how you signed your letter.</span></li>
+          <li>Complete the <b>reCAPTCHA</b>, press <b>Submit Comment</b>, and screenshot your tracking number.</li>
         </ol>
         <p class="fine" id="fallbackNote"></p>
       </div>
@@ -2729,7 +2738,26 @@ function validateActionButtons(){
 }
 let sendLocked = true;
 
+/* The regulations.gov identity choice should match how the letter is signed. */
+function paintSendGuide(){
+  const named = !!state.name.trim();
+  let pick, why;
+  if(state.mode === "org"){
+    pick = "An Organization";
+    why = "You're writing on behalf of a unit or organization. Choose Individual instead if you don't have permission to speak for it.";
+  } else if(named){
+    pick = "An Individual";
+    why = "That matches the name on your letter.";
+  } else {
+    pick = "Anonymous";
+    why = "Your letter isn't signed with a name. If you'd like an email confirmation, choose An Individual instead; anonymous comments can't get one.";
+  }
+  $("idChoice").textContent = pick;
+  $("idWhy").textContent = why;
+}
+
 function refreshLetter(){
+  paintSendGuide();
   const generated = buildLetter();
   if(state.letterEdited === null) $("letter").value = generated;
   $("regenBtn").hidden = state.letterEdited === null;
